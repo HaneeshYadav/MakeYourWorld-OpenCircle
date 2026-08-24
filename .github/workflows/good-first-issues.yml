@@ -1,0 +1,39 @@
+name: Notify Discord on Good First Issue
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  notify-discord:
+    if: github.event.label.name == 'good first issue'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Notification to Discord
+        run: |
+          curl -H "Content-Type: application/json" \
+          -X POST \
+          -d '{
+            "embeds": [{
+              "title": "🟢 Good First Issue: '${{ github.event.issue.title }}'",
+              "url": "'${{ github.event.issue.html_url }}'",
+              "description": "'"${{ github.event.issue.body }}"'",
+              "color": 5763719,
+              "fields": [
+                {
+                  "name": "Repository",
+                  "value": "'${{ github.repository }}'",
+                  "inline": true
+                },
+                {
+                  "name": "Opened By",
+                  "value": "'${{ github.event.issue.user.login }}'",
+                  "inline": true
+                }
+              ],
+              "footer": {
+                "text": "Open Circle Onboarding • Claim this issue on GitHub!"
+              }
+            }]
+          }' \
+          ${{ secrets.DISCORD_WEBHOOK }}
