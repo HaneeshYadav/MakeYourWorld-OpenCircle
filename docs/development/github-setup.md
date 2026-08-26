@@ -122,4 +122,4 @@ Use the following standardized label taxonomy for issue slots and PR tracking:
    - Remove student assignee from issue `#XX`.
    - Set label back to `status:available`.
    - **Reopen issue `#XX`** so the next student can claim the slot.
-   - (Optional) Award contributor role in community Discord using submitted username.
+   - (Optional) Award contributor role in community Discord using submitted username

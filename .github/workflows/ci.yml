@@ -29,6 +29,8 @@ jobs:
       - name: Install dependencies (clean lockfile install)
         run: npm ci
 
+      # Only execute the 2-commit & contributor boundary validator if this PR has the maintainer-assigned 'student-contribution' label.
+      # Normal maintainer/infrastructure PRs (without this label) will skip this step and proceed directly to standard quality gates.
       - name: Verify Contributor Boundaries (Student Contribution PRs Only)
         if: github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'student-contribution')
         run: npx tsx scripts/validate-pr.ts
