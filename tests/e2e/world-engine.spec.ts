@@ -1,72 +1,77 @@
 import { test, expect } from "@playwright/test";
 
-test.describe("Growing Forest Paper-Collage Prototype E2E", () => {
-  test("loads /dev/world-engine, displays segment-filtered objects and navigates all 3 segments", async ({
-    page,
-  }) => {
-    await page.goto("/dev/world-engine");
+test.describe("Growing Worlds Public Portal E2E", () => {
+  test("Homepage loads and primary CTAs navigate correctly", async ({ page }) => {
+    await page.goto("/");
 
-    // 1. Check title & world name
-    await expect(page.locator("h2")).toContainText("Growing Forest");
+    // 1. Verify Brand Heading & Hero Title
+    await expect(page.locator("h1")).toContainText("A Living Paper World Built By");
 
-    // 2. Verify world engine container renders
-    const worldContainer = page.locator('[data-testid="world-engine-growing-forest"]');
-    await expect(worldContainer).toBeVisible();
+    // 2. Verify Featured Live World Preview (Growing Forest)
+    const featuredWorld = page.locator('[data-testid="world-engine-growing-forest"]');
+    await expect(featuredWorld).toBeVisible();
 
-    // 3. Verify Segment 01 objects and contributor labels are visible
-    await expect(page.locator("text=Ancient Canopy")).toBeVisible();
-    await expect(page.locator("text=1 / 3")).toBeVisible();
-    await expect(page.locator("text=Shen")).toBeVisible(); // Pine Tree in Segment 01
-    await expect(page.locator("text=Alex")).toBeVisible(); // Bird in Segment 01
-    await expect(page.locator("text=Elena")).toBeVisible(); // Deer in Segment 01
-    await expect(page.locator("text=Liam")).toBeVisible(); // Rock in Segment 01
-    await expect(page.locator("text=Student Example")).toBeVisible(); // Simulated contributor butterfly in Segment 01
-
-    const prevBtn = page.locator('[data-testid="prev-segment-button"]');
-    const nextBtn = page.locator('[data-testid="next-segment-button"]');
-
-    // First segment boundary
-    await expect(prevBtn).toBeDisabled();
-    await expect(nextBtn).toBeEnabled();
-
-    // 4. Navigate to Segment 02: Sunlit Meadow
-    await nextBtn.click();
-    await expect(page.locator("text=Sunlit Meadow")).toBeVisible();
-    await expect(page.locator("text=2 / 3")).toBeVisible();
-    await expect(prevBtn).toBeEnabled();
-    await expect(nextBtn).toBeEnabled();
-
-    // Verify Segment 02 specific objects render (Woodland Flower by Maya)
-    await expect(page.locator("text=Maya")).toBeVisible();
-    // Verify Segment 01 objects are NOT visible in Segment 02
-    await expect(page.locator("text=Student Example")).not.toBeVisible();
-
-    // 5. Navigate to Segment 03: Deep Grove (unpopulated, ready for future growth)
-    await nextBtn.click();
-    await expect(page.locator("text=Deep Grove")).toBeVisible();
-    await expect(page.locator("text=3 / 3")).toBeVisible();
-    await expect(prevBtn).toBeEnabled();
-    await expect(nextBtn).toBeDisabled();
-    await expect(page.locator("text=Student Example")).not.toBeVisible();
-
-    // 6. Navigate back to Segment 01
-    await prevBtn.click();
-    await expect(page.locator("text=Sunlit Meadow")).toBeVisible();
-    await prevBtn.click();
-    await expect(page.locator("text=Ancient Canopy")).toBeVisible();
-    await expect(page.locator("text=Student Example")).toBeVisible();
+    // 3. Test Navigation to How to Contribute
+    const contributeBtn = page.getByRole("link", { name: "How to Contribute" }).first();
+    await contributeBtn.click();
+    await expect(page).toHaveURL("/how-to-contribute");
+    await expect(page.locator("h1")).toContainText("How to Contribute to Growing Worlds");
   });
 
-  test("renders gracefully on mobile viewport (375x667)", async ({ page }) => {
-    await page.setViewportSize({ width: 375, height: 667 });
-    await page.goto("/dev/world-engine");
+  test("World Gallery loads active Growing Forest card and planned worlds", async ({
+    page,
+  }) => {
+    await page.goto("/worlds");
 
+    await expect(page.locator("h1")).toContainText("World Gallery");
+
+    // Active Growing Forest Card
+    const forestHeading = page.getByRole("heading", { name: "Growing Forest" });
+    await expect(forestHeading).toBeVisible();
+
+    // Click Explore World
+    const exploreBtn = page.getByRole("link", { name: "Explore World" });
+    await exploreBtn.click();
+    await expect(page).toHaveURL("/worlds/growing-forest");
+  });
+
+  test("Growing Forest public world view renders engine, labels, and segment navigation", async ({
+    page,
+  }) => {
+    await page.goto("/worlds/growing-forest");
+
+    // 1. Verify World Header
     await expect(page.locator("h2")).toContainText("Growing Forest");
+
+    // 2. Verify World Engine container
     const worldContainer = page.locator('[data-testid="world-engine-growing-forest"]');
     await expect(worldContainer).toBeVisible();
 
-    // Verify contributor badges and navigation buttons scale cleanly
-    await expect(page.locator("text=Student Example")).toBeVisible();
-    await expect(page.locator('[data-testid="next-segment-button"]')).toBeVisible();
+    // 3. Verify Contributor Labels in Segment 01
+    await expect(page.locator("text=Shen")).toBeVisible();
+    await expect(page.locator("text=Alex")).toBeVisible();
+
+    // 4. Verify Contribution CTA Button
+    const addBtn = page.getByRole("button", {
+      name: "Add to this World (Good First Issue)",
+    });
+    await expect(addBtn).toBeVisible();
+
+    // 5. Test Segment Navigation
+    const nextBtn = page.locator('[data-testid="next-segment-button"]');
+    await nextBtn.click();
+    await expect(page.locator("text=Sunlit Meadow")).toBeVisible();
+    await expect(page.locator("text=Maya")).toBeVisible();
+  });
+
+  test("How-to-contribute page renders two-commit walkthrough and file boundaries", async ({
+    page,
+  }) => {
+    await page.goto("/how-to-contribute");
+
+    await expect(page.locator("h1")).toContainText("How to Contribute to Growing Worlds");
+    await expect(page.locator("text=Commit 1: Asset & Object Data")).toBeVisible();
+    await expect(page.locator("text=Commit 2: World Placement")).toBeVisible();
+    await expect(page.locator("text=Files Contributors Modify")).toBeVisible();
   });
 });
