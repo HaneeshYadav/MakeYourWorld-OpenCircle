@@ -16,14 +16,7 @@ export const forestPlacements: ObjectPlacement[] = [
     scale: 0.85,
     rotation: 6,
   },
-  {
-    objectId: "demo-pine-tree",
-    segmentId: "forest-01",
-    x: 22.0,
-    y: 65.0,
-    scale: 1.1,
-    rotation: -1,
-  },
+
   {
     objectId: "demo-forest-deer",
     segmentId: "forest-01",
@@ -47,6 +40,15 @@ export const forestPlacements: ObjectPlacement[] = [
     y: 42.0,
     scale: 1.0,
     rotation: -4,
+  },
+
+  {
+    objectId: "pine-tree",
+    segmentId: "forest-01",
+    x: 22.0,
+    y: 65.0,
+    scale: 1.1,
+    rotation: -1,
   },
 
   // Segment 02 Placements (Demonstrating multi-segment growing world)
