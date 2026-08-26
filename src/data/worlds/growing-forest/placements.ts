@@ -9,12 +9,44 @@ import type { ObjectPlacement } from "@/schemas";
 export const forestPlacements: ObjectPlacement[] = [
   // Segment 01 Placements
   {
-    objectId: "pine-tree",
+    objectId: "demo-song-bird",
     segmentId: "forest-01",
-    x: 25.0,
-    y: 60.0,
-    scale: 1.2,
-    rotation: 5,
+    x: 78.0,
+    y: 28.0,
+    scale: 0.85,
+    rotation: 6,
+  },
+  {
+    objectId: "demo-pine-tree",
+    segmentId: "forest-01",
+    x: 22.0,
+    y: 65.0,
+    scale: 1.1,
+    rotation: -1,
+  },
+  {
+    objectId: "demo-forest-deer",
+    segmentId: "forest-01",
+    x: 48.0,
+    y: 74.0,
+    scale: 0.95,
+    rotation: 1,
+  },
+  {
+    objectId: "demo-mossy-rock",
+    segmentId: "forest-01",
+    x: 18.0,
+    y: 84.0,
+    scale: 1.0,
+    rotation: -2,
+  },
+  {
+    objectId: "student-butterfly",
+    segmentId: "forest-01",
+    x: 62.0,
+    y: 42.0,
+    scale: 1.0,
+    rotation: -4,
   },
 
   // Segment 02 Placements (Demonstrating multi-segment growing world)

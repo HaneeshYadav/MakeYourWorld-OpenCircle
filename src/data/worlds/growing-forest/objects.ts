@@ -8,7 +8,7 @@ import type { WorldObject } from "@/schemas";
 export const forestObjects: WorldObject[] = [
   {
     id: "pine-tree",
-    asset: "/assets/worlds/growing-forest/demo-pine-tree.svg",
+    asset: "/assets/worlds/growing-forest/pine-tree.svg",
     contributor: {
       displayName: "Shen",
       githubUsername: "ShenSandaru",
