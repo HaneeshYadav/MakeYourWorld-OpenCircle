@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="100%" height="100%">
+  <defs>
+    <filter id="universe-shadow" x="-10%" y="-10%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#000005" flood-opacity="0.5"/>
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000005" flood-opacity="0.3"/>
+    </filter>
+    <radialGradient id="nebula-glow" cx="40%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#4c1d95" stop-opacity="0.4"/>
+      <stop offset="60%" stop-color="#1e1b4b" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#090a16" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Deep Space Cardstock Backdrop -->
+  <rect width="1600" height="900" fill="#090a16"/>
+  <rect width="1600" height="900" fill="url(#nebula-glow)"/>
+
+  <!-- Starfield Array -->
+  <g opacity="0.65">
+    <circle cx="90" cy="120" r="2" fill="#FEF08A"/>
+    <circle cx="210" cy="310" r="1.5" fill="#FFFFFF"/>
+    <circle cx="380" cy="180" r="2.5" fill="#E0E7FF"/>
+    <circle cx="560" cy="90" r="1.5" fill="#FFFFFF"/>
+    <circle cx="720" cy="270" r="2" fill="#FEF08A"/>
+    <circle cx="890" cy="150" r="1.5" fill="#FFFFFF"/>
+    <circle cx="1060" cy="340" r="2.5" fill="#E0E7FF"/>
+    <circle cx="1240" cy="110" r="1.5" fill="#FFFFFF"/>
+    <circle cx="1420" cy="280" r="2" fill="#FEF08A"/>
+    <circle cx="1520" cy="170" r="1.5" fill="#FFFFFF"/>
+  </g>
+
+  <!-- Subtle Torn Paper Nebula Cloud Layer -->
+  <path d="M 150 450 Q 300 280 600 320 Q 900 240 1200 380 Q 1450 480 1350 620 Q 1100 700 750 650 Q 400 720 180 580 Z" fill="#2E1065" opacity="0.35" filter="url(#universe-shadow)"/>
+
+  <!-- Majestic Ringed Planet Cutout (Midground Left) -->
+  <g filter="url(#universe-shadow)">
+    <!-- Back of Ring -->
+    <ellipse cx="420" cy="480" rx="240" ry="45" fill="none" stroke="#7C3AED" stroke-width="12" opacity="0.7"/>
+    <!-- Planet Sphere (Paper Layers) -->
+    <circle cx="420" cy="480" r="110" fill="#3B0764" stroke="#A855F7" stroke-width="2"/>
+    <path d="M 330 430 Q 420 460 510 430 Q 470 560 350 540 Z" fill="#2E1065" opacity="0.8"/>
+    <!-- Front of Ring -->
+    <path d="M 180 480 Q 420 540 660 480" fill="none" stroke="#C084FC" stroke-width="12"/>
+  </g>
+
+  <!-- Orbital Trajectory Line -->
+  <path d="M 0 350 Q 800 700 1600 400" fill="none" stroke="#6366F1" stroke-width="1.5" stroke-dasharray="6,6" opacity="0.3"/>
+</svg>

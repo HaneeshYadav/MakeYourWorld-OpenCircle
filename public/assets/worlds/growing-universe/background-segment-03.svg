@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="100%" height="100%">
+  <defs>
+    <filter id="universe-shadow" x="-10%" y="-10%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#000005" flood-opacity="0.5"/>
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000005" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <!-- Deep Cosmos Background -->
+  <rect width="1600" height="900" fill="#080714"/>
+
+  <!-- Dense Cosmic Dust / Distant Asteroid Belt Silhouettes -->
+  <g filter="url(#universe-shadow)">
+    <!-- Asteroid Belt Swarm Band -->
+    <path d="M 0 650 Q 800 450 1600 700 L 1600 850 Q 800 600 0 800 Z" fill="#18182E" opacity="0.75"/>
+    <!-- Small Silhouette Asteroids in Band -->
+    <polygon points="120,680 135,665 145,675 138,690 125,692" fill="#2E2E48"/>
+    <polygon points="340,600 360,580 375,595 365,615 348,612" fill="#2E2E48"/>
+    <polygon points="620,540 645,525 660,538 650,560 630,555" fill="#3D3D60"/>
+    <polygon points="920,530 940,510 960,528 950,548 930,542" fill="#3D3D60"/>
+    <polygon points="1210,580 1235,565 1250,578 1240,600 1220,595" fill="#2E2E48"/>
+    <polygon points="1440,660 1460,645 1475,658 1465,678 1448,675" fill="#2E2E48"/>
+  </g>
+
+  <!-- Giant Looming Gas Giant Silhouette (Far Right Horizon) -->
+  <g filter="url(#universe-shadow)">
+    <circle cx="1650" cy="380" r="320" fill="#131127" stroke="#312E81" stroke-width="2"/>
+    <path d="M 1340 320 Q 1500 350 1650 320" fill="none" stroke="#4F46E5" stroke-width="6" opacity="0.4"/>
+    <path d="M 1360 410 Q 1520 440 1650 410" fill="none" stroke="#6366F1" stroke-width="8" opacity="0.3"/>
+  </g>
+
+  <!-- Distant Starlight Points -->
+  <g opacity="0.7">
+    <circle cx="180" cy="140" r="2" fill="#FEF08A"/>
+    <circle cx="360" cy="220" r="1.5" fill="#FFFFFF"/>
+    <circle cx="580" cy="110" r="2.5" fill="#E0E7FF"/>
+    <circle cx="820" cy="190" r="1.5" fill="#FFFFFF"/>
+    <circle cx="1040" cy="130" r="2" fill="#FEF08A"/>
+    <circle cx="1260" cy="240" r="1.5" fill="#FFFFFF"/>
+  </g>
+</svg>

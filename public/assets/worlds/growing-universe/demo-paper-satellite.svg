@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 80" width="100%" height="100%">
+  <defs>
+    <filter id="satellite-shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="4" stdDeviation="3" flood-color="#000005" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#satellite-shadow)">
+    <!-- Solar Panels (Left and Right) -->
+    <rect x="6" y="28" width="28" height="24" rx="2" fill="#1E3A8A" stroke="#FFFFFF" stroke-width="1.2"/>
+    <line x1="20" y1="28" x2="20" y2="52" stroke="#60A5FA" stroke-width="1"/>
+    <line x1="6" y1="40" x2="34" y2="40" stroke="#60A5FA" stroke-width="1"/>
+
+    <rect x="66" y="28" width="28" height="24" rx="2" fill="#1E3A8A" stroke="#FFFFFF" stroke-width="1.2"/>
+    <line x1="80" y1="28" x2="80" y2="52" stroke="#60A5FA" stroke-width="1"/>
+    <line x1="66" y1="40" x2="94" y2="40" stroke="#60A5FA" stroke-width="1"/>
+
+    <!-- Mounting Struts -->
+    <line x1="34" y1="40" x2="42" y2="40" stroke="#94A3B8" stroke-width="2"/>
+    <line x1="58" y1="40" x2="66" y2="40" stroke="#94A3B8" stroke-width="2"/>
+
+    <!-- Main Satellite Bus (Gold Cardstock) -->
+    <rect x="42" y="30" width="16" height="20" rx="3" fill="#D97706" stroke="#FFFFFF" stroke-width="1.2"/>
+    <rect x="44" y="32" width="12" height="16" fill="#FBBF24"/>
+
+    <!-- Communications Dish -->
+    <path d="M 44 24 Q 50 18 56 24" fill="none" stroke="#F1F5F9" stroke-width="2"/>
+    <line x1="50" y1="21" x2="50" y2="30" stroke="#94A3B8" stroke-width="1.5"/>
+  </g>
+</svg>

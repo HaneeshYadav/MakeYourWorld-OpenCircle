@@ -1,5 +1,6 @@
 import type { World } from "@/schemas";
 import { growingForestWorld } from "./growing-forest";
+import { growingUniverseWorld } from "./growing-universe";
 
 export type WorldStatus = "implemented" | "planned";
 
@@ -21,8 +22,7 @@ export interface WorldCatalogEntry {
 
 /**
  * Formal Registry of the 10 Growing Worlds.
- * Only 'implemented' worlds contain populated `data`.
- * 'planned' worlds provide full design specifications without dummy schemas or assets.
+ * 'implemented' worlds contain populated `data`.
  */
 export const worldCatalog: WorldCatalogEntry[] = [
   {
@@ -52,10 +52,10 @@ export const worldCatalog: WorldCatalogEntry[] = [
     name: "Growing Universe",
     description:
       "A deep cosmic indigo paper diorama of nebulae, spiral galaxies, orbiting satellites, and stardust constellations.",
-    status: "planned",
+    status: "implemented",
     theme: {
-      primaryColor: "#0B0D1B",
-      secondaryColor: "#4C1D95",
+      primaryColor: "#4C1D95",
+      secondaryColor: "#0B0D1B",
       accentColor: "#FBBF24",
     },
     growthConcept: "Cosmic discovery expanding from initial orbit across asteroid belts into deep space nebulae.",
@@ -67,6 +67,7 @@ export const worldCatalog: WorldCatalogEntry[] = [
       "Deep Galaxy Vista (universe-05)",
     ],
     suggestedCategories: ["planets", "moons", "satellites", "asteroids", "constellations"],
+    data: growingUniverseWorld,
   },
   {
     id: "growing-ocean",
@@ -163,7 +164,7 @@ export const worldCatalog: WorldCatalogEntry[] = [
       secondaryColor: "#1E3A8A",
       accentColor: "#EAB308",
     },
-    growthConcept: "Collegiate expansion from main university gate across the academic quad to the research observatory.",
+    growthConcept: "Collegiate expansion from main university gate across the academic quad to the hilltop observatory.",
     segmentPlan: [
       "University Gate & Lawn (campus-01)",
       "Academic Brick Quad (campus-02)",
@@ -248,4 +249,4 @@ export const worldsMap: Record<string, World> = Object.fromEntries(
 );
 
 export const allWorlds = implementedWorlds;
-export { growingForestWorld };
+export { growingForestWorld, growingUniverseWorld };

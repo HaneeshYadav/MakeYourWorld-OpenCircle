@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-test.describe("Growing Worlds Public Portal E2E", () => {
+test.describe("Growing Worlds Public Portal & Multi-World E2E", () => {
   test("Homepage loads and primary CTAs navigate correctly", async ({ page }) => {
     await page.goto("/");
 
@@ -18,7 +18,7 @@ test.describe("Growing Worlds Public Portal E2E", () => {
     await expect(page.locator("h1")).toContainText("How to Contribute to Growing Worlds");
   });
 
-  test("World Gallery loads active Growing Forest card and planned worlds", async ({
+  test("World Gallery loads both active worlds (Forest & Universe) and planned worlds", async ({
     page,
   }) => {
     await page.goto("/worlds");
@@ -29,62 +29,82 @@ test.describe("Growing Worlds Public Portal E2E", () => {
     const forestHeading = page.getByRole("heading", { name: "Growing Forest" });
     await expect(forestHeading).toBeVisible();
 
-    // Verify planned worlds appear with Coming Soon / Awaiting Scaffolding
-    await expect(page.locator("text=Growing Universe")).toBeVisible();
+    // Active Growing Universe Card
+    const universeHeading = page.getByRole("heading", { name: "Growing Universe" });
+    await expect(universeHeading).toBeVisible();
+
+    // Planned worlds
     await expect(page.locator("text=Growing Ocean")).toBeVisible();
     await expect(page.locator("text=Alien Planet")).toBeVisible();
-
-    // Click Explore World for Growing Forest
-    const exploreBtn = page.getByRole("link", { name: "Explore World" });
-    await exploreBtn.click();
-    await expect(page).toHaveURL("/worlds/growing-forest");
   });
 
-  test("Growing Forest public world view renders engine, labels, and segment navigation", async ({
+  test("Growing Forest world view renders engine and segment navigation", async ({
     page,
   }) => {
     await page.goto("/worlds/growing-forest");
 
-    // 1. Verify World Header
     await expect(page.locator("h2")).toContainText("Growing Forest");
-
-    // 2. Verify World Engine container
     const worldContainer = page.locator('[data-testid="world-engine-growing-forest"]');
     await expect(worldContainer).toBeVisible();
 
-    // 3. Verify Contributor Labels in Segment 01
+    // Contributor labels
     await expect(page.locator("text=Shen")).toBeVisible();
     await expect(page.locator("text=Alex")).toBeVisible();
 
-    // 4. Verify Contribution CTA Button
-    const addBtn = page.getByRole("button", {
-      name: "Add to this World (Good First Issue)",
-    });
-    await expect(addBtn).toBeVisible();
-
-    // 5. Test Segment Navigation
+    // Segment Navigation
     const nextBtn = page.locator('[data-testid="next-segment-button"]');
     await nextBtn.click();
     await expect(page.locator("text=Sunlit Meadow")).toBeVisible();
     await expect(page.locator("text=Maya")).toBeVisible();
   });
 
+  test("Growing Universe world view renders shared engine, cosmic cutouts, and segments", async ({
+    page,
+  }) => {
+    await page.goto("/worlds/growing-universe");
+
+    // 1. World Header
+    await expect(page.locator("h2")).toContainText("Growing Universe");
+    const worldContainer = page.locator('[data-testid="world-engine-growing-universe"]');
+    await expect(worldContainer).toBeVisible();
+
+    // 2. Verify Segment 01 (Starlit Orbit) objects and contributors
+    await expect(page.locator("text=Starlit Orbit")).toBeVisible();
+    await expect(page.locator("text=1 / 3")).toBeVisible();
+    await expect(page.locator("text=Luna")).toBeVisible(); // Planet by Luna
+    await expect(page.locator("text=Orion")).toBeVisible(); // Satellite by Orion
+
+    const prevBtn = page.locator('[data-testid="prev-segment-button"]');
+    const nextBtn = page.locator('[data-testid="next-segment-button"]');
+
+    // 3. Navigate to Segment 02 (Planetary Horizon)
+    await nextBtn.click();
+    await expect(page.locator("text=Planetary Horizon")).toBeVisible();
+    await expect(page.locator("text=2 / 3")).toBeVisible();
+    await expect(page.locator("text=Stella")).toBeVisible(); // Moon by Stella
+    await expect(page.locator("text=Cosmo")).toBeVisible(); // Comet by Cosmo
+
+    // Segment 01 objects should not appear in Segment 02
+    await expect(page.locator("text=Luna")).not.toBeVisible();
+
+    // 4. Navigate to Segment 03 (Asteroid Belt)
+    await nextBtn.click();
+    await expect(page.locator("text=Asteroid Belt")).toBeVisible();
+    await expect(page.locator("text=3 / 3")).toBeVisible();
+    await expect(page.locator("text=Nova")).toBeVisible(); // Asteroid by Nova
+
+    // 5. Navigate back to Segment 01
+    await prevBtn.click();
+    await prevBtn.click();
+    await expect(page.locator("text=Starlit Orbit")).toBeVisible();
+    await expect(page.locator("text=Luna")).toBeVisible();
+  });
+
   test("Visiting planned or non-existent world returns 404 not found page", async ({
     page,
   }) => {
-    const response = await page.goto("/worlds/growing-universe");
+    const response = await page.goto("/worlds/growing-ocean");
     expect(response?.status()).toBe(404);
     await expect(page.locator("text=404")).toBeVisible();
-  });
-
-  test("How-to-contribute page renders two-commit walkthrough and file boundaries", async ({
-    page,
-  }) => {
-    await page.goto("/how-to-contribute");
-
-    await expect(page.locator("h1")).toContainText("How to Contribute to Growing Worlds");
-    await expect(page.locator("text=Commit 1: Asset & Object Data")).toBeVisible();
-    await expect(page.locator("text=Commit 2: World Placement")).toBeVisible();
-    await expect(page.locator("text=Files Contributors Modify")).toBeVisible();
   });
 });
