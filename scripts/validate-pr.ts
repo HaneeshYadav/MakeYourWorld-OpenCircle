@@ -3,7 +3,8 @@ import { validatePRCommits, type CommitDiffInfo } from "./pr-validator-core";
 
 function runPRValidation() {
   const baseRef = process.env.GITHUB_BASE_REF || "dev";
-  console.log(`🔍 Validating pull request against target base: 'origin/${baseRef}'...`);
+  const headRef = process.env.GITHUB_HEAD_REF || "";
+  console.log(`🔍 Inspecting pull request against target base: 'origin/${baseRef}' (branch: '${headRef}')...`);
 
   let commitHashes: string[] = [];
   try {
@@ -58,16 +59,22 @@ function runPRValidation() {
     c.files.forEach((f) => console.log(`      - ${f}`));
   });
 
-  const result = validatePRCommits(commits);
+  const result = validatePRCommits(commits, headRef);
+
+  if (!result.isStudentContribution) {
+    console.log(`\nℹ️ Maintainer / Infrastructure PR Detected: ${result.skippedReason}`);
+    console.log("⏩ Student 2-commit validator skipped. Proceeding to standard quality gates.");
+    return;
+  }
 
   if (!result.valid) {
-    console.error("\n❌ PR Validation Failed with the following errors:");
+    console.error("\n❌ Student PR Validation Failed with the following errors:");
     result.errors.forEach((err) => console.error(`  • ${err}`));
     console.error("\n📖 Contributor Reference: Please check CONTRIBUTING.md for the 2-commit workflow.");
     process.exit(1);
   }
 
-  console.log("\n✅ Contributor Two-Commit & File Boundary Validation Passed cleanly!");
+  console.log("\n✅ Student World Contribution Two-Commit & File Boundary Validation Passed cleanly!");
 }
 
 runPRValidation();

@@ -24,9 +24,15 @@ Each contribution follows a strict, beginner-friendly **two-commit workflow**:
 │  - Add ~1-5 lines: src/data/worlds/<world>/placements.ts│
 │  - Set assigned segmentId (e.g. "forest-01") & x, y (%)│
 │  - Test with: npm test && npm run lint                 │
-│  - Check visually at http://localhost:3000/dev/world-engine│
+│  - Check visually at http://localhost:3000/worlds/<id> │
 └────────────────────────────────────────────────────────┘
 ```
+
+---
+
+## 🏷️ Discovery Label Note
+
+- **`good first issue`**: Used on **Issues** to identify available contribution slots for beginner discovery.
 
 ---
 
@@ -36,6 +42,8 @@ Each contribution follows a strict, beginner-friendly **two-commit workflow**:
 - Browse our [Good First Issues](https://github.com/ShenSandaru/OpenCircle-Test/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
 - Find an open **Contribution Slot** that is unassigned.
 - Check the issue details for:
+  - **Contribution Slot ID**: e.g., `CONTRIB-SLOT #01`
+  - **Issue Number**: Note the GitHub issue number (e.g., `#12`) for your PR description.
   - **Target World**: e.g., `Growing Forest`
   - **Target Segment**: e.g., `forest-01`
   - **Allowed Category**: e.g., `woodland flora, birds, insects, small critters`
@@ -60,7 +68,7 @@ Each contribution follows a strict, beginner-friendly **two-commit workflow**:
   ```
 
 ### 3. Create a Feature Branch from `dev`
-Always base your feature branch on the upstream **`dev`** branch:
+Always base your feature branch on the upstream **`dev`** branch (NOT `main`):
 ```bash
 git checkout dev
 git fetch upstream dev
@@ -113,16 +121,18 @@ git checkout -b contrib/<world>-<object-name>
      rotation: -4,
    },
    ```
-3. View it locally in your browser:
-   ```bash
-   npm run dev
-   ```
-   Open `http://localhost:3000/dev/world-engine` to visually check your placed object and contributor label.
-4. Run the full test suite and linter:
+3. Run full validation:
    ```bash
    npm test
    npm run lint
+   npm run typecheck
+   npm run build
    ```
+4. View it locally in your browser:
+   ```bash
+   npm run dev
+   ```
+   Open `http://localhost:3000/worlds/<world-id>` to visually check your placed object and contributor badge.
 5. Create **Commit 2**:
    ```bash
    git add src/data/worlds/
@@ -138,30 +148,28 @@ git checkout -b contrib/<world>-<object-name>
    git push origin contrib/<world>-<object-name>
    ```
 2. Go to GitHub and open a Pull Request against the **`dev`** branch (NOT `main`).
-3. Keep the **two commits separate** (do not squash them).
-4. Fill out the PR template with:
-   - Target issue reference (`Closes #XX`)
-   - Your Contributor Display Name (rendered under your object)
-   - Your Discord username (for community recognition and role updates)
-5. Once reviewed and merged by maintainers, your contribution becomes part of the permanent growing world! 🎉
+3. In the PR description, replace `#<ISSUE_NUMBER>` with `Closes #<ASSIGNED_ISSUE_NUMBER>` (e.g. `Closes #12`).
+4. Keep the **two commits separate** (do not squash them).
+5. Fill out the PR template with your contributor display name and Discord handle.
+6. Once reviewed and merged by maintainers into `dev`, your contribution permanently appears in the growing world! 🎉
 
 ---
 
 ## 🛑 Contributor File Boundaries
 
-To ensure clean reviews, contributors must **only** edit:
+To ensure clean validation, contributors must **only** edit:
 - ✅ `public/assets/worlds/<world-name>/*`
 - ✅ `src/data/worlds/<world-name>/objects.ts`
 - ✅ `src/data/worlds/<world-name>/placements.ts`
 
-Do **NOT** modify engine code (`src/engine/*`), domain schemas (`src/schemas/*`), UI components (`src/components/*`), pages (`src/app/*`), tests, or configuration files.
+Do **NOT** modify engine code (`src/engine/*`), domain schemas (`src/schemas/*`), UI components (`src/components/*`), pages (`src/app/*`), tests (`tests/*`), workflows (`.github/*`), documentation (`docs/*`), scripts (`scripts/*`), or dependency files (`package.json`, `package-lock.json`).
 
 ---
 
 ## 🎨 Asset Guidelines
 
 - **Style**: 2D Paper-cutout aesthetic. Clean geometric or organic silhouettes, warm paper tones, and transparent background.
-- **Format**: SVG strongly preferred.
-- **Size**: Optimized, lightweight files (<50 KB).
+- **Format**: SVG strongly preferred (or PNG).
+- **Size**: Lightweight files (<50 KB).
 - **Attribution**: Display name renders beneath the object; Discord handle is used by maintainers for community roles and is never stored in public world files.
-- **Originality**: Only use original assets or permissive open-source assets (CC0 / MIT).
+- **Originality**: Only use original assets or permissive open-source assets (CC0 / MIT). Copyrighted or trademarked artwork is prohibited.
