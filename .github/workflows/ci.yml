@@ -6,30 +6,40 @@ on:
   pull_request:
     branches: [dev, main]
 
+permissions:
+  contents: read
+
 jobs:
   validate:
+    name: Contributor Quality Gates & Build
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout repository (with full history for diffing)
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Setup Node.js
+      - name: Setup Node.js 20
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: "npm"
 
-      - name: Install dependencies
+      - name: Install dependencies (clean lockfile install)
         run: npm ci
 
-      - name: Run linter
+      - name: Verify Contributor Boundaries
+        if: github.event_name == 'pull_request'
+        run: npx tsx scripts/validate-pr.ts
+
+      - name: Run ESLint
         run: npm run lint
 
-      - name: Run typecheck
+      - name: Run TypeScript Typecheck
         run: npm run typecheck
 
-      - name: Run unit & schema tests
+      - name: Run Vitest Unit & Schema Tests
         run: npm test
 
-      - name: Run Next.js production build
+      - name: Run Next.js Production SSG Build
         run: npm run build
