@@ -240,7 +240,7 @@ describe("Domain Schema Validation Suite", () => {
         placements: [
           ...growingForestWorld.placements,
           {
-            objectId: "demo-pine-tree",
+            objectId: "pine-tree",
             segmentId: "non-existent-segment-id",
             x: 50,
             y: 50,
@@ -262,7 +262,7 @@ describe("Domain Schema Validation Suite", () => {
         objects: [
           ...growingForestWorld.objects,
           {
-            id: "demo-pine-tree", // duplicate ID
+            id: "pine-tree", // duplicate ID
             asset: "/assets/worlds/growing-forest/another-tree.svg",
             contributor: { displayName: "Bob" },
           },
@@ -272,7 +272,7 @@ describe("Domain Schema Validation Suite", () => {
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error.issues[0].message).toContain(
-          "Duplicate object ID 'demo-pine-tree'"
+          "Duplicate object ID 'pine-tree'"
         );
       }
     });
@@ -280,11 +280,17 @@ describe("Domain Schema Validation Suite", () => {
     it("validates multiple objects distributed across multiple segments", () => {
       const multiSegmentWorld = {
         ...growingForestWorld,
+        objects: [
+          { id: "pine-tree", asset: "/assets/worlds/growing-forest/pine-tree.svg", contributor: { displayName: "Shen" } },
+          { id: "song-bird", asset: "/assets/worlds/growing-forest/song-bird.svg", contributor: { displayName: "Alex" } },
+          { id: "forest-deer", asset: "/assets/worlds/growing-forest/forest-deer.svg", contributor: { displayName: "Elena" } },
+          { id: "mossy-rock", asset: "/assets/worlds/growing-forest/mossy-rock.svg", contributor: { displayName: "Liam" } },
+        ],
         placements: [
-          { objectId: "demo-pine-tree", segmentId: "forest-01", x: 20, y: 50 },
-          { objectId: "demo-song-bird", segmentId: "forest-01", x: 60, y: 30 },
-          { objectId: "demo-forest-deer", segmentId: "forest-02", x: 40, y: 70 },
-          { objectId: "demo-mossy-rock", segmentId: "forest-03", x: 80, y: 85 },
+          { objectId: "pine-tree", segmentId: "forest-01", x: 20, y: 50 },
+          { objectId: "song-bird", segmentId: "forest-01", x: 60, y: 30 },
+          { objectId: "forest-deer", segmentId: "forest-02", x: 40, y: 70 },
+          { objectId: "mossy-rock", segmentId: "forest-03", x: 80, y: 85 },
         ],
       };
       const result = WorldSchema.safeParse(multiSegmentWorld);

@@ -13,20 +13,20 @@ export function generateDensityFixture(
   const isForest = worldId === "growing-forest";
 
   const sampleForestAssets = [
-    "/assets/worlds/growing-forest/demo-pine-tree.svg",
-    "/assets/worlds/growing-forest/demo-song-bird.svg",
-    "/assets/worlds/growing-forest/demo-woodland-flower.svg",
-    "/assets/worlds/growing-forest/demo-mossy-rock.svg",
-    "/assets/worlds/growing-forest/demo-forest-deer.svg",
+    "/assets/worlds/growing-forest/pine-tree.svg",
+    "/assets/worlds/growing-forest/song-bird.svg",
+    "/assets/worlds/growing-forest/woodland-flower.svg",
+    "/assets/worlds/growing-forest/mossy-rock.svg",
+    "/assets/worlds/growing-forest/forest-deer.svg",
     "/assets/worlds/growing-forest/student-butterfly.svg",
   ];
 
   const sampleUniverseAssets = [
-    "/assets/worlds/growing-universe/demo-paper-planet.svg",
-    "/assets/worlds/growing-universe/demo-paper-satellite.svg",
-    "/assets/worlds/growing-universe/demo-crescent-moon.svg",
-    "/assets/worlds/growing-universe/demo-paper-comet.svg",
-    "/assets/worlds/growing-universe/demo-paper-asteroid.svg",
+    "/assets/worlds/growing-universe/paper-planet.svg",
+    "/assets/worlds/growing-universe/paper-satellite.svg",
+    "/assets/worlds/growing-universe/crescent-moon.svg",
+    "/assets/worlds/growing-universe/paper-comet.svg",
+    "/assets/worlds/growing-universe/paper-asteroid.svg",
   ];
 
   const assetPool = isForest ? sampleForestAssets : sampleUniverseAssets;
