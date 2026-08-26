@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="100%" height="100%">
+  <defs>
+    <filter id="village-shadow" x="-10%" y="-10%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#1c1917" flood-opacity="0.22"/>
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#1c1917" flood-opacity="0.12"/>
+    </filter>
+    <linearGradient id="village-sky-3" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FEF08A"/>
+      <stop offset="60%" stop-color="#FFEDD5"/>
+      <stop offset="100%" stop-color="#FFF7ED"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Sky Layer (Warm Afternoon Lantern Light) -->
+  <rect width="1600" height="900" fill="url(#village-sky-3)"/>
+
+  <!-- Distant Village Rooflines & Church Spire -->
+  <g filter="url(#village-shadow)" opacity="0.65">
+    <rect x="220" y="320" width="200" height="260" fill="#9A3412"/>
+    <polygon points="190,320 320,180 450,320" fill="#7C2D12"/>
+    <!-- Spire -->
+    <rect x="740" y="240" width="120" height="340" fill="#78716C"/>
+    <polygon points="730,240 800,80 870,240" fill="#44403C"/>
+    <rect x="1180" y="310" width="240" height="270" fill="#9A3412"/>
+  </g>
+
+  <!-- Market Square Wooden Stalls & Stone Wishing Well (Centerpiece) -->
+  <g filter="url(#village-shadow)">
+    <!-- Market Stall 1 (Left - Striped Canvas Canopy) -->
+    <rect x="160" y="440" width="280" height="180" fill="#78350F"/>
+    <polygon points="140,440 280,360 420,440" fill="#DC2626"/>
+    <polygon points="140,440 210,400 280,440" fill="#FEF08A"/>
+    <polygon points="280,440 350,400 420,440" fill="#FEF08A"/>
+
+    <!-- Stone Wishing Well in Center Square -->
+    <ellipse cx="800" cy="620" rx="140" ry="50" fill="#78716C" stroke="#44403C" stroke-width="2"/>
+    <ellipse cx="800" cy="610" rx="110" ry="35" fill="#38BDF8"/>
+    <!-- Well Roof Canopy -->
+    <polygon points="700,480 800,400 900,480" fill="#78350F"/>
+    <line x1="720" y1="480" x2="720" y2="610" stroke="#451A03" stroke-width="4"/>
+    <line x1="880" y1="480" x2="880" y2="610" stroke="#451A03" stroke-width="4"/>
+
+    <!-- Market Stall 2 (Right) -->
+    <rect x="1160" y="440" width="280" height="180" fill="#78350F"/>
+    <polygon points="1140,440 1280,360 1420,440" fill="#0284C7"/>
+    <polygon points="1140,440 1210,400 1280,440" fill="#FEF08A"/>
+    <polygon points="1280,440 1350,400 1420,440" fill="#FEF08A"/>
+  </g>
+
+  <!-- Market Square Cobblestone Paved Floor -->
+  <g filter="url(#village-shadow)">
+    <rect x="0" y="620" width="1600" height="280" fill="#E7E5E4"/>
+    <ellipse cx="800" cy="740" rx="420" ry="120" fill="#D6D3D1" stroke="#A8A29E" stroke-width="2"/>
+  </g>
+</svg>

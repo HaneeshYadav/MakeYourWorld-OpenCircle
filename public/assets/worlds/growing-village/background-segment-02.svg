@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="100%" height="100%">
+  <defs>
+    <filter id="village-shadow" x="-10%" y="-10%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#1c1917" flood-opacity="0.22"/>
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#1c1917" flood-opacity="0.12"/>
+    </filter>
+    <linearGradient id="village-sky-2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#E2E8F0"/>
+      <stop offset="60%" stop-color="#FEF08A"/>
+      <stop offset="100%" stop-color="#FFFBEB"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Sky Layer -->
+  <rect width="1600" height="900" fill="url(#village-sky-2)"/>
+
+  <!-- Distant Hillside Trees -->
+  <g filter="url(#village-shadow)" opacity="0.75">
+    <path d="M 0 420 Q 400 360 850 400 T 1600 370 L 1600 600 L 0 600 Z" fill="#365314"/>
+  </g>
+
+  <!-- Thatched Cottages & Workshop Silhouette Rows -->
+  <g filter="url(#village-shadow)">
+    <!-- Cottage 1 (Left) -->
+    <rect x="120" y="380" width="280" height="240" fill="#FFFBEB" stroke="#D97706" stroke-width="2"/>
+    <polygon points="90,380 260,250 430,380" fill="#78350F" stroke="#451A03" stroke-width="2"/>
+    <rect x="220" y="480" width="60" height="140" fill="#92400E"/>
+
+    <!-- Cottage 2 (Center-Right) -->
+    <rect x="580" y="340" width="360" height="280" fill="#FEF3C7" stroke="#D97706" stroke-width="2"/>
+    <polygon points="540,340 760,210 980,340" fill="#78350F" stroke="#451A03" stroke-width="2"/>
+    <rect x="730" y="460" width="70" height="160" fill="#92400E"/>
+
+    <!-- Cottage 3 (Far Right) -->
+    <rect x="1150" y="390" width="340" height="230" fill="#FFFBEB" stroke="#D97706" stroke-width="2"/>
+    <polygon points="1110,390 1320,260 1530,390" fill="#78350F" stroke="#451A03" stroke-width="2"/>
+  </g>
+
+  <!-- Cobblestone Paved Village Street Floor -->
+  <g filter="url(#village-shadow)">
+    <rect x="0" y="620" width="1600" height="280" fill="#D6D3D1"/>
+    <!-- Cobblestone Texture Pattern Lines -->
+    <line x1="0" y1="690" x2="1600" y2="690" stroke="#A8A29E" stroke-width="2" stroke-dasharray="30,10"/>
+    <line x1="0" y1="760" x2="1600" y2="760" stroke="#A8A29E" stroke-width="2" stroke-dasharray="40,15"/>
+    <line x1="0" y1="830" x2="1600" y2="830" stroke="#A8A29E" stroke-width="2" stroke-dasharray="35,12"/>
+  </g>
+</svg>

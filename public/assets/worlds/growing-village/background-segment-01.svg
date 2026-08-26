@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="100%" height="100%">
+  <defs>
+    <filter id="village-shadow" x="-10%" y="-10%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#1c1917" flood-opacity="0.22"/>
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#1c1917" flood-opacity="0.12"/>
+    </filter>
+    <linearGradient id="village-sky-1" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#E0E7FF"/>
+      <stop offset="60%" stop-color="#FEF3C7"/>
+      <stop offset="100%" stop-color="#FEF9C3"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Sky Layer -->
+  <rect width="1600" height="900" fill="url(#village-sky-1)"/>
+
+  <!-- Distant Rolling Pasture Hills -->
+  <g filter="url(#village-shadow)">
+    <path d="M 0 450 Q 320 380 700 420 T 1600 390 L 1600 650 L 0 650 Z" fill="#4D7C0F" opacity="0.8"/>
+  </g>
+
+  <!-- River Stream & Watermill Backdrop Layer -->
+  <g filter="url(#village-shadow)">
+    <!-- River Banks -->
+    <path d="M 0 540 Q 420 500 850 530 T 1600 510 L 1600 900 L 0 900 Z" fill="#65A30D"/>
+    
+    <!-- Meandering Village Paper Stream -->
+    <path d="M 0 680 Q 450 620 900 660 T 1600 640 L 1600 780 Q 950 760 450 780 T 0 820 Z" fill="#38BDF8" stroke="#BAE6FD" stroke-width="2"/>
+
+    <!-- Watermill Timber House (Center Left) -->
+    <rect x="220" y="440" width="220" height="200" fill="#78350F" stroke="#451A03" stroke-width="2"/>
+    <polygon points="200,440 330,340 460,440" fill="#B45309" stroke="#451A03" stroke-width="2"/>
+    <!-- Turning Waterwheel Cutout -->
+    <circle cx="180" cy="580" r="60" fill="none" stroke="#451A03" stroke-width="8"/>
+    <line x1="180" y1="520" x2="180" y2="640" stroke="#451A03" stroke-width="4"/>
+    <line x1="120" y1="580" x2="240" y2="580" stroke="#451A03" stroke-width="4"/>
+    <line x1="138" y1="538" x2="222" y2="622" stroke="#451A03" stroke-width="4"/>
+    <line x1="138" y1="622" x2="222" y2="538" stroke="#451A03" stroke-width="4"/>
+
+    <!-- Stone Footbridge Crossing -->
+    <path d="M 980 640 Q 1120 610 1260 630 L 1260 760 Q 1120 740 980 760 Z" fill="#A8A29E" stroke="#78716C" stroke-width="2"/>
+  </g>
+
+  <!-- Grassy Riverbank Foreground -->
+  <g filter="url(#village-shadow)">
+    <path d="M 0 820 Q 520 780 1100 810 T 1600 790 L 1600 900 L 0 900 Z" fill="#3F6212"/>
+  </g>
+</svg>

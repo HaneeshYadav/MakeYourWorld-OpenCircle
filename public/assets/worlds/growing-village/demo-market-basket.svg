@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 70 70" width="100%" height="100%">
+  <defs>
+    <filter id="basket-shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="3" stdDeviation="2.5" flood-color="#1c1917" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#basket-shadow)">
+    <!-- Wicker Weave Basket Body -->
+    <path d="M 12 35 L 18 62 Q 35 66 52 62 L 58 35 Z" fill="#D97706" stroke="#92400E" stroke-width="1.5"/>
+    <line x1="14" y1="44" x2="56" y2="44" stroke="#92400E" stroke-width="1"/>
+    <line x1="16" y1="53" x2="54" y2="53" stroke="#92400E" stroke-width="1"/>
+
+    <!-- Wicker Handle Arch -->
+    <path d="M 16 35 Q 35 10 54 35" fill="none" stroke="#92400E" stroke-width="2.5"/>
+
+    <!-- Fresh Apples Inside Basket -->
+    <circle cx="28" cy="34" r="6" fill="#DC2626"/>
+    <circle cx="42" cy="34" r="6" fill="#DC2626"/>
+    <circle cx="35" cy="30" r="5.5" fill="#EF4444"/>
+  </g>
+</svg>

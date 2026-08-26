@@ -2,6 +2,8 @@ import type { World } from "@/schemas";
 import { growingForestWorld } from "./growing-forest";
 import { growingUniverseWorld } from "./growing-universe";
 import { growingOceanWorld } from "./growing-ocean";
+import { growingCityWorld } from "./growing-city";
+import { growingVillageWorld } from "./growing-village";
 
 export type WorldStatus = "implemented" | "planned";
 
@@ -97,7 +99,7 @@ export const worldCatalog: WorldCatalogEntry[] = [
     name: "Growing City",
     description:
       "A structured paper architectural grid of brownstones, slate skyscrapers, paper trams, and bustling parks.",
-    status: "planned",
+    status: "implemented",
     theme: {
       primaryColor: "#1E293B",
       secondaryColor: "#64748B",
@@ -105,13 +107,36 @@ export const worldCatalog: WorldCatalogEntry[] = [
     },
     growthConcept: "Urban civic evolution from quiet residential brownstones to civic town center and towering skyline.",
     segmentPlan: [
-      "Quiet Brownstone Street (city-01)",
-      "Town Square & Market (city-02)",
-      "Central Green Park (city-03)",
-      "Transit & Railway Hub (city-04)",
+      "Brownstone Street (city-01)",
+      "Town Square (city-02)",
+      "Transit District (city-03)",
+      "Central Green Park (city-04)",
       "Towering Skyline (city-05)",
     ],
-    suggestedCategories: ["lampposts", "bicycles", "brownstones", "trams", "park benches"],
+    suggestedCategories: ["street lamps", "bicycles", "park benches", "mailboxes", "street trees"],
+    data: growingCityWorld,
+  },
+  {
+    id: "growing-village",
+    name: "Growing Village",
+    description:
+      "A cozy cobblestone settlement of thatched cottages, stone bridges, watermills, and lantern-lit market stalls.",
+    status: "implemented",
+    theme: {
+      primaryColor: "#78350F",
+      secondaryColor: "#374151",
+      accentColor: "#FDE047",
+    },
+    growthConcept: "Community growth from river watermill through bustling market street to festive village green.",
+    segmentPlan: [
+      "River Watermill (village-01)",
+      "Cobblestone Street (village-02)",
+      "Market Square (village-03)",
+      "Artisan Workshop Quarter (village-04)",
+      "Festive Village Green (village-05)",
+    ],
+    suggestedCategories: ["flower pots", "wooden carts", "market baskets", "village lanterns", "fences"],
+    data: growingVillageWorld,
   },
   {
     id: "growing-island",
@@ -198,27 +223,6 @@ export const worldCatalog: WorldCatalogEntry[] = [
     suggestedCategories: ["crystal clusters", "arcane runes", "spellbooks", "wizard towers", "mythical creatures"],
   },
   {
-    id: "growing-village",
-    name: "Growing Village",
-    description:
-      "A cozy cobblestone settlement of thatched cottages, stone bridges, watermills, and lantern-lit market stalls.",
-    status: "planned",
-    theme: {
-      primaryColor: "#78350F",
-      secondaryColor: "#374151",
-      accentColor: "#FDE047",
-    },
-    growthConcept: "Community growth from river watermill through bustling market street to festive village green.",
-    segmentPlan: [
-      "River & Old Watermill (village-01)",
-      "Cobblestone Main Street (village-02)",
-      "Market Square & Well (village-03)",
-      "Artisan Workshop Quarter (village-04)",
-      "Festive Village Green (village-05)",
-    ],
-    suggestedCategories: ["thatched cottages", "watermills", "stone wells", "market stalls", "lanterns"],
-  },
-  {
     id: "alien-planet",
     name: "Alien Planet",
     description:
@@ -251,4 +255,10 @@ export const worldsMap: Record<string, World> = Object.fromEntries(
 );
 
 export const allWorlds = implementedWorlds;
-export { growingForestWorld, growingUniverseWorld, growingOceanWorld };
+export {
+  growingForestWorld,
+  growingUniverseWorld,
+  growingOceanWorld,
+  growingCityWorld,
+  growingVillageWorld,
+};
