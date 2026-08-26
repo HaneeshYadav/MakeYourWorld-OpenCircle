@@ -1,6 +1,7 @@
 import type { World } from "@/schemas";
 import { growingForestWorld } from "./growing-forest";
 import { growingUniverseWorld } from "./growing-universe";
+import { growingOceanWorld } from "./growing-ocean";
 
 export type WorldStatus = "implemented" | "planned";
 
@@ -74,7 +75,7 @@ export const worldCatalog: WorldCatalogEntry[] = [
     name: "Growing Ocean",
     description:
       "A sun-dappled turquoise marine diorama of coral reefs, sea turtles, swimming fish, and paper submarines.",
-    status: "planned",
+    status: "implemented",
     theme: {
       primaryColor: "#0F3846",
       secondaryColor: "#14B8A6",
@@ -84,11 +85,12 @@ export const worldCatalog: WorldCatalogEntry[] = [
     segmentPlan: [
       "Shallow Coral Reef (ocean-01)",
       "Sunlit Kelp Forest (ocean-02)",
-      "Open Blue Current (ocean-03)",
-      "Twilight Reef Shelf (ocean-04)",
+      "Twilight Reef Shelf (ocean-03)",
+      "Open Blue Current (ocean-04)",
       "Abyssal Glow Trench (ocean-05)",
     ],
     suggestedCategories: ["corals", "swimming fish", "sea turtles", "submersibles", "marine plants"],
+    data: growingOceanWorld,
   },
   {
     id: "growing-city",
@@ -249,4 +251,4 @@ export const worldsMap: Record<string, World> = Object.fromEntries(
 );
 
 export const allWorlds = implementedWorlds;
-export { growingForestWorld, growingUniverseWorld };
+export { growingForestWorld, growingUniverseWorld, growingOceanWorld };

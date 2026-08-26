@@ -18,23 +18,20 @@ test.describe("Growing Worlds Public Portal & Multi-World E2E", () => {
     await expect(page.locator("h1")).toContainText("How to Contribute to Growing Worlds");
   });
 
-  test("World Gallery loads both active worlds (Forest & Universe) and planned worlds", async ({
+  test("World Gallery loads all 3 active worlds (Forest, Universe, Ocean) and planned worlds", async ({
     page,
   }) => {
     await page.goto("/worlds");
 
     await expect(page.locator("h1")).toContainText("World Gallery");
 
-    // Active Growing Forest Card
-    const forestHeading = page.getByRole("heading", { name: "Growing Forest" });
-    await expect(forestHeading).toBeVisible();
-
-    // Active Growing Universe Card
-    const universeHeading = page.getByRole("heading", { name: "Growing Universe" });
-    await expect(universeHeading).toBeVisible();
+    // Active World Cards
+    await expect(page.getByRole("heading", { name: "Growing Forest" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Growing Universe" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Growing Ocean" })).toBeVisible();
 
     // Planned worlds
-    await expect(page.locator("text=Growing Ocean")).toBeVisible();
+    await expect(page.locator("text=Growing City")).toBeVisible();
     await expect(page.locator("text=Alien Planet")).toBeVisible();
   });
 
@@ -63,47 +60,69 @@ test.describe("Growing Worlds Public Portal & Multi-World E2E", () => {
   }) => {
     await page.goto("/worlds/growing-universe");
 
-    // 1. World Header
     await expect(page.locator("h2")).toContainText("Growing Universe");
     const worldContainer = page.locator('[data-testid="world-engine-growing-universe"]');
     await expect(worldContainer).toBeVisible();
 
-    // 2. Verify Segment 01 (Starlit Orbit) objects and contributors
+    // Segment 01 (Starlit Orbit)
     await expect(page.locator("text=Starlit Orbit")).toBeVisible();
+    await expect(page.locator("text=Luna")).toBeVisible();
+
+    // Segment 02 Navigation
+    const nextBtn = page.locator('[data-testid="next-segment-button"]');
+    await nextBtn.click();
+    await expect(page.locator("text=Planetary Horizon")).toBeVisible();
+    await expect(page.locator("text=Stella")).toBeVisible();
+  });
+
+  test("Growing Ocean world view renders shared engine, marine vertical depth, and segments", async ({
+    page,
+  }) => {
+    await page.goto("/worlds/growing-ocean");
+
+    // 1. World Header
+    await expect(page.locator("h2")).toContainText("Growing Ocean");
+    const worldContainer = page.locator('[data-testid="world-engine-growing-ocean"]');
+    await expect(worldContainer).toBeVisible();
+
+    // 2. Segment 01 (Shallow Reef) vertical depth items & labels
+    await expect(page.locator("text=Shallow Reef")).toBeVisible();
     await expect(page.locator("text=1 / 3")).toBeVisible();
-    await expect(page.locator("text=Luna")).toBeVisible(); // Planet by Luna
-    await expect(page.locator("text=Orion")).toBeVisible(); // Satellite by Orion
+    await expect(page.locator("text=Coral")).toBeVisible(); // Clownfish by Coral
+    await expect(page.locator("text=Kai")).toBeVisible(); // Turtle by Kai
+    await expect(page.locator("text=Marina")).toBeVisible(); // Coral by Marina
+    await expect(page.locator("text=Sandy")).toBeVisible(); // Shell by Sandy
 
     const prevBtn = page.locator('[data-testid="prev-segment-button"]');
     const nextBtn = page.locator('[data-testid="next-segment-button"]');
 
-    // 3. Navigate to Segment 02 (Planetary Horizon)
+    // 3. Navigate to Segment 02 (Kelp Forest)
     await nextBtn.click();
-    await expect(page.locator("text=Planetary Horizon")).toBeVisible();
+    await expect(page.locator("text=Kelp Forest")).toBeVisible();
     await expect(page.locator("text=2 / 3")).toBeVisible();
-    await expect(page.locator("text=Stella")).toBeVisible(); // Moon by Stella
-    await expect(page.locator("text=Cosmo")).toBeVisible(); // Comet by Cosmo
+    await expect(page.locator("text=Finn")).toBeVisible(); // Kelp by Finn
+    await expect(page.locator("text=Student Ocean")).toBeVisible(); // Simulated Jellyfish
 
-    // Segment 01 objects should not appear in Segment 02
-    await expect(page.locator("text=Luna")).not.toBeVisible();
+    // Segment 01 items should not be visible
+    await expect(page.locator("text=Marina")).not.toBeVisible();
 
-    // 4. Navigate to Segment 03 (Asteroid Belt)
+    // 4. Navigate to Segment 03 (Twilight Shelf)
     await nextBtn.click();
-    await expect(page.locator("text=Asteroid Belt")).toBeVisible();
+    await expect(page.locator("text=Twilight Shelf")).toBeVisible();
     await expect(page.locator("text=3 / 3")).toBeVisible();
-    await expect(page.locator("text=Nova")).toBeVisible(); // Asteroid by Nova
+    await expect(page.locator("text=Student Ocean")).not.toBeVisible();
 
     // 5. Navigate back to Segment 01
     await prevBtn.click();
     await prevBtn.click();
-    await expect(page.locator("text=Starlit Orbit")).toBeVisible();
-    await expect(page.locator("text=Luna")).toBeVisible();
+    await expect(page.locator("text=Shallow Reef")).toBeVisible();
+    await expect(page.locator("text=Marina")).toBeVisible();
   });
 
   test("Visiting planned or non-existent world returns 404 not found page", async ({
     page,
   }) => {
-    const response = await page.goto("/worlds/growing-ocean");
+    const response = await page.goto("/worlds/growing-city");
     expect(response?.status()).toBe(404);
     await expect(page.locator("text=404")).toBeVisible();
   });

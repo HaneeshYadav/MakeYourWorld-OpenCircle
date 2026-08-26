@@ -7,37 +7,40 @@ describe("World Catalog Registry Unit Tests", () => {
     expect(worldCatalog).toHaveLength(10);
   });
 
-  it("identifies Growing Forest and Growing Universe as implemented worlds with complete data", () => {
-    const forest = worldCatalog.find((w) => w.id === "growing-forest");
-    expect(forest).toBeDefined();
-    expect(forest?.status).toBe("implemented");
-    expect(forest?.data).toBeDefined();
-    expect(WorldSchema.safeParse(forest?.data).success).toBe(true);
-
-    const universe = worldCatalog.find((w) => w.id === "growing-universe");
-    expect(universe).toBeDefined();
-    expect(universe?.status).toBe("implemented");
-    expect(universe?.data).toBeDefined();
-    expect(WorldSchema.safeParse(universe?.data).success).toBe(true);
+  it("identifies Growing Forest, Growing Universe, and Growing Ocean as implemented worlds", () => {
+    ["growing-forest", "growing-universe", "growing-ocean"].forEach((worldId) => {
+      const world = worldCatalog.find((w) => w.id === worldId);
+      expect(world).toBeDefined();
+      expect(world?.status).toBe("implemented");
+      expect(world?.data).toBeDefined();
+      expect(WorldSchema.safeParse(world?.data).success).toBe(true);
+    });
   });
 
-  it("verifies Growing Universe has 3 segments and distributed placements", () => {
-    const universe = worldsMap["growing-universe"];
-    expect(universe).toBeDefined();
-    expect(universe.segments).toHaveLength(3);
-    expect(universe.objects.length).toBeGreaterThanOrEqual(5);
-    expect(universe.placements.length).toBeGreaterThanOrEqual(5);
+  it("verifies Growing Ocean has 3 segments and distributed vertical placements", () => {
+    const ocean = worldsMap["growing-ocean"];
+    expect(ocean).toBeDefined();
+    expect(ocean.segments).toHaveLength(3);
+    expect(ocean.objects.length).toBeGreaterThanOrEqual(5);
+    expect(ocean.placements.length).toBeGreaterThanOrEqual(5);
 
     // Verify placements span across segments
-    const segmentIds = new Set(universe.placements.map((p) => p.segmentId));
-    expect(segmentIds.has("universe-01")).toBe(true);
-    expect(segmentIds.has("universe-02")).toBe(true);
-    expect(segmentIds.has("universe-03")).toBe(true);
+    const segmentIds = new Set(ocean.placements.map((p) => p.segmentId));
+    expect(segmentIds.has("ocean-01")).toBe(true);
+    expect(segmentIds.has("ocean-02")).toBe(true);
+    expect(segmentIds.has("ocean-03")).toBe(true);
+
+    // Verify vertical depth distribution (shallow to deep)
+    const yValues = ocean.placements.map((p) => p.y);
+    const minDepth = Math.min(...yValues);
+    const maxDepth = Math.max(...yValues);
+    expect(minDepth).toBeLessThanOrEqual(35);
+    expect(maxDepth).toBeGreaterThanOrEqual(75);
   });
 
   it("distinguishes planned worlds and ensures they do not have dummy data attached", () => {
     const planned = worldCatalog.filter((w) => w.status === "planned");
-    expect(planned.length).toBe(8);
+    expect(planned.length).toBe(7);
     planned.forEach((world) => {
       expect(world.data).toBeUndefined();
       expect(world.segmentPlan.length).toBeGreaterThanOrEqual(3);
@@ -45,17 +48,19 @@ describe("World Catalog Registry Unit Tests", () => {
     });
   });
 
-  it("provides implementedWorlds containing exactly the 2 active worlds", () => {
-    expect(implementedWorlds).toHaveLength(2);
+  it("provides implementedWorlds containing exactly the 3 active worlds", () => {
+    expect(implementedWorlds).toHaveLength(3);
     expect(implementedWorlds.map((w) => w.id)).toEqual([
       "growing-forest",
       "growing-universe",
+      "growing-ocean",
     ]);
   });
 
   it("ensures worldsMap dictionary only indexes implemented worlds", () => {
     expect(worldsMap["growing-forest"]).toBeDefined();
     expect(worldsMap["growing-universe"]).toBeDefined();
-    expect(worldsMap["growing-ocean"]).toBeUndefined();
+    expect(worldsMap["growing-ocean"]).toBeDefined();
+    expect(worldsMap["growing-city"]).toBeUndefined();
   });
 });

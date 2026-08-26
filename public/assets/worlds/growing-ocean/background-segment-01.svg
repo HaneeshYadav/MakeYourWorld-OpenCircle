@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="100%" height="100%">
+  <defs>
+    <filter id="ocean-shadow" x="-10%" y="-10%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#021c24" flood-opacity="0.25"/>
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#021c24" flood-opacity="0.15"/>
+    </filter>
+    <linearGradient id="shallow-water" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#7DD3FC"/>
+      <stop offset="35%" stop-color="#38BDF8"/>
+      <stop offset="70%" stop-color="#0EA5E9"/>
+      <stop offset="100%" stop-color="#0284C7"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Water Backdrop Gradient -->
+  <rect width="1600" height="900" fill="url(#shallow-water)"/>
+
+  <!-- Surface Sunlight Rays (Paper Light Beams) -->
+  <g opacity="0.25">
+    <polygon points="200,0 280,0 450,700 320,700" fill="#FFFFFF"/>
+    <polygon points="550,0 660,0 920,800 760,800" fill="#FFFFFF"/>
+    <polygon points="980,0 1060,0 1340,750 1220,750" fill="#FFFFFF"/>
+    <polygon points="1350,0 1420,0 1580,600 1480,600" fill="#FFFFFF"/>
+  </g>
+
+  <!-- Distant Paper Reef Ridge Silhouette (Muted Aquamarine) -->
+  <g filter="url(#ocean-shadow)">
+    <path d="M 0 540 Q 240 480 500 520 T 1050 490 T 1600 530 L 1600 900 L 0 900 Z" fill="#0D9488" opacity="0.6"/>
+  </g>
+
+  <!-- Midground Coral Silhouettes & Shelf -->
+  <g filter="url(#ocean-shadow)">
+    <path d="M 0 650 Q 380 590 820 630 T 1600 600 L 1600 900 L 0 900 Z" fill="#0F766E"/>
+    <!-- Distant Branching Coral Silhouettes -->
+    <path d="M 180 650 L 180 580 Q 195 560 210 580 L 210 650" fill="#115E59"/>
+    <path d="M 1240 610 L 1240 550 Q 1260 530 1280 550 L 1280 610" fill="#115E59"/>
+  </g>
+
+  <!-- Warm Sandy Seabed (Torn Paper Cardstock Tier) -->
+  <g filter="url(#ocean-shadow)">
+    <path d="M 0 760 Q 420 710 900 750 T 1600 720 L 1600 900 L 0 900 Z" fill="#FDE68A"/>
+    <!-- Foreground Sandy Ridge -->
+    <path d="M 0 830 Q 520 780 1100 820 T 1600 790 L 1600 900 L 0 900 Z" fill="#FCD34D"/>
+  </g>
+
+  <!-- Subtle Surface Ripple Silhouette -->
+  <path d="M 0 35 Q 200 15 400 35 T 800 35 T 1200 35 T 1600 35 L 1600 0 L 0 0 Z" fill="#BAE6FD" opacity="0.4"/>
+</svg>
