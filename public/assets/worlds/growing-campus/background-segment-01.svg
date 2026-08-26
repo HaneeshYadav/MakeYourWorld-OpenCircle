@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="100%" height="100%">
+  <defs>
+    <filter id="campus-shadow" x="-10%" y="-10%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#1e1b4b" flood-opacity="0.22"/>
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#1e1b4b" flood-opacity="0.12"/>
+    </filter>
+    <linearGradient id="campus-sky-1" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#BAE6FD"/>
+      <stop offset="60%" stop-color="#E0E7FF"/>
+      <stop offset="100%" stop-color="#FEF3C7"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Sky Layer -->
+  <rect width="1600" height="900" fill="url(#campus-sky-1)"/>
+
+  <!-- Distant Ivy Brick Hall Silhouettes -->
+  <g filter="url(#campus-shadow)" opacity="0.6">
+    <rect x="220" y="280" width="260" height="340" fill="#881337"/>
+    <polygon points="190,280 350,180 510,280" fill="#4C0519"/>
+    <rect x="1120" y="260" width="300" height="360" fill="#881337"/>
+    <polygon points="1090,260 1270,160 1450,260" fill="#4C0519"/>
+  </g>
+
+  <!-- Grand University Wrought-Iron Arch Gate (Centerpiece) -->
+  <g filter="url(#campus-shadow)">
+    <!-- Left Brick Pillar -->
+    <rect x="420" y="300" width="90" height="380" fill="#991B1B" stroke="#7F1D1D" stroke-width="2"/>
+    <rect x="405" y="270" width="120" height="30" fill="#E2E8F0" stroke="#94A3B8" stroke-width="1.5"/>
+    <polygon points="415,270 465,220 515,270" fill="#CBD5E1"/>
+
+    <!-- Right Brick Pillar -->
+    <rect x="1090" y="300" width="90" height="380" fill="#991B1B" stroke="#7F1D1D" stroke-width="2"/>
+    <rect x="1075" y="270" width="120" height="30" fill="#E2E8F0" stroke="#94A3B8" stroke-width="1.5"/>
+    <polygon points="1085,270 1135,220 1185,270" fill="#CBD5E1"/>
+
+    <!-- Iron Wrought Arch Span -->
+    <path d="M 510 360 Q 800 180 1090 360" fill="none" stroke="#1E1B4B" stroke-width="8"/>
+    <path d="M 510 380 Q 800 210 1090 380" fill="none" stroke="#1E1B4B" stroke-width="4"/>
+    <!-- Gold Sign Plaque -->
+    <rect x="680" y="240" width="240" height="45" rx="6" fill="#FBBF24" stroke="#B45309" stroke-width="2"/>
+    <text x="800" y="270" text-anchor="middle" fill="#78350F" font-family="serif" font-weight="bold" font-size="20" letter-spacing="3">UNIVERSITAS</text>
+  </g>
+
+  <!-- Green Lawn & Cobblestone Gateway Entrance Floor -->
+  <g filter="url(#campus-shadow)">
+    <path d="M 0 650 Q 450 610 900 640 T 1600 620 L 1600 900 L 0 900 Z" fill="#15803D"/>
+    <!-- Paved Stone Entryway Path -->
+    <polygon points="620,640 980,640 1200,900 400,900" fill="#E2E8F0" stroke="#94A3B8" stroke-width="1.5"/>
+  </g>
+</svg>

@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="100%" height="100%">
+  <defs>
+    <filter id="fantasy-shadow" x="-10%" y="-10%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#2e1065" flood-opacity="0.3"/>
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#2e1065" flood-opacity="0.15"/>
+    </filter>
+    <linearGradient id="fantasy-sky-1" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#3B0764"/>
+      <stop offset="50%" stop-color="#581C87"/>
+      <stop offset="100%" stop-color="#7E22CE"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Sky Layer -->
+  <rect width="1600" height="900" fill="url(#fantasy-sky-1)"/>
+
+  <!-- Distant Glowing Crystal Peaks & Mystic Stardust Particles -->
+  <g opacity="0.65">
+    <polygon points="200,450 320,240 440,450" fill="#C084FC"/>
+    <polygon points="1200,450 1340,220 1480,450" fill="#E879F9"/>
+    <circle cx="280" cy="180" r="3" fill="#FDE047"/>
+    <circle cx="560" cy="240" r="2.5" fill="#67E8F9"/>
+    <circle cx="880" cy="160" r="3.5" fill="#FDE047"/>
+    <circle cx="1150" cy="220" r="2.5" fill="#67E8F9"/>
+  </g>
+
+  <!-- Giant Mystical Bioluminescent Mushroom Canopy Silhouettes -->
+  <g filter="url(#fantasy-shadow)">
+    <!-- Giant Mushroom 1 (Left) -->
+    <path d="M 120 480 Q 260 280 400 480 Z" fill="#9333EA" stroke="#C084FC" stroke-width="2"/>
+    <rect x="240" y="480" width="40" height="200" fill="#581C87"/>
+    <circle cx="200" cy="400" r="12" fill="#FDE047"/>
+    <circle cx="320" cy="380" r="10" fill="#FDE047"/>
+
+    <!-- Giant Mushroom 2 (Right) -->
+    <path d="M 1150 460 Q 1320 250 1490 460 Z" fill="#7E22CE" stroke="#E879F9" stroke-width="2"/>
+    <rect x="1300" y="460" width="40" height="220" fill="#3B0764"/>
+    <circle cx="1260" cy="380" r="12" fill="#67E8F9"/>
+    <circle cx="1380" cy="360" r="10" fill="#67E8F9"/>
+  </g>
+
+  <!-- Enchanted Glade Mossy Terraces & Winding Bioluminescent Path -->
+  <g filter="url(#fantasy-shadow)">
+    <path d="M 0 620 Q 420 560 880 600 T 1600 580 L 1600 900 L 0 900 Z" fill="#064E3B"/>
+    <!-- Glowing Luminescent River Path -->
+    <path d="M 0 760 Q 450 680 900 740 T 1600 710 L 1600 840 Q 900 820 450 850 T 0 900 Z" fill="#0D9488" stroke="#5EEAD4" stroke-width="2"/>
+  </g>
+</svg>

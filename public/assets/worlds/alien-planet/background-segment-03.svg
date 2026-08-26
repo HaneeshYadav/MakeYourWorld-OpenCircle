@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="100%" height="100%">
+  <defs>
+    <filter id="alien-shadow" x="-10%" y="-10%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#022c22" flood-opacity="0.35"/>
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#022c22" flood-opacity="0.2"/>
+    </filter>
+    <linearGradient id="alien-sky-3" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="50%" stop-color="#134E4A"/>
+      <stop offset="100%" stop-color="#4D7C0F"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Sky Layer -->
+  <rect width="1600" height="900" fill="url(#alien-sky-3)"/>
+
+  <!-- Erupting Acid Geyser Plumes (Background Atmosphere) -->
+  <g opacity="0.65">
+    <!-- Geyser Plume 1 (Left) -->
+    <polygon points="320,620 280,180 360,180" fill="#2DD4BF"/>
+    <ellipse cx="320" cy="180" rx="60" ry="30" fill="#A7F3D0"/>
+    <!-- Geyser Plume 2 (Right) -->
+    <polygon points="1240,620 1200,140 1280,140" fill="#A3E635"/>
+    <ellipse cx="1240" cy="140" rx="70" ry="35" fill="#BEF264"/>
+  </g>
+
+  <!-- Gigantic Crystalline Mineral Spire Formations (Centerpiece) -->
+  <g filter="url(#alien-shadow)">
+    <!-- Crystal Cluster 1 (Left Center) -->
+    <polygon points="460,720 540,320 620,720" fill="#0D9488" stroke="#5EEAD4" stroke-width="2"/>
+    <polygon points="540,320 580,480 620,720" fill="#042F2E"/>
+    <polygon points="380,720 440,420 500,720" fill="#14B8A6"/>
+
+    <!-- Crystal Cluster 2 (Right Center) -->
+    <polygon points="980,720 1060,260 1140,720" fill="#84CC16" stroke="#BEF264" stroke-width="2"/>
+    <polygon points="1060,260 1100,440 1140,720" fill="#365314"/>
+    <polygon points="1100,720 1160,380 1220,720" fill="#A3E635"/>
+  </g>
+
+  <!-- Mineral Terrace & Active Geyser Basin Ground Floor -->
+  <g filter="url(#alien-shadow)">
+    <path d="M 0 720 Q 480 670 980 710 T 1600 680 L 1600 900 L 0 900 Z" fill="#042F2E"/>
+    <path d="M 0 810 Q 520 760 1080 800 T 1600 770 L 1600 900 L 0 900 Z" fill="#022C22"/>
+  </g>
+</svg>

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 70 80" width="100%" height="100%">
+  <defs>
+    <filter id="mushroom-shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="4" stdDeviation="3" flood-color="#2e1065" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#mushroom-shadow)">
+    <!-- Pale Glowing Stem -->
+    <path d="M 30 72 L 28 45 Q 35 44 42 45 L 40 72 Z" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1.2"/>
+
+    <!-- Luminescent Violet/Magenta Dome Cap -->
+    <path d="M 12 45 Q 10 18 35 18 Q 60 18 58 45 Q 46 48 35 46 Q 24 48 12 45 Z" fill="#9333EA" stroke="#FFFFFF" stroke-width="1.5"/>
+    <!-- Glowing Yellow Spore Spots -->
+    <circle cx="24" cy="32" r="3.5" fill="#FDE047"/>
+    <circle cx="46" cy="30" r="4" fill="#FDE047"/>
+    <circle cx="35" cy="24" r="3" fill="#FDE047"/>
+    <circle cx="36" cy="38" r="2.5" fill="#67E8F9"/>
+  </g>
+</svg>

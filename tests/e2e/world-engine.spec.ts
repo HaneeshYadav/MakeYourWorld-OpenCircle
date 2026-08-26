@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-test.describe("Growing Worlds Public Portal & Multi-World E2E", () => {
+test.describe("Growing Worlds Public Portal & 10-World E2E Suite", () => {
   test("Homepage loads and primary CTAs navigate correctly", async ({ page }) => {
     await page.goto("/");
 
@@ -18,14 +18,12 @@ test.describe("Growing Worlds Public Portal & Multi-World E2E", () => {
     await expect(page.locator("h1")).toContainText("How to Contribute to Growing Worlds");
   });
 
-  test("World Gallery loads all 7 active worlds and planned worlds", async ({
-    page,
-  }) => {
+  test("World Gallery loads all 10 active worlds", async ({ page }) => {
     await page.goto("/worlds");
 
     await expect(page.locator("h1")).toContainText("World Gallery");
 
-    // Active World Cards (7)
+    // All 10 Active World Cards
     await expect(page.getByRole("heading", { name: "Growing Forest" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Growing Universe" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Growing Ocean" })).toBeVisible();
@@ -33,68 +31,80 @@ test.describe("Growing Worlds Public Portal & Multi-World E2E", () => {
     await expect(page.getByRole("heading", { name: "Growing Village" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Growing Island" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Growing Farm" })).toBeVisible();
-
-    // Planned worlds (3)
-    await expect(page.locator("text=Growing Campus")).toBeVisible();
-    await expect(page.locator("text=Alien Planet")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Growing Campus" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Fantasy World" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Alien Planet" })).toBeVisible();
   });
 
-  test("Growing Island world view renders shared engine, coastal shoreline, and navigation", async ({
-    page,
-  }) => {
-    await page.goto("/worlds/growing-island");
+  test("Growing Campus world view renders shared engine and segments", async ({ page }) => {
+    await page.goto("/worlds/growing-campus");
 
-    // 1. Header & Engine container
-    await expect(page.locator("h2")).toContainText("Growing Island");
-    const worldContainer = page.locator('[data-testid="world-engine-growing-island"]');
+    await expect(page.locator("h2")).toContainText("Growing Campus");
+    const worldContainer = page.locator('[data-testid="world-engine-growing-campus"]');
     await expect(worldContainer).toBeVisible();
 
-    // 2. Segment 01 (Arrival Beach) objects and contributors
-    await expect(page.locator("text=Arrival Beach")).toBeVisible();
+    // Segment 01 (University Gate)
+    await expect(page.locator("text=University Gate")).toBeVisible();
     await expect(page.locator("text=1 / 3")).toBeVisible();
-    await expect(page.locator("text=Moana")).toBeVisible(); // Coconut Palm
-    await expect(page.locator("text=Koa")).toBeVisible(); // Wooden Canoe
+    await expect(page.locator("text=Zoe")).toBeVisible(); // Planter
+    await expect(page.locator("text=Rohan")).toBeVisible(); // Bicycle
 
+    // Segment 02 (Academic Quad)
     const nextBtn = page.locator('[data-testid="next-segment-button"]');
-
-    // 3. Navigate to Segment 02 (Palm Lagoon)
     await nextBtn.click();
-    await expect(page.locator("text=Palm Lagoon")).toBeVisible();
+    await expect(page.locator("text=Academic Quad")).toBeVisible();
     await expect(page.locator("text=2 / 3")).toBeVisible();
-    await expect(page.locator("text=Tane")).toBeVisible(); // Parrot
-    await expect(page.locator("text=Lani")).toBeVisible(); // Flower
+    await expect(page.locator("text=Julian")).toBeVisible(); // Bench
+    await expect(page.locator("text=Elena")).toBeVisible(); // Books
   });
 
-  test("Growing Farm world view renders shared engine, golden fields, and navigation", async ({
-    page,
-  }) => {
-    await page.goto("/worlds/growing-farm");
+  test("Fantasy World view renders shared engine, floating elements, and segments", async ({ page }) => {
+    await page.goto("/worlds/fantasy-world");
 
-    // 1. Header & Engine container
-    await expect(page.locator("h2")).toContainText("Growing Farm");
-    const worldContainer = page.locator('[data-testid="world-engine-growing-farm"]');
+    await expect(page.locator("h2")).toContainText("Fantasy World");
+    const worldContainer = page.locator('[data-testid="world-engine-fantasy-world"]');
     await expect(worldContainer).toBeVisible();
 
-    // 2. Segment 01 (Homestead Yard) objects and contributors
-    await expect(page.locator("text=Homestead Yard")).toBeVisible();
+    // Segment 01 (Enchanted Glade)
+    await expect(page.locator("text=Enchanted Glade")).toBeVisible();
     await expect(page.locator("text=1 / 3")).toBeVisible();
-    await expect(page.locator("text=Oliver")).toBeVisible(); // Pumpkin
-    await expect(page.locator("text=Mia")).toBeVisible(); // Watering Can
+    await expect(page.locator("text=Arthur")).toBeVisible(); // Rune Stone
+    await expect(page.locator("text=Lyra")).toBeVisible(); // Floating Crystal
+    await expect(page.locator("text=Rowan")).toBeVisible(); // Magic Mushroom
 
+    // Segment 02 (Rune Arch)
     const nextBtn = page.locator('[data-testid="next-segment-button"]');
-
-    // 3. Navigate to Segment 02 (Wheat Fields)
     await nextBtn.click();
-    await expect(page.locator("text=Wheat Fields")).toBeVisible();
+    await expect(page.locator("text=Rune Arch")).toBeVisible();
     await expect(page.locator("text=2 / 3")).toBeVisible();
-    await expect(page.locator("text=Silas")).toBeVisible(); // Scarecrow
-    await expect(page.locator("text=Emma")).toBeVisible(); // Wheat Bundle
+    await expect(page.locator("text=Ignis")).toBeVisible(); // Wizard Lantern
+    await expect(page.locator("text=Morgana")).toBeVisible(); // Grimoire
   });
 
-  test("Visiting planned or non-existent world returns 404 not found page", async ({
-    page,
-  }) => {
-    const response = await page.goto("/worlds/growing-campus");
+  test("Alien Planet view renders shared engine, xenobiology, and segments", async ({ page }) => {
+    await page.goto("/worlds/alien-planet");
+
+    await expect(page.locator("h2")).toContainText("Alien Planet");
+    const worldContainer = page.locator('[data-testid="world-engine-alien-planet"]');
+    await expect(worldContainer).toBeVisible();
+
+    // Segment 01 (Touchdown Basin)
+    await expect(page.locator("text=Touchdown Basin")).toBeVisible();
+    await expect(page.locator("text=1 / 3")).toBeVisible();
+    await expect(page.locator("text=Orion")).toBeVisible(); // Survey Probe
+    await expect(page.locator("text=Vex")).toBeVisible(); // Neon Crystal
+
+    // Segment 02 (Spore Forest)
+    const nextBtn = page.locator('[data-testid="next-segment-button"]');
+    await nextBtn.click();
+    await expect(page.locator("text=Spore Forest")).toBeVisible();
+    await expect(page.locator("text=2 / 3")).toBeVisible();
+    await expect(page.locator("text=Zylar")).toBeVisible(); // Alien Mushroom
+    await expect(page.locator("text=Bloop")).toBeVisible(); // Creature
+  });
+
+  test("Visiting non-existent world returns 404 not found page", async ({ page }) => {
+    const response = await page.goto("/worlds/unknown-realm");
     expect(response?.status()).toBe(404);
     await expect(page.locator("text=404")).toBeVisible();
   });

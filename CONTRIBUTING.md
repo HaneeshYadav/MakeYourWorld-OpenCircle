@@ -2,47 +2,49 @@
 
 Welcome! We are thrilled you want to contribute to **Growing Worlds**.
 
-Growing Worlds is specifically built for students and beginners to practice real-world open-source contributions. Every contribution is tiny (~1–10 meaningful lines of code), structured, and celebrated. Your chosen display name will be permanently rendered beneath the object you place in the world!
+Growing Worlds is an open-source educational project specifically designed for students and new developers to learn authentic open-source contribution workflows. Every contribution is scoped to a bite-sized Good First Issue (~1–10 meaningful lines of code), and your chosen display name will be permanently rendered in a paper pin badge beneath your object in the shared world!
 
 ---
 
 ## 🌟 The 2-Commit Contribution Process
 
-Each contribution is split into two small, distinct commits:
+Each contribution follows a strict, beginner-friendly **two-commit workflow**:
 
 ```
 ┌────────────────────────────────────────────────────────┐
 │  Commit 1: Add Image Asset & Object Registration       │
-│  - Add your SVG/PNG file: public/assets/worlds/<world>/│
-│  - Add 1-5 lines: src/data/worlds/<world>/objects.ts   │
+│  - Add paper SVG file: public/assets/worlds/<world>/   │
+│  - Add ~1-5 lines: src/data/worlds/<world>/objects.ts  │
 │  - Test with: npm test                                 │
 └────────────────────────────────────────────────────────┘
                            │
                            ▼
 ┌────────────────────────────────────────────────────────┐
 │  Commit 2: Place Object in World Segment               │
-│  - Add 1-5 lines: src/data/worlds/<world>/placements.ts│
-│  - Set target segmentId (e.g. "forest-01") & x, y (%)  │
-│  - Test with: npm test                                 │
+│  - Add ~1-5 lines: src/data/worlds/<world>/placements.ts│
+│  - Set assigned segmentId (e.g. "forest-01") & x, y (%)│
+│  - Test with: npm test && npm run lint                 │
 │  - Check visually at http://localhost:3000/dev/world-engine│
 └────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 🚀 Quick Step-by-Step Guide
+## 🚀 Quick Step-by-Step Contributor Guide
 
-### 1. Claim an Issue
+### 1. Claim a Reusable Issue Slot
 - Browse our [Good First Issues](https://github.com/ShenSandaru/OpenCircle-Test/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
+- Find an open **Contribution Slot** that is unassigned.
 - Check the issue details for:
   - **Target World**: e.g., `Growing Forest`
   - **Target Segment**: e.g., `forest-01`
-  - **Object Idea**: e.g., `Butterfly`
+  - **Allowed Category**: e.g., `woodland flora, birds, insects, small critters`
 - Comment on the issue: `I would like to work on this!`
-- Wait for a maintainer to assign the issue to you before starting work.
+- **Wait for Assignment**: A maintainer will formally assign the issue to you. Commenting alone does not reserve the slot.
+- *Note on Inactivity*: Assigned slots are held for **48 hours**. If no PR is submitted within 48 hours, the slot may be unassigned to give other students an opportunity.
 
 ### 2. Fork and Clone
-- Click **Fork** at the top-right of the repository.
+- Click **Fork** at the top-right of the repository on GitHub.
 - Clone your fork to your computer:
   ```bash
   git clone https://github.com/<your-username>/OpenCircle-Test.git
@@ -57,11 +59,12 @@ Each contribution is split into two small, distinct commits:
   npm install
   ```
 
-### 3. Create a Branch from `dev`
-Always create your branch from `dev`:
+### 3. Create a Feature Branch from `dev`
+Always base your feature branch on the upstream **`dev`** branch:
 ```bash
 git checkout dev
-git pull upstream dev
+git fetch upstream dev
+git merge upstream/dev
 git checkout -b contrib/<world>-<object-name>
 ```
 *Example: `git checkout -b contrib/forest-butterfly`*
@@ -70,7 +73,7 @@ git checkout -b contrib/<world>-<object-name>
 
 ### 4. Commit 1: Asset & Object Registration (~1–5 lines)
 
-1. Save your paper-collage style SVG (or transparent PNG/WebP) to:
+1. Save your paper-cutout SVG file (transparent background) to:
    `public/assets/worlds/<world-name>/<object-id>.svg`
    *(Example: `public/assets/worlds/growing-forest/student-butterfly.svg`)*
 2. Open `src/data/worlds/<world-name>/objects.ts` and append your object to the array:
@@ -134,27 +137,31 @@ git checkout -b contrib/<world>-<object-name>
    ```bash
    git push origin contrib/<world>-<object-name>
    ```
-2. Go to GitHub and open a Pull Request against the `dev` branch.
+2. Go to GitHub and open a Pull Request against the **`dev`** branch (NOT `main`).
 3. Keep the **two commits separate** (do not squash them).
-4. Fill out the PR template with your details and Discord username for notification tracking.
-5. Once merged by maintainers, your contribution is live! 🎉
+4. Fill out the PR template with:
+   - Target issue reference (`Closes #XX`)
+   - Your Contributor Display Name (rendered under your object)
+   - Your Discord username (for community recognition and role updates)
+5. Once reviewed and merged by maintainers, your contribution becomes part of the permanent growing world! 🎉
 
 ---
 
-## 🛑 Files Contributors Should NEVER Modify
+## 🛑 Contributor File Boundaries
 
-To ensure a smooth review, contributors must **only** edit:
-- `public/assets/worlds/<world-name>/*`
-- `src/data/worlds/<world-name>/objects.ts`
-- `src/data/worlds/<world-name>/placements.ts`
+To ensure clean reviews, contributors must **only** edit:
+- ✅ `public/assets/worlds/<world-name>/*`
+- ✅ `src/data/worlds/<world-name>/objects.ts`
+- ✅ `src/data/worlds/<world-name>/placements.ts`
 
-Do **NOT** modify engine code (`src/engine/*`), schemas (`src/schemas/*`), components, or CI configurations.
+Do **NOT** modify engine code (`src/engine/*`), domain schemas (`src/schemas/*`), UI components (`src/components/*`), pages (`src/app/*`), tests, or configuration files.
 
 ---
 
 ## 🎨 Asset Guidelines
 
-- **Style**: 2D Paper cutout aesthetic. Clean silhouettes with warm, harmonious colors.
-- **Format**: SVG preferred (transparent background), or transparent WebP/PNG.
-- **Size**: Optimized, lightweight files.
-- **Original / Open Source**: Please only use assets you created or those with permissive open-source licenses (CC0 / MIT).
+- **Style**: 2D Paper-cutout aesthetic. Clean geometric or organic silhouettes, warm paper tones, and transparent background.
+- **Format**: SVG strongly preferred.
+- **Size**: Optimized, lightweight files (<50 KB).
+- **Attribution**: Display name renders beneath the object; Discord handle is used by maintainers for community roles and is never stored in public world files.
+- **Originality**: Only use original assets or permissive open-source assets (CC0 / MIT).

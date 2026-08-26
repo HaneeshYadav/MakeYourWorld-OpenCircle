@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 70 80" width="100%" height="100%">
+  <defs>
+    <filter id="flow-shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="3" stdDeviation="2.5" flood-color="#022c22" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#flow-shadow)">
+    <!-- Curving Stem -->
+    <path d="M 35 75 Q 24 50 35 35" fill="none" stroke="#065F46" stroke-width="3" stroke-linecap="round"/>
+    
+    <!-- Bioluminescent Tendril Petals (Cyan & Magenta) -->
+    <ellipse cx="22" cy="28" rx="8" ry="14" fill="#2DD4BF" stroke="#FFFFFF" stroke-width="1" transform="rotate(-30 22 28)"/>
+    <ellipse cx="48" cy="28" rx="8" ry="14" fill="#2DD4BF" stroke="#FFFFFF" stroke-width="1" transform="rotate(30 48 28)"/>
+    <ellipse cx="35" cy="18" rx="8" ry="14" fill="#E879F9" stroke="#FFFFFF" stroke-width="1"/>
+
+    <!-- Glowing Bulb Core -->
+    <circle cx="35" cy="28" r="6" fill="#FDE047"/>
+  </g>
+</svg>

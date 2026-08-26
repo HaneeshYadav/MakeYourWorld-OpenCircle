@@ -2,17 +2,20 @@
 # Lines starting with '#' are comments.
 # Each line is a file pattern followed by one or more owners.
 
-# Global maintainers
+# Global repository maintainers
 * @ShenSandaru
 
-# Maintainer-only zones (Engine, Schemas, Config, GitHub CI)
+# Maintainer-only zones (Engine, Schemas, Config, GitHub CI, Docs)
 /src/engine/          @ShenSandaru
 /src/schemas/         @ShenSandaru
+/src/components/      @ShenSandaru
+/src/app/             @ShenSandaru
+/src/config/          @ShenSandaru
 /tests/               @ShenSandaru
 /.github/             @ShenSandaru
 /AGENTS.md            @ShenSandaru
 /package.json         @ShenSandaru
-/pnpm-lock.yaml       @ShenSandaru
+/package-lock.json    @ShenSandaru
 
 # Open contributor zones
 /src/data/worlds/     @ShenSandaru

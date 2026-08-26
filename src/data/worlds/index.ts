@@ -6,6 +6,9 @@ import { growingCityWorld } from "./growing-city";
 import { growingVillageWorld } from "./growing-village";
 import { growingIslandWorld } from "./growing-island";
 import { growingFarmWorld } from "./growing-farm";
+import { growingCampusWorld } from "./growing-campus";
+import { fantasyWorld } from "./fantasy-world";
+import { alienPlanetWorld } from "./alien-planet";
 
 export type WorldStatus = "implemented" | "planned";
 
@@ -27,7 +30,7 @@ export interface WorldCatalogEntry {
 
 /**
  * Formal Registry of the 10 Growing Worlds.
- * 'implemented' worlds contain populated `data`.
+ * 100% Implemented — all 10 worlds contain populated `data`.
  */
 export const worldCatalog: WorldCatalogEntry[] = [
   {
@@ -189,7 +192,7 @@ export const worldCatalog: WorldCatalogEntry[] = [
     name: "Growing Campus",
     description:
       "An ivy brick collegiate diorama celebrating learning, libraries, lecture halls, and student creativity.",
-    status: "planned",
+    status: "implemented",
     theme: {
       primaryColor: "#881337",
       secondaryColor: "#1E3A8A",
@@ -197,20 +200,21 @@ export const worldCatalog: WorldCatalogEntry[] = [
     },
     growthConcept: "Collegiate expansion from main university gate across the academic quad to the hilltop observatory.",
     segmentPlan: [
-      "University Gate & Lawn (campus-01)",
-      "Academic Brick Quad (campus-02)",
-      "Grand Library Plaza (campus-03)",
+      "University Gate (campus-01)",
+      "Academic Quad (campus-02)",
+      "Library Plaza (campus-03)",
       "Student Union Garden (campus-04)",
       "Hilltop Observatory (campus-05)",
     ],
-    suggestedCategories: ["brick halls", "library books", "bicycles", "campus benches", "trees"],
+    suggestedCategories: ["campus benches", "bicycles", "stacks of books", "flower planters", "backpacks"],
+    data: growingCampusWorld,
   },
   {
     id: "fantasy-world",
     name: "Fantasy World",
     description:
       "A mystical paper realm of floating crystal islands, arcane towers, ancient rune arches, and magical beasts.",
-    status: "planned",
+    status: "implemented",
     theme: {
       primaryColor: "#3B0764",
       secondaryColor: "#065F46",
@@ -219,19 +223,20 @@ export const worldCatalog: WorldCatalogEntry[] = [
     growthConcept: "Arcane journey from enchanted forest border to celestial floating spires and ancient dragon roost.",
     segmentPlan: [
       "Enchanted Glade (fantasy-01)",
-      "Floating Crystal Isle (fantasy-02)",
-      "Rune Arch Terrace (fantasy-03)",
-      "Wizard High Spire (fantasy-04)",
+      "Rune Arch (fantasy-02)",
+      "High Spire (fantasy-03)",
+      "Floating Crystal Isle (fantasy-04)",
       "Starlit Dragon Peak (fantasy-05)",
     ],
-    suggestedCategories: ["crystal clusters", "arcane runes", "spellbooks", "wizard towers", "mythical creatures"],
+    suggestedCategories: ["rune stones", "floating crystals", "magic mushrooms", "ancient spellbooks", "wizard lanterns"],
+    data: fantasyWorld,
   },
   {
     id: "alien-planet",
     name: "Alien Planet",
     description:
       "An enigmatic paper xenobiology world of bioluminescent fungi, acid cyan biomes, and exploration probes.",
-    status: "planned",
+    status: "implemented",
     theme: {
       primaryColor: "#180828",
       secondaryColor: "#0D9488",
@@ -239,17 +244,18 @@ export const worldCatalog: WorldCatalogEntry[] = [
     },
     growthConcept: "Planetary survey from scout rover landing zone across crystal geysers to bioluminescent mega-fungi.",
     segmentPlan: [
-      "Lander Touchdown Basin (alien-01)",
-      "Bioluminescent Forest (alien-02)",
-      "Crystal Geyser Flats (alien-03)",
+      "Touchdown Basin (alien-01)",
+      "Spore Forest (alien-02)",
+      "Crystal Geysers (alien-03)",
       "Spire Chasm (alien-04)",
       "Xenolith Ridge (alien-05)",
     ],
-    suggestedCategories: ["bioluminescent fungi", "alien crystals", "survey probes", "spire rocks", "xenoflora"],
+    suggestedCategories: ["alien mushrooms", "neon crystals", "survey probes", "alien flowers", "alien creatures"],
+    data: alienPlanetWorld,
   },
 ];
 
-// Implemented world dictionary & list
+// Implemented world dictionary & list (All 10 Worlds)
 export const implementedWorlds: World[] = worldCatalog
   .filter((entry): entry is WorldCatalogEntry & { data: World } => entry.status === "implemented" && !!entry.data)
   .map((entry) => entry.data);
@@ -267,4 +273,7 @@ export {
   growingVillageWorld,
   growingIslandWorld,
   growingFarmWorld,
+  growingCampusWorld,
+  fantasyWorld,
+  alienPlanetWorld,
 };

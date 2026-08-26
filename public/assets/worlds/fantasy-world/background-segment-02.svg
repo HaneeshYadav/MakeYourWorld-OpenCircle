@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="100%" height="100%">
+  <defs>
+    <filter id="fantasy-shadow" x="-10%" y="-10%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#2e1065" flood-opacity="0.3"/>
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#2e1065" flood-opacity="0.15"/>
+    </filter>
+    <linearGradient id="fantasy-sky-2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#2E1065"/>
+      <stop offset="50%" stop-color="#4C1D95"/>
+      <stop offset="100%" stop-color="#6B21A8"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Sky Layer (Continuous with Segment 01) -->
+  <rect width="1600" height="900" fill="url(#fantasy-sky-2)"/>
+
+  <!-- Distant Mystical Floating Crystal Islets -->
+  <g filter="url(#fantasy-shadow)">
+    <!-- Floating Isle 1 (Left) -->
+    <polygon points="160,300 320,300 240,360" fill="#3B0764"/>
+    <polygon points="210,300 240,240 270,300" fill="#C084FC"/>
+    <!-- Floating Isle 2 (Right) -->
+    <polygon points="1280,260 1460,260 1370,330" fill="#3B0764"/>
+    <polygon points="1340,260 1370,190 1400,260" fill="#67E8F9"/>
+  </g>
+
+  <!-- Ancient Rune Arch Portal (Centerpiece) -->
+  <g filter="url(#fantasy-shadow)">
+    <!-- Arch Stone Masonry -->
+    <path d="M 460 700 L 460 380 Q 800 180 1140 380 L 1140 700 L 1020 700 L 1020 420 Q 800 280 580 420 L 580 700 Z" fill="#475569" stroke="#334155" stroke-width="3"/>
+    
+    <!-- Glowing Arcane Rune Inscriptions -->
+    <circle cx="520" cy="480" r="10" fill="#FBBF24" opacity="0.9"/>
+    <circle cx="520" cy="560" r="10" fill="#67E8F9" opacity="0.9"/>
+    <circle cx="1080" cy="480" r="10" fill="#FBBF24" opacity="0.9"/>
+    <circle cx="1080" cy="560" r="10" fill="#67E8F9" opacity="0.9"/>
+    <polygon points="800,240 780,270 820,270" fill="#E879F9"/>
+
+    <!-- Inner Shimmering Portal Vortex -->
+    <ellipse cx="800" cy="520" rx="200" ry="160" fill="#7E22CE" opacity="0.45"/>
+  </g>
+
+  <!-- Mystical Terraced Stone Ground Tier -->
+  <g filter="url(#fantasy-shadow)">
+    <path d="M 0 680 Q 420 620 900 660 T 1600 640 L 1600 900 L 0 900 Z" fill="#064E3B"/>
+    <path d="M 0 780 Q 520 730 1080 770 T 1600 750 L 1600 900 L 0 900 Z" fill="#042F2E"/>
+  </g>
+</svg>

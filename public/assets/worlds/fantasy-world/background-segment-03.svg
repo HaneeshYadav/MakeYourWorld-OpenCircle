@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="100%" height="100%">
+  <defs>
+    <filter id="fantasy-shadow" x="-10%" y="-10%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#2e1065" flood-opacity="0.35"/>
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#2e1065" flood-opacity="0.2"/>
+    </filter>
+    <linearGradient id="fantasy-sky-3" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1E1B4B"/>
+      <stop offset="50%" stop-color="#312E81"/>
+      <stop offset="100%" stop-color="#4C1D95"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Sky Layer -->
+  <rect width="1600" height="900" fill="url(#fantasy-sky-3)"/>
+
+  <!-- Swirling Nebula Cloud Bands & Floating Runestones -->
+  <g opacity="0.4">
+    <ellipse cx="400" cy="200" rx="320" ry="80" fill="#C084FC"/>
+    <ellipse cx="1200" cy="250" rx="380" ry="90" fill="#67E8F9"/>
+  </g>
+
+  <!-- Wizard High Spire & Floating Stepping Islands -->
+  <g filter="url(#fantasy-shadow)">
+    <!-- Main High Spire Tower (Center Left) -->
+    <polygon points="340,780 460,780 430,220 370,220" fill="#334155" stroke="#1E293B" stroke-width="2"/>
+    <!-- Spire Conical Roof -->
+    <polygon points="350,220 400,60 450,220" fill="#7E22CE" stroke="#581C87" stroke-width="2"/>
+    <!-- Glowing Spire Orb Peak -->
+    <circle cx="400" cy="50" r="16" fill="#FDE047" stroke="#F59E0B" stroke-width="2"/>
+
+    <!-- Floating Staircase Islets (Stepping up toward Spire) -->
+    <polygon points="700,520 840,520 770,580" fill="#3B0764"/>
+    <polygon points="740,520 770,460 800,520" fill="#C084FC"/>
+
+    <polygon points="980,400 1140,400 1060,470" fill="#3B0764"/>
+    <polygon points="1030,400 1060,330 1090,400" fill="#67E8F9"/>
+
+    <polygon points="1260,280 1440,280 1350,360" fill="#3B0764"/>
+    <polygon points="1310,280 1350,190 1390,280" fill="#F472B6"/>
+  </g>
+
+  <!-- Cliffside Summit Foreground Platform Tier -->
+  <g filter="url(#fantasy-shadow)">
+    <path d="M 0 760 Q 450 710 920 750 T 1600 720 L 1600 900 L 0 900 Z" fill="#1E1B4B" stroke="#0F172A" stroke-width="2"/>
+  </g>
+</svg>
