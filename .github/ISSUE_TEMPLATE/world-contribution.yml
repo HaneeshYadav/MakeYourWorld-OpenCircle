@@ -7,7 +7,7 @@ body:
     attributes:
       value: |
         # 🌿 Growing Worlds Contribution Slot
-        Configure this reusable task slot for student and beginner contributors. Select the target world, slot ID, and segment from the dropdowns below.
+        Configure this reusable task slot for student and beginner contributors. Select the target world, slot ID, segment, and suggested object/category from the dropdowns below.
 
   - type: dropdown
     id: world
@@ -96,14 +96,92 @@ body:
     validations:
       required: true
 
-  - type: input
-    id: object_name
+  - type: dropdown
+    id: suggested_category
     attributes:
-      label: 🎨 Suggested Object Name & Category
-      description: The name or creative category of object the student should craft (e.g. Butterfly, Pine Tree, Coral, Student Backpack, Floating Crystal).
-      placeholder: "Butterfly (woodland fauna)"
+      label: 🎨 Suggested Object Category & Concept
+      description: Select a curated theme-specific category or object concept for this slot.
+      options:
+        # Growing Forest
+        - "🌲 Forest: Butterfly (Woodland Wildlife / Fauna)"
+        - "🌲 Forest: Song Bird (Canopy Bird / Fauna)"
+        - "🌲 Forest: Woodland Flower (Forest Floor Flora)"
+        - "🌲 Forest: Mossy Rock (Terrain Prop)"
+        - "🌲 Forest: Forest Deer (Large Fauna)"
+        - "🌲 Forest: Red Mushroom (Fungi & Undergrowth)"
+        # Growing Universe
+        - "🌌 Universe: Spiral Galaxy (Deep Space Nebula)"
+        - "🌌 Universe: Crescent Moon (Lunar Body)"
+        - "🌌 Universe: Paper Satellite (Orbital Tech)"
+        - "🌌 Universe: Paper Comet (Cosmic Wanderer)"
+        - "🌌 Universe: Paper Asteroid (Asteroid Belt)"
+        # Growing Ocean
+        - "🌊 Ocean: Swimming Clownfish (Reef Fish)"
+        - "🌊 Ocean: Sea Turtle (Marine Fauna)"
+        - "🌊 Ocean: Paper Coral (Reef Structure)"
+        - "🌊 Ocean: Kelp Stalk (Marine Flora)"
+        - "🌊 Ocean: Research Submarine (Marine Exploration)"
+        - "🌊 Ocean: Paper Seashell (Ocean Floor Detail)"
+        # Growing City
+        - "🏙️ City: Park Bench (Street Furniture)"
+        - "🏙️ City: Street Lamp (Urban Lighting)"
+        - "🏙️ City: Paper Bicycle (Urban Transit)"
+        - "🏙️ City: City Mailbox (Civic Detail)"
+        - "🏙️ City: Street Tree (Urban Canopy)"
+        - "🏙️ City: Paper Tram (Transit Rail)"
+        # Growing Village
+        - "🏡 Village: Flower Pot (Rustic Garden)"
+        - "🏡 Village: Wooden Cart (Market Prop)"
+        - "🏡 Village: Village Lantern (Street Lighting)"
+        - "🏡 Village: Market Basket (Artisan Goods)"
+        - "🏡 Village: Stone Well (Village Landmark)"
+        - "🏡 Village: Village Fence (Homestead Perimeter)"
+        # Growing Island
+        - "🏝️ Island: Coconut Palm (Coastal Flora)"
+        - "🏝️ Island: Wooden Canoe (Shoreline Vessel)"
+        - "🏝️ Island: Tropical Parrot (Island Wildlife)"
+        - "🏝️ Island: Tropical Flower (Volcanic Flora)"
+        - "🏝️ Island: Island Seashell (Beach Detail)"
+        - "🏝️ Island: Island Lighthouse (Coastal Landmark)"
+        # Growing Farm
+        - "🚜 Farm: Harvest Pumpkin (Crop Harvest)"
+        - "🚜 Farm: Wheat Bundle (Field Sheaf)"
+        - "🚜 Farm: Scarecrow (Field Guardian)"
+        - "🚜 Farm: Pasture Sheep (Barnyard Animal)"
+        - "🚜 Farm: Watering Can (Gardening Tool)"
+        - "🚜 Farm: Pasture Windmill (Farm Landmark)"
+        # Growing Campus
+        - "🏛️ Campus: Student Backpack (Campus Life)"
+        - "🏛️ Campus: Stack of Books (Library Detail)"
+        - "🏛️ Campus: Student Bicycle (Campus Mobility)"
+        - "🏛️ Campus: Campus Planter (Quad Flora)"
+        - "🏛️ Campus: Campus Bench (Quad Furniture)"
+        - "🏛️ Campus: Campus Telescope (Observatory Instrument)"
+        # Fantasy World
+        - "🔮 Fantasy: Floating Crystal (Arcane Landmark)"
+        - "🔮 Fantasy: Rune Stone (Ancient Magic)"
+        - "🔮 Fantasy: Magic Mushroom (Enchanted Glade)"
+        - "🔮 Fantasy: Wizard Lantern (Spellcraft Light)"
+        - "🔮 Fantasy: Ancient Spellbook (Grimoire Detail)"
+        - "🔮 Fantasy: Dragon Egg (Mythical Artifact)"
+        # Alien Planet
+        - "🪐 Alien: Alien Mushroom (Bioluminescent Flora)"
+        - "🪐 Alien: Neon Crystal (Xenolith Mineral)"
+        - "🪐 Alien: Survey Probe (Planetary Scout)"
+        - "🪐 Alien: Alien Flower (Exotic Flora)"
+        - "🪐 Alien: Alien Creature (Xenobiology Fauna)"
+        - "🪐 Alien: Surface Rover (Exploration Vehicle)"
     validations:
       required: true
+
+  - type: input
+    id: custom_object_name
+    attributes:
+      label: ✏️ Custom Object Name (Optional)
+      description: If you want to specify a custom creative object name instead of the preset above, type it here (e.g. "Golden Dragonfly", "Arcane Staff", "Kelp Otter").
+      placeholder: "e.g. Golden Dragonfly (woodland fauna)"
+    validations:
+      required: false
 
   - type: markdown
     attributes:
@@ -211,6 +289,7 @@ body:
         ### STEP 12 — Run local validation
         ```bash
         npm ci
+        npm run test:integrity
         npm run lint
         npm run typecheck
         npm test
