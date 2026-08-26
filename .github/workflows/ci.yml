@@ -41,6 +41,9 @@ jobs:
       - name: Run TypeScript Typecheck
         run: npm run typecheck
 
+      - name: Audit Data & Asset Integrity
+        run: npx tsx scripts/audit-integrity.ts
+
       - name: Run Vitest Unit & Schema Tests
         run: npm test
 

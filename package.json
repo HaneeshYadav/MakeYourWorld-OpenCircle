@@ -11,6 +11,7 @@
     "format:check": "prettier --check .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "test:integrity": "npx tsx scripts/audit-integrity.ts",
     "test:watch": "vitest",
     "test:objects": "vitest run tests/unit/schemas/objects.test.ts",
     "test:e2e": "playwright test"
