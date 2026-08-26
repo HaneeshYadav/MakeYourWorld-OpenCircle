@@ -75,7 +75,7 @@ test.describe("Growing Worlds Public Portal & 10-World E2E Suite", () => {
     // Segment 02 (Rune Arch)
     const nextBtn = page.locator('[data-testid="next-segment-button"]');
     await nextBtn.click();
-    await expect(page.locator("text=Rune Arch")).toBeVisible();
+    await expect(page.getByText("Rune Arch", { exact: true })).toBeVisible();
     await expect(page.locator("text=2 / 3")).toBeVisible();
     await expect(page.locator("text=Ignis")).toBeVisible(); // Wizard Lantern
     await expect(page.locator("text=Morgana")).toBeVisible(); // Grimoire
