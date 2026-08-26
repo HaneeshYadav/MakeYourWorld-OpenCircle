@@ -2,8 +2,8 @@ import { describe, it, expect } from "vitest";
 import { validatePRCommits, type CommitDiffInfo } from "../../../scripts/pr-validator-core";
 
 describe("GitHub Contributor PR Validation Suite", () => {
-  it("passes for a valid 2-commit contributor contribution", () => {
-    const validPR: CommitDiffInfo[] = [
+  it("passes for a valid 2-commit student contribution", () => {
+    const validStudentPR: CommitDiffInfo[] = [
       {
         commitMessage: "feat(campus): add student backpack",
         files: [
@@ -17,12 +17,12 @@ describe("GitHub Contributor PR Validation Suite", () => {
       },
     ];
 
-    const result = validatePRCommits(validPR);
+    const result = validatePRCommits(validStudentPR);
     expect(result.valid).toBe(true);
     expect(result.errors).toHaveLength(0);
   });
 
-  it("fails if PR has only 1 squashed commit", () => {
+  it("fails if student PR has only 1 squashed commit", () => {
     const singleCommitPR: CommitDiffInfo[] = [
       {
         commitMessage: "feat(campus): add and place backpack",
@@ -39,7 +39,7 @@ describe("GitHub Contributor PR Validation Suite", () => {
     expect(result.errors.some((e) => e.includes("exactly 2 commits"))).toBe(true);
   });
 
-  it("fails if PR has 3 or more commits", () => {
+  it("fails if student PR has 3 or more commits", () => {
     const threeCommitPR: CommitDiffInfo[] = [
       {
         commitMessage: "feat(campus): add asset",
@@ -80,8 +80,8 @@ describe("GitHub Contributor PR Validation Suite", () => {
     expect(result.errors.some((e) => e.includes("Commit 1 must NOT contain placement changes"))).toBe(true);
   });
 
-  it("fails if contributor touches maintainer protected zones", () => {
-    const forbiddenFilesPR: CommitDiffInfo[] = [
+  it("fails if student touches maintainer protected zones (src/engine)", () => {
+    const forbiddenEnginePR: CommitDiffInfo[] = [
       {
         commitMessage: "feat(engine): modify viewport container",
         files: [
@@ -95,7 +95,47 @@ describe("GitHub Contributor PR Validation Suite", () => {
       },
     ];
 
-    const result = validatePRCommits(forbiddenFilesPR);
+    const result = validatePRCommits(forbiddenEnginePR);
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes("Forbidden file modified"))).toBe(true);
+  });
+
+  it("fails if student touches package.json or dependencies", () => {
+    const forbiddenPkgPR: CommitDiffInfo[] = [
+      {
+        commitMessage: "feat(campus): add asset and update package",
+        files: [
+          "public/assets/worlds/growing-campus/paper-backpack.svg",
+          "package.json",
+        ],
+      },
+      {
+        commitMessage: "feat(campus): place object",
+        files: ["src/data/worlds/growing-campus/placements.ts"],
+      },
+    ];
+
+    const result = validatePRCommits(forbiddenPkgPR);
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes("Forbidden file modified"))).toBe(true);
+  });
+
+  it("fails if student touches .github workflows or configurations", () => {
+    const forbiddenGithubPR: CommitDiffInfo[] = [
+      {
+        commitMessage: "feat(campus): add asset and edit workflow",
+        files: [
+          "public/assets/worlds/growing-campus/paper-backpack.svg",
+          ".github/workflows/ci.yml",
+        ],
+      },
+      {
+        commitMessage: "feat(campus): place object",
+        files: ["src/data/worlds/growing-campus/placements.ts"],
+      },
+    ];
+
+    const result = validatePRCommits(forbiddenGithubPR);
     expect(result.valid).toBe(false);
     expect(result.errors.some((e) => e.includes("Forbidden file modified"))).toBe(true);
   });
