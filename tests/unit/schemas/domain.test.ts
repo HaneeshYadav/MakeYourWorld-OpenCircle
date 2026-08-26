@@ -101,10 +101,11 @@ describe("Domain Schema Validation Suite", () => {
     });
   });
 
-  describe("5, 6, 7, 8, 9. ObjectPlacementSchema (Normalized Coordinates)", () => {
-    it("validates a valid placement within 0-100 bounds (Commit 2 item)", () => {
+  describe("5, 6, 7, 8, 9. ObjectPlacementSchema (Normalized Coordinates & Segment Assignment)", () => {
+    it("validates a valid placement with explicit segmentId (Commit 2 item)", () => {
       const result = ObjectPlacementSchema.safeParse({
         objectId: "shen-tree",
+        segmentId: "forest-01",
         x: 42.5,
         y: 68.0,
         scale: 1.1,
@@ -113,14 +114,25 @@ describe("Domain Schema Validation Suite", () => {
       expect(result.success).toBe(true);
     });
 
+    it("rejects placement missing segmentId", () => {
+      const result = ObjectPlacementSchema.safeParse({
+        objectId: "shen-tree",
+        x: 42.5,
+        y: 68.0,
+      });
+      expect(result.success).toBe(false);
+    });
+
     it("validates boundary values 0 and 100", () => {
       const resultMin = ObjectPlacementSchema.safeParse({
         objectId: "shen-tree",
+        segmentId: "forest-01",
         x: 0,
         y: 0,
       });
       const resultMax = ObjectPlacementSchema.safeParse({
         objectId: "shen-tree",
+        segmentId: "forest-01",
         x: 100,
         y: 100,
       });
@@ -131,6 +143,7 @@ describe("Domain Schema Validation Suite", () => {
     it("rejects x below 0", () => {
       const result = ObjectPlacementSchema.safeParse({
         objectId: "shen-tree",
+        segmentId: "forest-01",
         x: -10,
         y: 50,
       });
@@ -140,6 +153,7 @@ describe("Domain Schema Validation Suite", () => {
     it("rejects x above 100", () => {
       const result = ObjectPlacementSchema.safeParse({
         objectId: "shen-tree",
+        segmentId: "forest-01",
         x: 150,
         y: 50,
       });
@@ -149,6 +163,7 @@ describe("Domain Schema Validation Suite", () => {
     it("rejects y below 0", () => {
       const result = ObjectPlacementSchema.safeParse({
         objectId: "shen-tree",
+        segmentId: "forest-01",
         x: 50,
         y: -20,
       });
@@ -158,6 +173,7 @@ describe("Domain Schema Validation Suite", () => {
     it("rejects y above 100", () => {
       const result = ObjectPlacementSchema.safeParse({
         objectId: "shen-tree",
+        segmentId: "forest-01",
         x: 50,
         y: 200,
       });
@@ -190,7 +206,7 @@ describe("Domain Schema Validation Suite", () => {
     });
   });
 
-  describe("13, 14, 15. WorldSchema & Integrity Verification", () => {
+  describe("13, 14, 15. WorldSchema & Relational Integrity Verification", () => {
     it("validates the demo Growing Forest world", () => {
       const result = WorldSchema.safeParse(growingForestWorld);
       expect(result.success).toBe(true);
@@ -203,6 +219,7 @@ describe("Domain Schema Validation Suite", () => {
           ...growingForestWorld.placements,
           {
             objectId: "non-existent-object-id",
+            segmentId: "forest-01",
             x: 50,
             y: 50,
           },
@@ -213,6 +230,28 @@ describe("Domain Schema Validation Suite", () => {
       if (!result.success) {
         expect(result.error.issues[0].message).toContain(
           "references undeclared objectId 'non-existent-object-id'"
+        );
+      }
+    });
+
+    it("rejects world with placement referencing undeclared segmentId", () => {
+      const invalidWorld = {
+        ...growingForestWorld,
+        placements: [
+          ...growingForestWorld.placements,
+          {
+            objectId: "demo-pine-tree",
+            segmentId: "non-existent-segment-id",
+            x: 50,
+            y: 50,
+          },
+        ],
+      };
+      const result = WorldSchema.safeParse(invalidWorld);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues[0].message).toContain(
+          "references undeclared segmentId 'non-existent-segment-id'"
         );
       }
     });
@@ -237,6 +276,20 @@ describe("Domain Schema Validation Suite", () => {
         );
       }
     });
+
+    it("validates multiple objects distributed across multiple segments", () => {
+      const multiSegmentWorld = {
+        ...growingForestWorld,
+        placements: [
+          { objectId: "demo-pine-tree", segmentId: "forest-01", x: 20, y: 50 },
+          { objectId: "demo-song-bird", segmentId: "forest-01", x: 60, y: 30 },
+          { objectId: "demo-forest-deer", segmentId: "forest-02", x: 40, y: 70 },
+          { objectId: "demo-mossy-rock", segmentId: "forest-03", x: 80, y: 85 },
+        ],
+      };
+      const result = WorldSchema.safeParse(multiSegmentWorld);
+      expect(result.success).toBe(true);
+    });
   });
 
   describe("16. Two-Commit Data Contract Independence", () => {
@@ -254,7 +307,7 @@ describe("Domain Schema Validation Suite", () => {
       expect(objectValidation.success).toBe(true);
     });
 
-    it("Commit 2: validates placement and integration into World in isolation", () => {
+    it("Commit 2: validates placement with segmentId and integration into World", () => {
       const commit1Object = {
         id: "my-student-tree",
         asset: "/assets/worlds/growing-forest/my-student-tree.svg",
@@ -266,6 +319,7 @@ describe("Domain Schema Validation Suite", () => {
 
       const commit2Placement = {
         objectId: "my-student-tree",
+        segmentId: "forest-01",
         x: 60.5,
         y: 85.0,
       };

@@ -55,13 +55,21 @@ export const WorldSchema = z
       segmentIds.add(seg.id);
     });
 
-    // 3. Verify every placement references a declared object in objects
+    // 3. Verify every placement references a declared object in objects AND a declared segment
     world.placements.forEach((placement, index) => {
       if (!objectIds.has(placement.objectId)) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: `Placement at placements[${index}] references undeclared objectId '${placement.objectId}'`,
           path: ["placements", index, "objectId"],
+        });
+      }
+
+      if (!segmentIds.has(placement.segmentId)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Placement at placements[${index}] references undeclared segmentId '${placement.segmentId}'`,
+          path: ["placements", index, "segmentId"],
         });
       }
     });

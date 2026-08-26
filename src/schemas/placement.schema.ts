@@ -2,7 +2,7 @@ import { z } from "zod";
 
 /**
  * ObjectPlacement schema for Step 2 of the contributor workflow.
- * Uses normalized coordinates (0 to 100).
+ * Uses normalized coordinates (0 to 100) and explicitly declares which segment it belongs to.
  * Target size: 1–10 meaningful LOC.
  */
 export const ObjectPlacementSchema = z.object({
@@ -11,7 +11,14 @@ export const ObjectPlacementSchema = z.object({
     .trim()
     .regex(
       /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-      "Object ID reference must be kebab-case"
+      "Object ID reference must be kebab-case (e.g. 'shen-tree')"
+    ),
+  segmentId: z
+    .string()
+    .trim()
+    .regex(
+      /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+      "Segment ID reference must be kebab-case (e.g. 'forest-01')"
     ),
   x: z
     .number({

@@ -37,6 +37,7 @@ classDiagram
     }
     class ObjectPlacement {
       +string objectId
+      +string segmentId
       +number x
       +number y
       +number? scale
@@ -49,6 +50,7 @@ classDiagram
     WorldObject *-- Contributor : contributor-owned
     World *-- ObjectPlacement : contributor-owned (Commit 2)
     ObjectPlacement ..> WorldObject : references objectId
+    ObjectPlacement ..> WorldSegment : references segmentId
 ```
 
 ---
@@ -58,7 +60,7 @@ classDiagram
 | Entity | Owner | File Location | Workflow Stage | Purpose |
 | :--- | :--- | :--- | :--- | :--- |
 | **`WorldObject`** | Contributor | `src/data/worlds/<world>/objects.ts` | **Commit 1** | Registers paper asset path and contributor attribution |
-| **`ObjectPlacement`**| Contributor | `src/data/worlds/<world>/placements.ts` | **Commit 2** | Sets normalized `x, y` percentage coordinates (0–100) |
+| **`ObjectPlacement`**| Contributor | `src/data/worlds/<world>/placements.ts` | **Commit 2** | Assigns `segmentId` and normalized `x, y` coordinates (0–100) |
 | **`WorldSegment`** | Maintainer | `src/data/worlds/<world>/segments.ts` | Pre-built | Multi-window growing background progression |
 | **`Background`** | Maintainer | `src/data/worlds/<world>/segments.ts` | Pre-built | Static SVG/PNG backdrops or CSS gradients |
 | **`World`** | Maintainer | `src/data/worlds/<world>/index.ts` | Scaffolding | Aggregates segments, objects, and placements |
@@ -80,7 +82,6 @@ export const ContributorSchema = z.object({
     .optional(),
 });
 ```
-*Note: Discord usernames are not part of the core world-rendering identity.*
 
 ---
 
@@ -100,18 +101,6 @@ export const WorldObjectSchema = z.object({
 });
 ```
 
-#### Example `objects.ts` entry:
-```typescript
-{
-  id: "demo-pine-tree",
-  asset: "/assets/worlds/growing-forest/demo-pine-tree.svg",
-  contributor: {
-    displayName: "Shen",
-    githubUsername: "ShenSandaru",
-  },
-}
-```
-
 ---
 
 ### 3.3 Object Placement (`placement.schema.ts` — Commit 2)
@@ -121,8 +110,9 @@ import { z } from "zod";
 
 export const ObjectPlacementSchema = z.object({
   objectId: z.string().trim().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
-  x: z.number().min(0).max(100), // Normalized % (0 to 100)
-  y: z.number().min(0).max(100), // Normalized % (0 to 100)
+  segmentId: z.string().trim().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+  x: z.number().min(0).max(100), // Normalized % across the segment (0 to 100)
+  y: z.number().min(0).max(100), // Normalized % down the segment (0 to 100)
   scale: z.number().min(0.1).max(5.0).optional(),
   rotation: z.number().min(-360).max(360).optional(),
 });
@@ -132,55 +122,19 @@ export const ObjectPlacementSchema = z.object({
 ```typescript
 {
   objectId: "demo-pine-tree",
-  x: 45.0,
-  y: 72.5,
-  scale: 1.2,
-  rotation: -2,
+  segmentId: "forest-01",
+  x: 22.0,
+  y: 65.0,
+  scale: 1.1,
+  rotation: -1,
 }
 ```
 
 ---
 
-### 3.4 World & Segments (`world.schema.ts`, `segment.schema.ts`)
-```typescript
-export const WorldSchema = z
-  .object({
-    id: z.string().trim().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
-    name: z.string().trim().min(1).max(60),
-    description: z.string().trim().min(1).max(300),
-    theme: z.object({
-      primaryColor: z.string().trim().min(1),
-      secondaryColor: z.string().trim().optional(),
-      accentColor: z.string().trim().optional(),
-    }),
-    segments: z.array(WorldSegmentSchema).min(1),
-    objects: z.array(WorldObjectSchema),
-    placements: z.array(ObjectPlacementSchema),
-  })
-  .superRefine((world, ctx) => {
-    // 1. Verify object IDs are unique
-    // 2. Verify segment IDs are unique
-    // 3. Verify every placement references an existing objectId
-  });
-```
+## 4. Growing World Segments & Capacity Policy
 
----
-
-## 4. Normalized Coordinate System
-
-To ensure all contributed objects render responsively across mobile screens, tablets, and 4K displays:
-- **`x: 0–100`**: Horizontal percentage of the world segment width.
-- **`y: 0–100`**: Vertical percentage of the world segment height.
-- Coordinates outside `[0.0, 100.0]` (e.g. `x: -10` or `y: 150`) are rejected by Zod runtime validation.
-- Depth, layering, and z-ordering are derived automatically by the World Engine (e.g. based on vertical `y` position).
-
----
-
-## 5. Two-Commit Data Contract Integrity
-
-1. **Commit 1 State**:
-   - Contributor places asset in `public/assets/worlds/<world>/` and registers definition in `src/data/worlds/<world>/objects.ts`.
-   - Validated independently by `WorldObjectSchema`.
-2. **Commit 2 State**:
-   - Contributor places object in `src/data/worlds/<world>/placements.ts`.
-   - Validated by `ObjectPlacementSchema` and super-refined by `WorldSchema` (foreign key check).
+- **Segment Assignment**: Each contribution issue explicitly specifies the target world and segment (e.g. `Target segment: forest-01`).
+- **No Automatic Overflow**: Automatic redistribution algorithms are intentionally avoided to ensure contributor placements remain 100% deterministic and faithfully positioned where the student intended.
+- **Progressive World Growth**: As maintainers notice a segment filling up, new Good First Issues are targeted toward the next prepared segment (`forest-02`, `forest-03`, etc.).
+- **Future Continuous Coordinates**: The engine can seamlessly concatenate segments `[0, 100] + [100, 200] + [200, 300]` horizontally in future phases without altering existing contributor placement files.
