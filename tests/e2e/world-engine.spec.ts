@@ -29,7 +29,12 @@ test.describe("Growing Worlds Public Portal E2E", () => {
     const forestHeading = page.getByRole("heading", { name: "Growing Forest" });
     await expect(forestHeading).toBeVisible();
 
-    // Click Explore World
+    // Verify planned worlds appear with Coming Soon / Awaiting Scaffolding
+    await expect(page.locator("text=Growing Universe")).toBeVisible();
+    await expect(page.locator("text=Growing Ocean")).toBeVisible();
+    await expect(page.locator("text=Alien Planet")).toBeVisible();
+
+    // Click Explore World for Growing Forest
     const exploreBtn = page.getByRole("link", { name: "Explore World" });
     await exploreBtn.click();
     await expect(page).toHaveURL("/worlds/growing-forest");
@@ -62,6 +67,14 @@ test.describe("Growing Worlds Public Portal E2E", () => {
     await nextBtn.click();
     await expect(page.locator("text=Sunlit Meadow")).toBeVisible();
     await expect(page.locator("text=Maya")).toBeVisible();
+  });
+
+  test("Visiting planned or non-existent world returns 404 not found page", async ({
+    page,
+  }) => {
+    const response = await page.goto("/worlds/growing-universe");
+    expect(response?.status()).toBe(404);
+    await expect(page.locator("text=404")).toBeVisible();
   });
 
   test("How-to-contribute page renders two-commit walkthrough and file boundaries", async ({
