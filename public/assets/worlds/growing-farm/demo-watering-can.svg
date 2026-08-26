@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 80" width="100%" height="100%">
+  <defs>
+    <filter id="can-shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="4" stdDeviation="3" flood-color="#451a03" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#can-shadow)">
+    <!-- Can Body (Galvanized Zinc Slate Paper) -->
+    <rect x="25" y="32" width="40" height="42" rx="4" fill="#94A3B8" stroke="#475569" stroke-width="1.5"/>
+    <rect x="28" y="36" width="34" height="6" fill="#CBD5E1"/>
+
+    <!-- Long Spout with Rose Head -->
+    <path d="M 62 55 L 88 32 L 85 28 L 60 48 Z" fill="#64748B" stroke="#475569" stroke-width="1"/>
+    <!-- Rose Sprinkler Head -->
+    <polygon points="84,24 94,34 90,38 80,28" fill="#475569"/>
+
+    <!-- Top Arch Handle -->
+    <path d="M 28 32 Q 45 10 62 32" fill="none" stroke="#475569" stroke-width="3"/>
+    <!-- Side Grip Handle -->
+    <path d="M 25 38 Q 12 50 25 65" fill="none" stroke="#475569" stroke-width="3"/>
+  </g>
+</svg>

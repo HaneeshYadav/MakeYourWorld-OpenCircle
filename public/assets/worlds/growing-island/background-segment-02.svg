@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="100%" height="100%">
+  <defs>
+    <filter id="island-shadow" x="-10%" y="-10%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#082f49" flood-opacity="0.22"/>
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#082f49" flood-opacity="0.12"/>
+    </filter>
+    <linearGradient id="island-sky-2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0284C7"/>
+      <stop offset="60%" stop-color="#7DD3FC"/>
+      <stop offset="100%" stop-color="#FEF08A"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Sky Layer (Continuous with Segment 01) -->
+  <rect width="1600" height="900" fill="url(#island-sky-2)"/>
+
+  <!-- Midground Volcanic Mountain Base (Closer than Segment 01) -->
+  <g filter="url(#island-shadow)">
+    <polygon points="120,500 520,200 920,500" fill="#044E46" opacity="0.75"/>
+    <polygon points="740,500 1180,180 1600,500" fill="#0F766E" opacity="0.7"/>
+  </g>
+
+  <!-- Dense Tropical Palm Ridge & Jungle Terraces -->
+  <g filter="url(#island-shadow)">
+    <path d="M 0 480 Q 420 420 880 460 T 1600 440 L 1600 700 L 0 700 Z" fill="#15803D"/>
+    <!-- Tropical Canopy Highlights -->
+    <path d="M 0 540 Q 380 490 820 530 T 1600 500 L 1600 750 L 0 750 Z" fill="#16A34A"/>
+  </g>
+
+  <!-- Inland Saltwater Lagoon Basin (Calm Turquoise Pool) -->
+  <g filter="url(#island-shadow)">
+    <path d="M 0 650 Q 520 590 1050 630 T 1600 600 L 1600 800 Q 1100 780 550 820 T 0 800 Z" fill="#0D9488" stroke="#5EEAD4" stroke-width="2"/>
+  </g>
+
+  <!-- Lagoon Shoreline Rocky Soil Tier -->
+  <g filter="url(#island-shadow)">
+    <path d="M 0 780 Q 480 730 980 760 T 1600 740 L 1600 900 L 0 900 Z" fill="#166534"/>
+  </g>
+</svg>

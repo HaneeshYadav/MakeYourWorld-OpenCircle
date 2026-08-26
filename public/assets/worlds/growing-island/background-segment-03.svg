@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="100%" height="100%">
+  <defs>
+    <filter id="island-shadow" x="-10%" y="-10%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#082f49" flood-opacity="0.25"/>
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#082f49" flood-opacity="0.15"/>
+    </filter>
+    <linearGradient id="island-sky-3" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0369A1"/>
+      <stop offset="60%" stop-color="#38BDF8"/>
+      <stop offset="100%" stop-color="#FDE047"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Sky Layer -->
+  <rect width="1600" height="900" fill="url(#island-sky-3)"/>
+
+  <!-- Distant Ocean Horizon Seen From Mountain Ridge -->
+  <line x1="0" y1="460" x2="1600" y2="460" stroke="#0284C7" stroke-width="6"/>
+
+  <!-- Dramatic Volcanic Peak Summit (Immediate Background) -->
+  <g filter="url(#island-shadow)">
+    <polygon points="0,480 380,140 760,480" fill="#18181B" stroke="#09090B" stroke-width="2"/>
+    <!-- Volcanic Rim Facets -->
+    <polygon points="380,140 460,260 320,380 0,480" fill="#27272A" opacity="0.8"/>
+    <polygon points="620,480 1100,160 1600,480" fill="#18181B" stroke="#09090B" stroke-width="2"/>
+  </g>
+
+  <!-- Elevated Jungle Ridge Terraces -->
+  <g filter="url(#island-shadow)">
+    <path d="M 0 540 Q 420 480 880 520 T 1600 500 L 1600 780 L 0 780 Z" fill="#064E3B"/>
+    <path d="M 0 640 Q 520 580 1050 620 T 1600 590 L 1600 840 L 0 840 Z" fill="#047857"/>
+  </g>
+
+  <!-- Rocky Volcanic Crag Foreground Tier -->
+  <g filter="url(#island-shadow)">
+    <path d="M 0 760 Q 450 710 920 740 T 1600 720 L 1600 900 L 0 900 Z" fill="#27272A" stroke="#18181B" stroke-width="2"/>
+  </g>
+</svg>

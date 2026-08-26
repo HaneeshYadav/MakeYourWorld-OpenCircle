@@ -4,6 +4,8 @@ import { growingUniverseWorld } from "./growing-universe";
 import { growingOceanWorld } from "./growing-ocean";
 import { growingCityWorld } from "./growing-city";
 import { growingVillageWorld } from "./growing-village";
+import { growingIslandWorld } from "./growing-island";
+import { growingFarmWorld } from "./growing-farm";
 
 export type WorldStatus = "implemented" | "planned";
 
@@ -143,7 +145,7 @@ export const worldCatalog: WorldCatalogEntry[] = [
     name: "Growing Island",
     description:
       "A tropical azure shoreline diorama of paper palms, volcanic crags, wooden canoes, and coastal lighthouses.",
-    status: "planned",
+    status: "implemented",
     theme: {
       primaryColor: "#0284C7",
       secondaryColor: "#15803D",
@@ -151,20 +153,21 @@ export const worldCatalog: WorldCatalogEntry[] = [
     },
     growthConcept: "Coastal exploration from sandy beach arrival through volcanic jungle ridges to panoramic lookout.",
     segmentPlan: [
-      "Sandy Arrival Beach (island-01)",
-      "Palm Grove Lagoon (island-02)",
-      "Volcanic Ridge Trail (island-03)",
+      "Arrival Beach (island-01)",
+      "Palm Lagoon (island-02)",
+      "Volcanic Ridge (island-03)",
       "Coastal Lookout Bluff (island-04)",
       "Historic Beacon Point (island-05)",
     ],
-    suggestedCategories: ["palm trees", "shells", "canoes", "lighthouses", "parrots"],
+    suggestedCategories: ["palm trees", "shells", "canoes", "tropical flowers", "parrots"],
+    data: growingIslandWorld,
   },
   {
     id: "growing-farm",
     name: "Growing Farm",
     description:
       "A warm golden harvest paper landscape of wheat sheaves, wooden fences, barnyard animals, and windmills.",
-    status: "planned",
+    status: "implemented",
     theme: {
       primaryColor: "#CA8A04",
       secondaryColor: "#991B1B",
@@ -173,12 +176,13 @@ export const worldCatalog: WorldCatalogEntry[] = [
     growthConcept: "Agricultural cultivation across seasonal fields from homestead yard to golden crop acreage.",
     segmentPlan: [
       "Homestead Yard (farm-01)",
-      "Golden Wheat Fields (farm-02)",
-      "Pasture & Windmill (farm-03)",
+      "Wheat Fields (farm-02)",
+      "Pasture Windmill (farm-03)",
       "Apple Orchard Valley (farm-04)",
       "Harvest Barn Plateau (farm-05)",
     ],
-    suggestedCategories: ["wheat sheaves", "pumpkins", "farm animals", "fences", "tractors"],
+    suggestedCategories: ["scarecrows", "wheat bundles", "harvest pumpkins", "watering cans", "pasture sheep"],
+    data: growingFarmWorld,
   },
   {
     id: "growing-campus",
@@ -261,4 +265,6 @@ export {
   growingOceanWorld,
   growingCityWorld,
   growingVillageWorld,
+  growingIslandWorld,
+  growingFarmWorld,
 };

@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="100%" height="100%">
+  <defs>
+    <filter id="farm-shadow" x="-10%" y="-10%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#451a03" flood-opacity="0.22"/>
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#451a03" flood-opacity="0.12"/>
+    </filter>
+    <linearGradient id="farm-sky-1" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#BAE6FD"/>
+      <stop offset="60%" stop-color="#FEF08A"/>
+      <stop offset="100%" stop-color="#FEF9C3"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Sky Layer -->
+  <rect width="1600" height="900" fill="url(#farm-sky-1)"/>
+
+  <!-- Distant Rolling Pasture Hills (Continuous Ridge) -->
+  <g filter="url(#farm-shadow)">
+    <path d="M 0 420 Q 380 360 820 400 T 1600 370 L 1600 650 L 0 650 Z" fill="#65A30D" opacity="0.8"/>
+  </g>
+
+  <!-- Farmhouse & Garden Orchard Backdrop -->
+  <g filter="url(#farm-shadow)">
+    <!-- Distant Homestead Barn (Center Left) -->
+    <rect x="240" y="380" width="280" height="200" fill="#991B1B" stroke="#7F1D1D" stroke-width="2"/>
+    <polygon points="210,380 380,260 550,380" fill="#7F1D1D" stroke="#450A0A" stroke-width="2"/>
+    <!-- Barn White X-Doors -->
+    <rect x="330" y="460" width="100" height="120" fill="#FFFFFF"/>
+    <line x1="330" y1="460" x2="430" y2="580" stroke="#7F1D1D" stroke-width="3"/>
+    <line x1="330" y1="580" x2="430" y2="460" stroke="#7F1D1D" stroke-width="3"/>
+
+    <!-- Garden Patch Bed Ridge -->
+    <path d="M 0 540 Q 450 490 920 530 T 1600 500 L 1600 780 L 0 780 Z" fill="#4D7C0F"/>
+  </g>
+
+  <!-- Homestead Yard Dirt Path & Lawn Tier -->
+  <g filter="url(#farm-shadow)">
+    <path d="M 0 680 Q 420 630 880 670 T 1600 640 L 1600 900 L 0 900 Z" fill="#3F6212"/>
+    <!-- Farm Track Path (Golden Earth) -->
+    <path d="M 0 780 Q 450 720 900 760 T 1600 740 L 1600 860 Q 900 840 450 860 T 0 900 Z" fill="#D97706" opacity="0.85"/>
+  </g>
+</svg>

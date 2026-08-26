@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="100%" height="100%">
+  <defs>
+    <filter id="island-shadow" x="-10%" y="-10%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#082f49" flood-opacity="0.22"/>
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#082f49" flood-opacity="0.12"/>
+    </filter>
+    <linearGradient id="island-sky-1" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8"/>
+      <stop offset="60%" stop-color="#BAE6FD"/>
+      <stop offset="100%" stop-color="#FEF08A"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Sky Layer -->
+  <rect width="1600" height="900" fill="url(#island-sky-1)"/>
+
+  <!-- Distant Volcanic Peak Silhouette (Continuous Inland Anchor) -->
+  <g filter="url(#island-shadow)">
+    <polygon points="450,520 780,260 1150,520" fill="#0F766E" opacity="0.6"/>
+    <polygon points="950,520 1200,320 1480,520" fill="#115E59" opacity="0.5"/>
+  </g>
+
+  <!-- Midground Turquoise Ocean Horizon & Coral Reef Reef Shelf -->
+  <g filter="url(#island-shadow)">
+    <path d="M 0 520 L 1600 520 L 1600 680 Q 1100 640 600 670 T 0 680 Z" fill="#0284C7"/>
+    <!-- Gentle Shoreline Wave Crests -->
+    <path d="M 0 670 Q 400 640 800 660 T 1600 650" fill="none" stroke="#FFFFFF" stroke-width="4" opacity="0.75"/>
+  </g>
+
+  <!-- Arrival Sandy Beach (Warm Golden Sand Cardstock) -->
+  <g filter="url(#island-shadow)">
+    <path d="M 0 680 Q 450 630 950 670 T 1600 650 L 1600 900 L 0 900 Z" fill="#FDE68A"/>
+    <!-- Wet Sand Shoreline Band -->
+    <path d="M 0 740 Q 520 700 1050 730 T 1600 710 L 1600 900 L 0 900 Z" fill="#FCD34D"/>
+  </g>
+
+  <!-- Palm Bluff Edge (Left Foreland) -->
+  <g filter="url(#island-shadow)">
+    <path d="M 0 760 Q 240 700 360 900 L 0 900 Z" fill="#15803D"/>
+  </g>
+</svg>

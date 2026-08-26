@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 80" width="100%" height="100%">
+  <defs>
+    <filter id="sheep-shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="4" stdDeviation="3" flood-color="#451a03" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#sheep-shadow)">
+    <!-- 4 Black Wooden Legs -->
+    <rect x="24" y="55" width="5" height="20" fill="#1E293B"/>
+    <rect x="36" y="55" width="5" height="20" fill="#1E293B"/>
+    <rect x="62" y="55" width="5" height="20" fill="#1E293B"/>
+    <rect x="74" y="55" width="5" height="20" fill="#1E293B"/>
+
+    <!-- Fluffy Wool Body (Layered Cream Cardstock Scallops) -->
+    <ellipse cx="50" cy="45" rx="30" ry="20" fill="#FFFDF7" stroke="#E2E8F0" stroke-width="1.5"/>
+    <circle cx="30" cy="38" r="10" fill="#FFFDF7"/>
+    <circle cx="45" cy="32" r="11" fill="#FFFDF7"/>
+    <circle cx="62" cy="34" r="10" fill="#FFFDF7"/>
+    <circle cx="70" cy="45" r="9" fill="#FFFDF7"/>
+
+    <!-- Black Sheep Head & Drooping Ears -->
+    <ellipse cx="22" cy="40" rx="9" ry="12" fill="#1E293B"/>
+    <ellipse cx="28" cy="32" rx="4" ry="7" fill="#334155"/>
+    <!-- Eye -->
+    <circle cx="18" cy="38" r="1.5" fill="#FFFFFF"/>
+  </g>
+</svg>

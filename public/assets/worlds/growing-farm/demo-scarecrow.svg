@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 130" width="100%" height="100%">
+  <defs>
+    <filter id="scarecrow-shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="4" stdDeviation="3" flood-color="#451a03" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#scarecrow-shadow)">
+    <!-- Wooden Pole Frame -->
+    <rect x="47" y="30" width="6" height="95" fill="#78350F"/>
+    <rect x="20" y="55" width="60" height="5" fill="#78350F"/>
+
+    <!-- Tattered Shirt (Blue Flannel Paper) -->
+    <polygon points="35,45 65,45 75,75 60,75 50,60 40,75 25,75" fill="#2563EB" stroke="#1E40AF" stroke-width="1.2"/>
+    <!-- Patches -->
+    <rect x="42" y="50" width="8" height="8" fill="#FBBF24" stroke="#D97706" stroke-width="1"/>
+
+    <!-- Straw Head & Hat -->
+    <circle cx="50" cy="35" r="12" fill="#FEF08A" stroke="#CA8A04" stroke-width="1"/>
+    <!-- Hat -->
+    <polygon points="30,28 70,28 58,12 42,12" fill="#92400E" stroke="#78350F" stroke-width="1.2"/>
+    <ellipse cx="50" cy="28" rx="22" ry="4" fill="#B45309"/>
+
+    <!-- Face Details -->
+    <circle cx="46" cy="34" r="1.5" fill="#451A03"/>
+    <circle cx="54" cy="34" r="1.5" fill="#451A03"/>
+    <path d="M 45 40 Q 50 44 55 40" fill="none" stroke="#451A03" stroke-width="1.2"/>
+  </g>
+</svg>

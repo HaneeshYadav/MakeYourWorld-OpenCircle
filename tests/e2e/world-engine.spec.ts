@@ -18,85 +18,83 @@ test.describe("Growing Worlds Public Portal & Multi-World E2E", () => {
     await expect(page.locator("h1")).toContainText("How to Contribute to Growing Worlds");
   });
 
-  test("World Gallery loads all 5 active worlds and planned worlds", async ({
+  test("World Gallery loads all 7 active worlds and planned worlds", async ({
     page,
   }) => {
     await page.goto("/worlds");
 
     await expect(page.locator("h1")).toContainText("World Gallery");
 
-    // Active World Cards (5)
+    // Active World Cards (7)
     await expect(page.getByRole("heading", { name: "Growing Forest" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Growing Universe" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Growing Ocean" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Growing City" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Growing Village" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Growing Island" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Growing Farm" })).toBeVisible();
 
-    // Planned worlds (5)
-    await expect(page.locator("text=Growing Island")).toBeVisible();
+    // Planned worlds (3)
+    await expect(page.locator("text=Growing Campus")).toBeVisible();
     await expect(page.locator("text=Alien Planet")).toBeVisible();
   });
 
-  test("Growing City world view renders shared engine, streetscapes, and navigation", async ({
+  test("Growing Island world view renders shared engine, coastal shoreline, and navigation", async ({
     page,
   }) => {
-    await page.goto("/worlds/growing-city");
+    await page.goto("/worlds/growing-island");
 
     // 1. Header & Engine container
-    await expect(page.locator("h2")).toContainText("Growing City");
-    const worldContainer = page.locator('[data-testid="world-engine-growing-city"]');
+    await expect(page.locator("h2")).toContainText("Growing Island");
+    const worldContainer = page.locator('[data-testid="world-engine-growing-island"]');
     await expect(worldContainer).toBeVisible();
 
-    // 2. Segment 01 (Brownstone Street) objects and contributors
-    await expect(page.locator("text=Brownstone Street")).toBeVisible();
+    // 2. Segment 01 (Arrival Beach) objects and contributors
+    await expect(page.locator("text=Arrival Beach")).toBeVisible();
     await expect(page.locator("text=1 / 3")).toBeVisible();
-    await expect(page.locator("text=Jordan")).toBeVisible(); // Street Tree
-    await expect(page.locator("text=Avery")).toBeVisible(); // Mailbox
-    await expect(page.locator("text=Devon")).toBeVisible(); // Bike
+    await expect(page.locator("text=Moana")).toBeVisible(); // Coconut Palm
+    await expect(page.locator("text=Koa")).toBeVisible(); // Wooden Canoe
 
     const nextBtn = page.locator('[data-testid="next-segment-button"]');
 
-    // 3. Navigate to Segment 02 (Town Square)
+    // 3. Navigate to Segment 02 (Palm Lagoon)
     await nextBtn.click();
-    await expect(page.locator("text=Town Square")).toBeVisible();
+    await expect(page.locator("text=Palm Lagoon")).toBeVisible();
     await expect(page.locator("text=2 / 3")).toBeVisible();
-    await expect(page.locator("text=Marcus")).toBeVisible(); // Street Lamp
-    await expect(page.locator("text=Chloe")).toBeVisible(); // Park Bench
-
-    // Segment 01 objects should not appear in Segment 02
-    await expect(page.locator("text=Avery")).not.toBeVisible();
+    await expect(page.locator("text=Tane")).toBeVisible(); // Parrot
+    await expect(page.locator("text=Lani")).toBeVisible(); // Flower
   });
 
-  test("Growing Village world view renders shared engine, rural cottages, and navigation", async ({
+  test("Growing Farm world view renders shared engine, golden fields, and navigation", async ({
     page,
   }) => {
-    await page.goto("/worlds/growing-village");
+    await page.goto("/worlds/growing-farm");
 
     // 1. Header & Engine container
-    await expect(page.locator("h2")).toContainText("Growing Village");
-    const worldContainer = page.locator('[data-testid="world-engine-growing-village"]');
+    await expect(page.locator("h2")).toContainText("Growing Farm");
+    const worldContainer = page.locator('[data-testid="world-engine-growing-farm"]');
     await expect(worldContainer).toBeVisible();
 
-    // 2. Segment 01 (River Watermill) objects and contributors
-    await expect(page.locator("text=River Watermill")).toBeVisible();
+    // 2. Segment 01 (Homestead Yard) objects and contributors
+    await expect(page.locator("text=Homestead Yard")).toBeVisible();
     await expect(page.locator("text=1 / 3")).toBeVisible();
-    await expect(page.locator("text=Clara")).toBeVisible(); // Flower Pot
-    await expect(page.locator("text=Tobias")).toBeVisible(); // Wooden Cart
+    await expect(page.locator("text=Oliver")).toBeVisible(); // Pumpkin
+    await expect(page.locator("text=Mia")).toBeVisible(); // Watering Can
 
     const nextBtn = page.locator('[data-testid="next-segment-button"]');
 
-    // 3. Navigate to Segment 02 (Cobblestone Street)
+    // 3. Navigate to Segment 02 (Wheat Fields)
     await nextBtn.click();
-    await expect(page.locator("text=Cobblestone Street")).toBeVisible();
+    await expect(page.locator("text=Wheat Fields")).toBeVisible();
     await expect(page.locator("text=2 / 3")).toBeVisible();
-    await expect(page.locator("text=Lukas")).toBeVisible(); // Lantern
-    await expect(page.locator("text=Greta")).toBeVisible(); // Fence
+    await expect(page.locator("text=Silas")).toBeVisible(); // Scarecrow
+    await expect(page.locator("text=Emma")).toBeVisible(); // Wheat Bundle
   });
 
   test("Visiting planned or non-existent world returns 404 not found page", async ({
     page,
   }) => {
-    const response = await page.goto("/worlds/growing-island");
+    const response = await page.goto("/worlds/growing-campus");
     expect(response?.status()).toBe(404);
     await expect(page.locator("text=404")).toBeVisible();
   });
