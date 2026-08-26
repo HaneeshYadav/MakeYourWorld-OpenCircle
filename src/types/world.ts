@@ -1,4 +1,21 @@
-// Placeholder export to satisfy TypeScript until domain types are added in Phase 3
+import type {
+  Contributor,
+  WorldObject,
+  ObjectPlacement,
+  Background,
+  WorldSegment,
+  World,
+} from "@/schemas";
+
+export type {
+  Contributor,
+  WorldObject,
+  ObjectPlacement,
+  Background,
+  WorldSegment,
+  World,
+};
+
 export type WorldId =
   | "growing-forest"
   | "growing-universe"
