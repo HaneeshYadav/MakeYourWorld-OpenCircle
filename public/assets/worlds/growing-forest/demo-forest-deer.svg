@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 140" width="100%" height="100%">
+  <defs>
+    <filter id="deer-shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="4" stdDeviation="3.5" flood-color="#0a140f" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#deer-shadow)">
+    <!-- Legs (Back and Front) -->
+    <path d="M 42 85 L 38 132 L 44 133 L 48 88 Z" fill="#78350F"/>
+    <path d="M 52 85 L 48 134 L 54 135 L 58 88 Z" fill="#92400E"/>
+    <path d="M 80 85 L 76 132 L 82 133 L 86 88 Z" fill="#78350F"/>
+    <path d="M 90 85 L 86 134 L 92 135 L 96 88 Z" fill="#92400E"/>
+
+    <!-- Body Cutout Piece -->
+    <path d="M 35 68 Q 30 85 45 88 L 92 88 Q 105 85 102 65 Q 95 52 75 55 L 45 56 Q 32 55 35 68 Z" fill="#B45309" stroke="#FFFFFF" stroke-width="1.5" stroke-linejoin="round"/>
+
+    <!-- Tail -->
+    <path d="M 28 62 Q 22 68 28 72 Z" fill="#FDE68A" stroke="#FFFFFF" stroke-width="1"/>
+
+    <!-- Neck and Head -->
+    <path d="M 85 62 L 95 35 Q 98 25 110 28 Q 115 32 108 42 L 98 70 Z" fill="#B45309" stroke="#FFFFFF" stroke-width="1.5" stroke-linejoin="round"/>
+
+    <!-- Snout & Ear -->
+    <polygon points="106,30 118,34 108,38" fill="#78350F"/>
+    <polygon points="96,28 92,15 102,22" fill="#D97706" stroke="#FFFFFF" stroke-width="1"/>
+
+    <!-- Antlers (Paper Craft) -->
+    <path d="M 94 22 L 90 5 L 84 9 M 90 10 L 98 8 M 90 5 L 94 2" fill="none" stroke="#78350F" stroke-width="2" stroke-linecap="round"/>
+
+    <!-- Dappled Spots -->
+    <circle cx="55" cy="65" r="2.5" fill="#FDE68A" opacity="0.9"/>
+    <circle cx="68" cy="62" r="2.5" fill="#FDE68A" opacity="0.9"/>
+    <circle cx="80" cy="66" r="2" fill="#FDE68A" opacity="0.9"/>
+  </g>
+</svg>

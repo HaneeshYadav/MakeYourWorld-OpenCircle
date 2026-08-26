@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="100%" height="100%">
+  <defs>
+    <!-- Paper Grain Filter -->
+    <filter id="paper-texture" x="0%" y="0%" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="4" result="noise"/>
+      <feDiffuseLighting in="noise" lighting-color="#fffdf7" surfaceScale="1.5" result="light">
+        <feDistantLight azimuth="60" elevation="50"/>
+      </feDiffuseLighting>
+      <feBlend mode="multiply" in="SourceGraphic" in2="light"/>
+    </filter>
+
+    <!-- Paper Drop Shadow -->
+    <filter id="paper-shadow-soft" x="-10%" y="-10%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#0a140f" flood-opacity="0.18"/>
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#0a140f" flood-opacity="0.10"/>
+    </filter>
+  </defs>
+
+  <!-- Sky Layer: Soft Warm Morning Paper Gradient -->
+  <rect width="1600" height="900" fill="#E8EDE4"/>
+  <rect width="1600" height="480" fill="url(#sky-grad)" opacity="0.8"/>
+  <defs>
+    <linearGradient id="sky-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#D1E0D7"/>
+      <stop offset="60%" stop-color="#E8EDE4"/>
+      <stop offset="100%" stop-color="#F4EFE6"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Distant Clouds (Torn Paper Cutouts) -->
+  <g opacity="0.85" filter="url(#paper-shadow-soft)">
+    <path d="M 120 180 Q 180 140 260 160 Q 320 120 400 150 Q 480 140 520 190 Q 560 230 480 250 L 160 250 Q 100 230 120 180 Z" fill="#FDFCFA"/>
+    <path d="M 980 140 Q 1060 100 1160 120 Q 1240 90 1320 130 Q 1390 120 1430 170 Q 1460 220 1380 230 L 1020 230 Q 940 200 980 140 Z" fill="#FDFCFA"/>
+  </g>
+
+  <!-- Distant Mountain Peaks (Misty Deep Pine Teal) -->
+  <g filter="url(#paper-shadow-soft)">
+    <polygon points="0,520 180,340 380,480 560,310 820,530 1040,360 1280,490 1460,330 1600,450 1600,600 0,600" fill="#7A9A8B" opacity="0.9"/>
+  </g>
+
+  <!-- Middle-Distance Pine Ridge (Mossy Forest Green) -->
+  <g filter="url(#paper-shadow-soft)">
+    <path d="M 0,560 Q 150,480 320,510 T 700,530 T 1100,490 T 1450,540 T 1600,520 L 1600,750 L 0,750 Z" fill="#436B56"/>
+    <!-- Distant tree cutout silhouettes on ridge -->
+    <polygon points="120,495 135,460 150,495" fill="#315342"/>
+    <polygon points="140,490 155,445 170,490" fill="#315342"/>
+    <polygon points="280,515 295,475 310,515" fill="#315342"/>
+    <polygon points="780,530 795,480 810,530" fill="#315342"/>
+    <polygon points="1180,495 1195,450 1210,495" fill="#315342"/>
+    <polygon points="1420,540 1435,490 1450,540" fill="#315342"/>
+  </g>
+
+  <!-- Rolling Meadow Ground / Terraces (Deep Handcrafted Paper Greens) -->
+  <g filter="url(#paper-shadow-soft)">
+    <path d="M 0,650 Q 300,590 650,630 T 1300,600 T 1600,640 L 1600,900 L 0,900 Z" fill="#2E4F3E"/>
+  </g>
+
+  <!-- Forest Stream Path (Winding Paper Ribbon) -->
+  <path d="M 450,625 Q 520,680 480,740 T 560,830 T 520,900 L 680,900 Q 720,830 640,740 T 670,680 T 580,625 Z" fill="#88B8A6" opacity="0.85" filter="url(#paper-shadow-soft)"/>
+
+  <!-- Foreground Forest Floor (Warm Earth & Lichen Green) -->
+  <g filter="url(#paper-shadow-soft)">
+    <path d="M 0,760 Q 400,710 800,750 T 1600,720 L 1600,900 L 0,900 Z" fill="#1C3527"/>
+  </g>
+
+  <!-- Foreground Paper Foliage Cutout Flanks (Left & Right framing) -->
+  <g filter="url(#paper-shadow-soft)">
+    <!-- Left canopy branch -->
+    <path d="M -20,-20 Q 80,120 180,140 Q 240,190 200,240 Q 140,260 80,210 Q 0,220 -20,180 Z" fill="#152B1F"/>
+    <polygon points="30,190 60,250 10,240" fill="#274A36"/>
+    <!-- Right canopy branch -->
+    <path d="M 1620,-20 Q 1520,100 1420,130 Q 1360,180 1400,230 Q 1460,250 1520,200 Q 1600,210 1620,170 Z" fill="#152B1F"/>
+  </g>
+</svg>

@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="100%" height="100%">
+  <defs>
+    <filter id="paper-shadow-soft" x="-10%" y="-10%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#0a140f" flood-opacity="0.18"/>
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#0a140f" flood-opacity="0.10"/>
+    </filter>
+    <linearGradient id="sky-grad-2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#D9E6DE"/>
+      <stop offset="60%" stop-color="#EBF0E6"/>
+      <stop offset="100%" stop-color="#F7F2E8"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Sky Layer: Sunlit clearing atmosphere -->
+  <rect width="1600" height="900" fill="#EBF0E6"/>
+  <rect width="1600" height="480" fill="url(#sky-grad-2)" opacity="0.9"/>
+
+  <!-- Warm Sun Disc (Torn Paper Circle) -->
+  <circle cx="1180" cy="220" r="90" fill="#FCE7B8" opacity="0.8" filter="url(#paper-shadow-soft)"/>
+  <circle cx="1180" cy="220" r="70" fill="#FFF4D4" opacity="0.9"/>
+
+  <!-- Soft Paper Clouds -->
+  <g opacity="0.8" filter="url(#paper-shadow-soft)">
+    <path d="M 280 160 Q 360 110 460 130 Q 540 100 620 140 Q 680 130 720 180 Q 750 230 680 240 L 320 240 Q 240 210 280 160 Z" fill="#FDFCFA"/>
+  </g>
+
+  <!-- Distant Ridge Continuous with Segment 01 -->
+  <g filter="url(#paper-shadow-soft)">
+    <polygon points="0,450 220,320 460,460 740,300 1020,470 1340,330 1600,440 1600,600 0,600" fill="#7A9A8B" opacity="0.85"/>
+  </g>
+
+  <!-- Midground Pine Clearing Ridge -->
+  <g filter="url(#paper-shadow-soft)">
+    <path d="M 0,520 Q 250,470 550,510 T 1150,480 T 1600,530 L 1600,750 L 0,750 Z" fill="#436B56"/>
+    <polygon points="210,490 225,445 240,490" fill="#315342"/>
+    <polygon points="620,510 635,465 650,510" fill="#315342"/>
+    <polygon points="980,485 995,435 1010,485" fill="#315342"/>
+  </g>
+
+  <!-- Sunlit Meadow Basin -->
+  <g filter="url(#paper-shadow-soft)">
+    <path d="M 0,640 Q 450,580 900,620 T 1600,590 L 1600,900 L 0,900 Z" fill="#365C47"/>
+  </g>
+
+  <!-- Sunlit Grass Terrace & Path (Golden Warm Green) -->
+  <g filter="url(#paper-shadow-soft)">
+    <path d="M 0,720 Q 380,670 780,710 T 1600,680 L 1600,900 L 0,900 Z" fill="#254533"/>
+  </g>
+
+  <!-- Foreground Earth Tier -->
+  <g filter="url(#paper-shadow-soft)">
+    <path d="M 0,790 Q 500,740 1050,780 T 1600,750 L 1600,900 L 0,900 Z" fill="#1C3527"/>
+  </g>
+</svg>

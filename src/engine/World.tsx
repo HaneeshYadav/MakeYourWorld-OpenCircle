@@ -27,12 +27,21 @@ export function World({ world, initialSegmentId }: WorldProps) {
 
   return (
     <div className="flex flex-col gap-4 w-full" data-testid={`world-engine-${world.id}`}>
-      {/* 1. Header with World Information */}
+      {/* 1. Header with World Information & Theme Accent */}
       <div className="flex flex-col gap-1 text-center sm:text-left">
-        <h2 className="text-2xl font-bold tracking-tight text-foreground">
-          {world.name}
-        </h2>
-        <p className="text-sm text-muted-foreground">{world.description}</p>
+        <div className="flex items-center justify-center sm:justify-start gap-2">
+          <span
+            className="h-3 w-3 rounded-full shadow-sm"
+            style={{ backgroundColor: world.theme.primaryColor }}
+            aria-hidden="true"
+          />
+          <h2 className="text-2xl font-extrabold tracking-tight text-stone-900 dark:text-stone-100">
+            {world.name}
+          </h2>
+        </div>
+        <p className="text-sm text-stone-600 dark:text-stone-400 max-w-2xl">
+          {world.description}
+        </p>
       </div>
 
       {/* 2. Responsive 2D Viewport */}

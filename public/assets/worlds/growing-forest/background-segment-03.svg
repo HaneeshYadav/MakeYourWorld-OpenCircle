@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="100%" height="100%">
+  <defs>
+    <filter id="paper-shadow-soft" x="-10%" y="-10%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#0a140f" flood-opacity="0.18"/>
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#0a140f" flood-opacity="0.10"/>
+    </filter>
+    <linearGradient id="sky-grad-3" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#CDE0D9"/>
+      <stop offset="60%" stop-color="#E2EBE5"/>
+      <stop offset="100%" stop-color="#F2EFE8"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Sky Layer -->
+  <rect width="1600" height="900" fill="#E2EBE5"/>
+  <rect width="1600" height="480" fill="url(#sky-grad-3)" opacity="0.9"/>
+
+  <!-- Distant Mountain Peaks -->
+  <g filter="url(#paper-shadow-soft)">
+    <polygon points="0,440 240,310 520,470 780,290 1080,450 1380,300 1600,430 1600,600 0,600" fill="#6E8E7F" opacity="0.85"/>
+  </g>
+
+  <!-- Midground Deep Woodland Ridge -->
+  <g filter="url(#paper-shadow-soft)">
+    <path d="M 0,530 Q 320,460 700,500 T 1350,470 T 1600,510 L 1600,750 L 0,750 Z" fill="#3D634F"/>
+    <polygon points="150,490 165,445 180,490" fill="#2B493A"/>
+    <polygon points="450,475 465,430 480,475" fill="#2B493A"/>
+    <polygon points="850,495 865,445 880,495" fill="#2B493A"/>
+    <polygon points="1250,470 1265,420 1280,470" fill="#2B493A"/>
+  </g>
+
+  <!-- Rolling Ancient Moss Terrace -->
+  <g filter="url(#paper-shadow-soft)">
+    <path d="M 0,590 Q 420,630 850,580 T 1600,610 L 1600,900 L 0,900 Z" fill="#2F523E"/>
+  </g>
+
+  <!-- Deep Forest Floor Tier -->
+  <g filter="url(#paper-shadow-soft)">
+    <path d="M 0,680 Q 480,720 980,670 T 1600,700 L 1600,900 L 0,900 Z" fill="#223E2F"/>
+  </g>
+
+  <!-- Foreground Dark Canopy Tier -->
+  <g filter="url(#paper-shadow-soft)">
+    <path d="M 0,770 Q 380,730 820,760 T 1600,730 L 1600,900 L 0,900 Z" fill="#172C20"/>
+  </g>
+</svg>

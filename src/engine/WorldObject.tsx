@@ -10,6 +10,7 @@ export interface WorldObjectProps {
 /**
  * WorldObject renders a single contributor object in the world.
  * Calculates responsive normalized CSS coordinates and positions the ContributorLabel automatically beneath it.
+ * Uses physical paper drop shadows and subtle hover elevation.
  */
 export function WorldObject({ objectDef, placement }: WorldObjectProps) {
   const style = calculatePositionStyle(
@@ -21,7 +22,7 @@ export function WorldObject({ objectDef, placement }: WorldObjectProps) {
 
   return (
     <div
-      className="absolute flex flex-col items-center pointer-events-auto transition-transform duration-200"
+      className="absolute flex flex-col items-center pointer-events-auto transition-transform duration-300 ease-out hover:z-[2000]"
       style={{
         left: style.left,
         top: style.top,
@@ -31,14 +32,12 @@ export function WorldObject({ objectDef, placement }: WorldObjectProps) {
       data-testid={`world-object-${objectDef.id}`}
       data-object-id={objectDef.id}
     >
-      <div className="relative flex items-center justify-center">
-        {/* Render SVG / PNG / WebP asset or placeholder if missing */}
+      <div className="relative flex items-center justify-center filter drop-shadow-[0_6px_6px_rgba(10,20,15,0.22)] transition-transform duration-200 hover:scale-105">
         <img
           src={objectDef.asset}
           alt={objectDef.id}
-          className="h-16 w-16 object-contain drop-shadow-md transition-transform hover:scale-105"
+          className="h-20 w-20 max-w-[120px] max-h-[120px] object-contain select-none pointer-events-auto"
           onError={(e) => {
-            // Development fallback placeholder
             const target = e.currentTarget;
             target.style.display = "none";
             const fallback = target.parentElement?.querySelector(".fallback-placeholder");
@@ -47,12 +46,11 @@ export function WorldObject({ objectDef, placement }: WorldObjectProps) {
             }
           }}
         />
-        {/* Development visual fallback */}
         <div
           className="fallback-placeholder hidden h-16 w-16 items-center justify-center rounded-lg border border-dashed border-foreground/30 bg-card/80 p-2 text-center text-xs font-mono font-medium text-foreground shadow-sm"
           title={objectDef.id}
         >
-          {objectDef.id.includes("tree") ? "🌲" : objectDef.id.includes("bird") ? "🐦" : "📦"}
+          📦
         </div>
       </div>
       <ContributorLabel contributor={objectDef.contributor} />
