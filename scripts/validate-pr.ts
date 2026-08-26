@@ -1,102 +1,73 @@
 import { execSync } from "node:child_process";
-import path from "node:path";
+import { validatePRCommits, type CommitDiffInfo } from "./pr-validator-core";
 
-/**
- * Validates pull request contributor constraints:
- * 1. PR only modifies contributor-allowed files:
- *    - public/assets/worlds/<world>/*
- *    - src/data/worlds/<world>/objects.ts
- *    - src/data/worlds/<world>/placements.ts
- * 2. Assets are valid SVG or PNG (no executable or suspicious extensions).
- * 3. Two distinct commits exist in the PR (Asset+Registration, then Placement).
- */
-function validateContributorPR() {
+function runPRValidation() {
   const baseRef = process.env.GITHUB_BASE_REF || "dev";
-  console.log(`🔍 Validating pull request against target base: '${baseRef}'...`);
+  console.log(`🔍 Validating pull request against target base: 'origin/${baseRef}'...`);
 
-  // 1. Get changed files against baseRef
-  let diffOutput = "";
+  let commitHashes: string[] = [];
   try {
-    diffOutput = execSync(`git diff --name-only origin/${baseRef}...HEAD`, {
+    const rawLogs = execSync(`git log --reverse --format="%H|%s" origin/${baseRef}...HEAD`, {
       encoding: "utf-8",
     });
-  } catch {
-    try {
-      diffOutput = execSync(`git diff --name-only HEAD~2...HEAD`, {
-        encoding: "utf-8",
-      });
-    } catch {
-      console.warn("⚠️ Could not diff against base ref. Checking working tree changes.");
-      diffOutput = execSync("git diff --name-only HEAD", { encoding: "utf-8" });
-    }
-  }
-
-  const changedFiles = diffOutput
-    .split("\n")
-    .map((f) => f.trim())
-    .filter(Boolean);
-
-  if (changedFiles.length === 0) {
-    console.log("ℹ️ No changed files detected.");
-    return;
-  }
-
-  console.log(`📁 Changed files (${changedFiles.length}):`);
-  changedFiles.forEach((f) => console.log(`   - ${f}`));
-
-  const allowedPatterns = [
-    /^public\/assets\/worlds\/[a-z0-9-]+\/[a-z0-9-_.]+\.(svg|png)$/i,
-    /^src\/data\/worlds\/[a-z0-9-]+\/objects\.ts$/i,
-    /^src\/data\/worlds\/[a-z0-9-]+\/placements\.ts$/i,
-  ];
-
-  const violations: string[] = [];
-
-  for (const file of changedFiles) {
-    // Check if path matches allowed contributor patterns
-    const isAllowed = allowedPatterns.some((pattern) => pattern.test(file));
-    if (!isAllowed) {
-      violations.push(`Forbidden file modification: ${file}`);
-    }
-
-    // Check for suspicious file extensions
-    const ext = path.extname(file).toLowerCase();
-    const forbiddenExtensions = [".exe", ".sh", ".bat", ".cmd", ".js", ".mjs", ".cjs", ".html", ".wasm"];
-    if (forbiddenExtensions.includes(ext)) {
-      violations.push(`Unsafe file type submitted: ${file}`);
-    }
-  }
-
-  if (violations.length > 0) {
-    console.error("\n❌ Contributor Boundary Violation(s) Detected:");
-    violations.forEach((v) => console.error(`  - ${v}`));
-    console.error("\n💡 Contributor Rule: Contributors may only modify:");
-    console.error("  1. public/assets/worlds/<world>/<object-id>.svg");
-    console.error("  2. src/data/worlds/<world>/objects.ts");
-    console.error("  3. src/data/worlds/<world>/placements.ts");
-    process.exit(1);
-  }
-
-  // 2. Validate Two-Commit rule if multiple commits exist
-  try {
-    const commitLogs = execSync(`git log --oneline origin/${baseRef}...HEAD`, {
-      encoding: "utf-8",
-    })
+    commitHashes = rawLogs
       .split("\n")
       .map((l) => l.trim())
       .filter(Boolean);
-
-    console.log(`\n📋 PR Commit Count: ${commitLogs.length}`);
-    commitLogs.forEach((c) => console.log(`   - ${c}`));
-
-    if (commitLogs.length > 0 && commitLogs.length < 2) {
-      console.warn("⚠️ Recommendation: The contributor workflow recommends 2 separate commits (Commit 1: Asset + objects.ts, Commit 2: placements.ts).");
-    }
   } catch {
-    // In shallow or local checkouts, skip commit count check
+    console.warn("⚠️ Could not diff commit logs against base ref. Attempting recent local commits.");
+    try {
+      const rawLogs = execSync(`git log -2 --reverse --format="%H|%s" HEAD`, {
+        encoding: "utf-8",
+      });
+      commitHashes = rawLogs
+        .split("\n")
+        .map((l) => l.trim())
+        .filter(Boolean);
+    } catch {
+      console.log("ℹ️ Running in non-git or shallow environment. Skipping commit list.");
+    }
   }
 
-  console.log("\n✅ Contributor Boundary Validation Passed!");
+  const commits: CommitDiffInfo[] = [];
+
+  for (const line of commitHashes) {
+    const [hash, ...msgParts] = line.split("|");
+    const commitMessage = msgParts.join("|");
+    try {
+      const filesOutput = execSync(`git diff-tree --no-commit-id --name-only -r ${hash}`, {
+        encoding: "utf-8",
+      });
+      const files = filesOutput
+        .split("\n")
+        .map((f) => f.trim())
+        .filter(Boolean);
+
+      commits.push({
+        commitMessage,
+        files,
+      });
+    } catch (e) {
+      console.warn(`Could not inspect files for commit ${hash}:`, e);
+    }
+  }
+
+  console.log(`\n📋 Inspected ${commits.length} PR commits:`);
+  commits.forEach((c, idx) => {
+    console.log(`   [Commit ${idx + 1}] "${c.commitMessage}" (${c.files.length} files)`);
+    c.files.forEach((f) => console.log(`      - ${f}`));
+  });
+
+  const result = validatePRCommits(commits);
+
+  if (!result.valid) {
+    console.error("\n❌ PR Validation Failed with the following errors:");
+    result.errors.forEach((err) => console.error(`  • ${err}`));
+    console.error("\n📖 Contributor Reference: Please check CONTRIBUTING.md for the 2-commit workflow.");
+    process.exit(1);
+  }
+
+  console.log("\n✅ Contributor Two-Commit & File Boundary Validation Passed cleanly!");
 }
 
-validateContributorPR();
+runPRValidation();
