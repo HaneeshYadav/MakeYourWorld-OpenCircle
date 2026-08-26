@@ -1,2 +1,9 @@
-// Shared World Engine placeholder - maintainer zone
-export {};
+export * from "./World";
+export * from "./WorldViewport";
+export * from "./WorldSegment";
+export * from "./WorldBackground";
+export * from "./WorldObject";
+export * from "./ContributorLabel";
+export * from "./WorldNavigation";
+export * from "./positioning/math";
+export * from "./positioning/segments";
