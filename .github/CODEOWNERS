@@ -1,0 +1,19 @@
+# CODEOWNERS for Growing Worlds
+# Lines starting with '#' are comments.
+# Each line is a file pattern followed by one or more owners.
+
+# Global maintainers
+* @ShenSandaru
+
+# Maintainer-only zones (Engine, Schemas, Config, GitHub CI)
+/src/engine/          @ShenSandaru
+/src/schemas/         @ShenSandaru
+/tests/               @ShenSandaru
+/.github/             @ShenSandaru
+/AGENTS.md            @ShenSandaru
+/package.json         @ShenSandaru
+/pnpm-lock.yaml       @ShenSandaru
+
+# Open contributor zones
+/src/data/worlds/     @ShenSandaru
+/public/assets/       @ShenSandaru
