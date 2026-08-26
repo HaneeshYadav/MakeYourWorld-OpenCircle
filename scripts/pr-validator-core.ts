@@ -6,9 +6,11 @@ export interface CommitDiffInfo {
 }
 
 export interface PRValidationResult {
+  isStudentContribution: boolean;
   valid: boolean;
   errors: string[];
   warnings: string[];
+  skippedReason?: string;
 }
 
 const ALLOWED_ASSET_REGEX = /^public\/assets\/worlds\/[a-z0-9-]+\/[a-z0-9-_.]+\.(svg|png)$/i;
@@ -17,31 +19,71 @@ const ALLOWED_PLACEMENTS_REGEX = /^src\/data\/worlds\/[a-z0-9-]+\/placements\.ts
 const FORBIDDEN_EXTENSIONS = [".exe", ".sh", ".bat", ".cmd", ".js", ".mjs", ".cjs", ".html", ".wasm", ".py", ".php"];
 
 /**
- * Pure validation logic for PR commits and file changes.
- * Tests can run directly against this function with simulated commit diffs.
+ * Authoritative Check:
+ * A PR is strictly classified as a Student World Contribution IF AND ONLY IF
+ * the branch name starts with the `contrib/` prefix (or `contrib-`).
+ *
+ * Example valid student branches:
+ * - contrib/forest-butterfly
+ * - contrib/campus-backpack
+ * - contrib-slot-01
  */
-export function validatePRCommits(commits: CommitDiffInfo[]): PRValidationResult {
+export function isContribBranch(branchName?: string): boolean {
+  if (!branchName) return false;
+  return /^contrib\/.+/i.test(branchName) || /^contrib-.+/i.test(branchName);
+}
+
+/**
+ * Validates PR commits and file boundaries based on branch prefix.
+ *
+ * Classification Rule:
+ * 1. Non-contrib branches (`feature/*`, `fix/*`, `chore/*`, `docs/*`, `dev`, `main`, etc.)
+ *    are classified as Maintainer / Infrastructure PRs. They safely bypass the student
+ *    2-commit validation regardless of which files they modify.
+ * 2. `contrib/*` branches are classified as Student World Contributions and must strictly satisfy:
+ *    - Exactly 2 commits.
+ *    - Commit 1 must contain asset (SVG/PNG) + objects.ts registration (no placements).
+ *    - Commit 2 must contain placements.ts.
+ *    - Must NOT modify maintainer files (docs, engine, schemas, components, app, tests, workflows, package.json).
+ *    - Must NOT contain unsafe or executable file types.
+ */
+export function validatePRCommits(commits: CommitDiffInfo[], headRef?: string): PRValidationResult {
   const errors: string[] = [];
   const warnings: string[] = [];
 
-  // 1. Commit count check
-  if (commits.length === 0) {
+  const isStudentBranch = isContribBranch(headRef);
+
+  // If the branch is NOT a student contrib branch, safely skip the student validator.
+  if (!isStudentBranch) {
     return {
+      isStudentContribution: false,
       valid: true,
       errors: [],
-      warnings: ["No commits found to validate."],
+      warnings: [],
+      skippedReason: `Maintainer branch detected ('${headRef || "unspecified"}'). Student 2-commit validator skipped.`,
     };
   }
 
+  if (commits.length === 0) {
+    return {
+      isStudentContribution: true,
+      valid: false,
+      errors: ["Student contribution branch has no commits to validate."],
+      warnings: [],
+    };
+  }
+
+  const allFiles = commits.flatMap((c) => c.files);
+
+  // --- Strict Student Contribution Rules for contrib/* branches ---
+  // 1. Commit count check (must be exactly 2 commits)
   if (commits.length !== 2) {
     errors.push(
-      `PR must contain exactly 2 commits following the contributor workflow (Found: ${commits.length} commits).`
+      `Student World Contribution on '${headRef}' must contain exactly 2 commits following the contributor workflow (Found: ${commits.length} commits).`
     );
   }
 
-  // 2. File boundary validation across all commits
-  const allFiles = commits.flatMap((c) => c.files);
-
+  // 2. File boundary validation across all files
   for (const file of allFiles) {
     const ext = path.extname(file).toLowerCase();
     if (FORBIDDEN_EXTENSIONS.includes(ext)) {
@@ -55,7 +97,7 @@ export function validatePRCommits(commits: CommitDiffInfo[]): PRValidationResult
 
     if (!isAllowed) {
       errors.push(
-        `Forbidden file modified: '${file}'. Contributors may only touch public/assets/worlds/<world>/*, objects.ts, and placements.ts.`
+        `Forbidden file modified in student contribution: '${file}'. Students may only touch public/assets/worlds/<world>/*, objects.ts, and placements.ts.`
       );
     }
   }
@@ -86,6 +128,7 @@ export function validatePRCommits(commits: CommitDiffInfo[]): PRValidationResult
   }
 
   return {
+    isStudentContribution: true,
     valid: errors.length === 0,
     errors,
     warnings,

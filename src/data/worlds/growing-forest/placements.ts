@@ -43,7 +43,7 @@ export const forestPlacements: ObjectPlacement[] = [
   },
 
   {
-    objectId: "pine-tree",
+    objectId: "demo-pine-tree",
     segmentId: "forest-01",
     x: 22.0,
     y: 65.0,

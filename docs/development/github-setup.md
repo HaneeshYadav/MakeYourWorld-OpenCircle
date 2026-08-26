@@ -4,23 +4,29 @@ This document outlines the GitHub governance model, branch architecture, branch 
 
 ---
 
-## 1. Branch Strategy
+## 1. Branch Strategy & PR Classification
+
+The repository uses branch naming as the **authoritative signal** to classify pull requests:
 
 ```
-feature branch (student fork)
-      ↓ PR (with 'student-contribution' label)
-     dev (Integration Branch)
-      ↓ PR / Release Merge (Maintainer PR)
-     main (Production SSG Deployment)
+Student Contribution PR
+  Branch: contrib/<world>-<object-name>
+  Target: dev
+  CI: Strict 2-Commit & Boundary Validator + Quality Gates
+
+Maintainer / Infrastructure PR
+  Branch: feature/*, fix/*, chore/*, docs/*
+  Target: dev / main
+  CI: Quality Gates (Lint, Typecheck, Tests, Next.js Build)
 ```
 
 1. **`main`**: Production branch. Contains stable, reviewed code and is deployed automatically to static hosting. Direct pushes are forbidden.
 2. **`dev`**: Active integration branch. **All student contributor PRs and feature integrations target `dev`**.
-3. **`contrib/<world>-<object-name>`**: Short-lived feature branches created on student forks from `upstream/dev`.
+3. **`contrib/<world>-<object-name>`**: Short-lived feature branches created on student forks from upstream `dev`. Triggers strict 2-commit validation.
 
 ---
 
-## 2. PR Classification & Validation Pipeline
+## 2. PR Validation Architecture
 
 The CI workflow ([`.github/workflows/ci.yml`](file:///d:/Temp/codes/Open%20Circle/OpenCircle-Test/.github/workflows/ci.yml)) provides a single unified status check: **`Contributor Quality Gates & Build`**.
 
@@ -29,12 +35,12 @@ The CI workflow ([`.github/workflows/ci.yml`](file:///d:/Temp/codes/Open%20Circl
                                |
                 +--------------+--------------+
                 |                             |
-     Student Contribution PR            Maintainer PR
-(has 'student-contribution' label) (docs, engine, CI, etc.)
+       Branch: contrib/*             Branch: non-contrib
+    (Student Contribution)         (feature/*, fix/*, etc.)
                 |                             |
-       Student Validator                      |
-  (2 commits, boundary paths,                 |
-       safe asset check)                      |
+     Student 2-Commit Validator               |
+   (2 commits, boundary limits,               |
+        safe asset check)                     |
                 |                             |
                 +--------------+--------------+
                                |
@@ -43,14 +49,10 @@ The CI workflow ([`.github/workflows/ci.yml`](file:///d:/Temp/codes/Open%20Circl
                       Next.js Static Build)
 ```
 
-1. **Maintainer / Infrastructure PRs**:
-   - Modifying `.github/*`, `scripts/*`, `docs/*`, `tests/*`, `package.json`, `src/engine/*`, etc.
-   - Run the standard quality gates (`npm ci`, `lint`, `typecheck`, `test`, `build`).
-   - The student 2-commit validator is safely skipped.
-2. **Student World Contribution PRs**:
-   - Identified by the maintainer-applied **`student-contribution`** label.
-   - Run the strict boundary and 2-commit validator (`npx tsx scripts/validate-pr.ts`).
-   - Run the standard quality gates.
+1. **Student World Contribution PRs (`contrib/*`)**:
+   - The validator strictly requires exactly 2 commits (Commit 1: Asset + `objects.ts`, Commit 2: `placements.ts`) and forbids touching files outside contributor zones.
+2. **Maintainer / Infrastructure PRs (`feature/*`, `fix/*`, `chore/*`, `docs/*`)**:
+   - Safely bypasses the student 2-commit check, proceeding directly to the standard quality gates (`npm ci`, `lint`, `typecheck`, `test`, `build`).
 
 ---
 
@@ -93,17 +95,16 @@ In **Settings > General**:
 
 ## 4. Label Taxonomy
 
-Use the following standardized label taxonomy for issue slots and PR tracking:
+Use the following standardized label taxonomy for issue slots:
 
 | Label | Color | Purpose | Target Entity |
 | :--- | :--- | :--- | :--- |
 | `good first issue` | `#7057ff` | Marks reusable student contribution slots for GitHub discovery | **Issue Slots** |
-| `student-contribution` | `#1d76db` | Identifies student PRs that must pass the strict 2-commit validator | **Pull Requests** |
 | `contribution-slot` | `#0e8a16` | Identifies active revolving slots (Slots #01–#20) | **Issue Slots** |
 | `status:available` | `#0075ca` | Slot is open for a student to claim | **Issue Slots** |
 | `status:claimed` | `#d93f0b` | Slot is currently assigned (48h reservation window) | **Issue Slots** |
 | `status:in-review` | `#fbca04` | PR has been opened and is awaiting maintainer check | **Pull Requests** |
-| `world:forest` ... `world:alien` | Dynamic | Categorizes slot or PR by world | **Issues & PRs** |
+| `world:forest` ... `world:alien` | Dynamic | Categorizes slot by world | **Issues & PRs** |
 
 ---
 
@@ -111,15 +112,14 @@ Use the following standardized label taxonomy for issue slots and PR tracking:
 
 1. **Student Claims Slot**: Student comments on open slot issue `#XX` (labeled `good first issue`).
 2. **Maintainer Assigns**: Maintainer assigns student and updates label to `status:claimed`.
-3. **Student Submits PR**: Student opens PR targeting `dev` with two commits.
-4. **Maintainer Labels PR**: Maintainer applies `student-contribution` label to trigger the 2-commit validator.
-5. **Automated CI Execution**: GitHub Actions executes `scripts/validate-pr.ts`, ESLint, TypeScript typecheck, Vitest, and static Next.js build under the unified `Contributor Quality Gates & Build` check.
-6. **Maintainer Review & Merge**:
+3. **Student Submits PR**: Student opens PR targeting `dev` from `contrib/<world>-<object>` with two commits and includes `Closes #XX`.
+4. **Automated CI Execution**: GitHub Actions executes `validate-pr.ts`, ESLint, TypeScript typecheck, Vitest, and static Next.js build under the unified `Contributor Quality Gates & Build` check.
+5. **Maintainer Review & Merge**:
    - Verify 2 distinct commits.
    - Verify placement visually.
    - Merge PR into `dev`.
-7. **Issue Reopened (Manual)**:
+6. **Issue Reopened (Manual)**:
    - Remove student assignee from issue `#XX`.
    - Set label back to `status:available`.
    - **Reopen issue `#XX`** so the next student can claim the slot.
-   - (Optional) Award contributor role in community Discord using submitted username
+   - (Optional) Award contributor role in community Discord using submitted username.
