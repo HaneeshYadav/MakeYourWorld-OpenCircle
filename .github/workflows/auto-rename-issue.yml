@@ -1,67 +1,167 @@
-name: Auto Rename Issue Slot Title
+name: Auto Rename Issue Slot Title & Discord Notification
 
 on:
   issues:
-    types: [opened, edited]
+    types: [opened, edited, assigned]
 
 permissions:
   issues: write
 
 jobs:
-  update-title:
+  update-title-and-notify:
     runs-on: ubuntu-latest
     if: contains(github.event.issue.labels.*.name, 'world-contribution') || contains(github.event.issue.title, '[CONTRIB-SLOT')
     steps:
-      - name: Parse form fields and update Issue title
+      - name: Parse form fields, update Issue title, and notify Discord
         uses: actions/github-script@v7
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
           script: |
             const issue = context.payload.issue;
+            const action = context.payload.action;
             const body = issue.body || "";
 
-            // Helper to extract response from GitHub Issue Forms YAML markdown
-            function extractField(labelRegex) {
-              const match = body.match(new RegExp(labelRegex + '\\s*\\n+([^\\n#]+)', 'i'));
-              return match ? match[1].trim() : null;
+            console.log(`Action: ${action}, Issue #${issue.number}`);
+
+            // Robust multi-line/markdown field extractor
+            function extractSection(headingKeywords) {
+              for (const keyword of headingKeywords) {
+                const regex = new RegExp(`(?:###?\\s*.*${keyword}.*)[\\r\\n]+([\\s\\S]*?)(?=(?:\\n###?|\\n---|\\n\\*\\*|$))`, 'i');
+                const match = body.match(regex);
+                if (match && match[1]) {
+                  const cleaned = match[1]
+                    .split('\n')
+                    .map(line => line.trim())
+                    .filter(line => line.length > 0 && !line.startsWith('>'))[0];
+                  if (cleaned && cleaned !== '_No response_') {
+                    return cleaned;
+                  }
+                }
+              }
+              return null;
             }
 
-            const worldField = extractField('### 🌍 Target World') || extractField('Target World');
-            const slotField = extractField('### 🏷️ Contribution Slot Identifier') || extractField('Contribution Slot Identifier');
-            const segmentField = extractField('### 📍 Assigned World Segment ID') || extractField('Assigned World Segment ID');
-            const categoryField = extractField('### 🎨 Suggested Object Category & Concept') || extractField('Suggested Object Category & Concept');
-            const customObjField = extractField('### ✏️ Custom Object Name \\(Optional\\)') || extractField('Custom Object Name');
+            const worldField = extractSection(['Target World', 'world']);
+            const slotField = extractSection(['Contribution Slot', 'slot_id', 'slot']);
+            const segmentField = extractSection(['Assigned World Segment', 'target_segment', 'segment']);
+            const categoryField = extractSection(['Suggested Object Category', 'suggested_category', 'category']);
+            const customObjField = extractSection(['Custom Object Name', 'custom_object_name']);
 
-            // Format slot (e.g. "CONTRIB-SLOT #01")
-            const slotMatch = slotField ? slotField.match(/CONTRIB-SLOT\s*#?\s*(\d+)/i) : null;
-            const slotFormatted = slotMatch ? `[CONTRIB-SLOT #${slotMatch[1].padStart(2, '0')}]` : '[CONTRIB-SLOT]';
+            // Extract slot number (e.g. "CONTRIB-SLOT #01", "#02", "1")
+            let slotFormatted = '[CONTRIB-SLOT]';
+            if (slotField) {
+              const numMatch = slotField.match(/(\d+)/);
+              if (numMatch) {
+                slotFormatted = `[CONTRIB-SLOT #${numMatch[1].padStart(2, '0')}]`;
+              }
+            }
 
-            // Clean world name (e.g. "Fantasy World (fantasy-world)" -> "Fantasy World")
-            const worldClean = worldField ? worldField.replace(/\s*\([^)]*\)/, '').trim() : 'World';
+            // Clean world name
+            let worldClean = 'World';
+            if (worldField) {
+              worldClean = worldField.replace(/\s*\([^)]*\)/, '').trim();
+            }
 
-            // Clean segment (e.g. "forest-01 (Ancient Canopy)" -> "forest-01")
-            const segmentMatch = segmentField ? segmentField.match(/([a-z0-9-]+)/i) : null;
-            const segmentClean = segmentMatch ? segmentMatch[1] : '';
+            // Clean segment
+            let segmentClean = '';
+            if (segmentField) {
+              const segmentMatch = segmentField.match(/([a-z0-9]+-[0-9]+)/i) || segmentField.match(/([a-z0-9-]+)/i);
+              if (segmentMatch) {
+                segmentClean = segmentMatch[1];
+              }
+            }
 
-            // Clean object name: prioritize custom input if given, else parse category
+            // Clean object name
             let objectClean = 'Object';
             if (customObjField && customObjField !== '_No response_' && customObjField.trim() !== '') {
               objectClean = customObjField.replace(/\s*\([^)]*\)/, '').trim();
             } else if (categoryField && categoryField !== '_No response_') {
-              // e.g. "🔮 Fantasy: Dragon Egg (Mythical Artifact)" -> "Dragon Egg"
               const afterColon = categoryField.includes(':') ? categoryField.split(':')[1] : categoryField;
               objectClean = afterColon.replace(/\s*\([^)]*\)/, '').trim();
             }
 
-            const newTitle = `${slotFormatted} Add ${objectClean} to ${worldClean}${segmentClean ? ` (${segmentClean})` : ''}`;
+            const finalTitle = `${slotFormatted} Add ${objectClean} to ${worldClean}${segmentClean ? ` (${segmentClean})` : ''}`;
 
-            if (issue.title !== newTitle) {
-              console.log(`Updating issue #${issue.number} title to: "${newTitle}"`);
+            let titleUpdated = false;
+            if (issue.title !== finalTitle) {
+              console.log(`Renaming issue #${issue.number} title to: "${finalTitle}"`);
               await github.rest.issues.update({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: issue.number,
-                title: newTitle,
+                title: finalTitle,
               });
+              titleUpdated = true;
             } else {
               console.log(`Issue #${issue.number} already has formatted title.`);
+            }
+
+            // -------------------------------------------------------------
+            // DISCORD NOTIFICATION TRIGGER
+            // -------------------------------------------------------------
+            const webhookUrl = process.env.DISCORD_WEBHOOK;
+            if (!webhookUrl) {
+              console.log("No DISCORD_WEBHOOK secret configured. Skipping Discord notification.");
+              return;
+            }
+
+            // Scenario 1: New Slot Opened (send only on 'opened' or first rename)
+            if (action === 'opened') {
+              console.log("Sending 'New Contribution Slot' notification to Discord...");
+              const discordPayload = {
+                embeds: [
+                  {
+                    title: `🌿 New World Slot #${issue.number}: ${finalTitle}`,
+                    url: issue.html_url,
+                    description: `A new reusable student contribution slot is open for **${worldClean}**!\n\n**World**: ${worldClean}\n**Segment**: \`${segmentClean}\`\n**Object**: ${objectClean}\n**Slot**: ${slotFormatted}`,
+                    color: 3066993, // Green
+                    fields: [
+                      { name: "Repository", value: context.repo.repo, inline: true },
+                      { name: "Status", value: "🟢 Available (Claimable)", inline: true },
+                    ],
+                    footer: {
+                      text: `Growing Worlds Onboarding • Comment on Issue #${issue.number} to claim!`,
+                    },
+                  },
+                ],
+              };
+
+              await fetch(webhookUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(discordPayload),
+              });
+              console.log("Discord notification sent successfully for issue opening.");
+            }
+
+            // Scenario 2: Slot Assigned to a Contributor ('assigned')
+            if (action === 'assigned') {
+              const assignee = context.payload.assignee ? context.payload.assignee.login : (issue.assignees && issue.assignees[0] ? issue.assignees[0].login : 'Student');
+              console.log(`Sending 'Slot Assigned to @${assignee}' notification to Discord...`);
+
+              const discordPayload = {
+                embeds: [
+                  {
+                    title: `🎯 Slot Claimed: ${finalTitle} (#${issue.number})`,
+                    url: issue.html_url,
+                    description: `This contribution slot has been assigned to **@${assignee}**! 🎉\n\n**World**: ${worldClean}\n**Assigned To**: [\`@${assignee}\`](https://github.com/${assignee})\n**Next Step**: Branch from \`dev\` via \`contrib/${segmentClean ? segmentClean : 'world'}-${objectClean.toLowerCase().replace(/\\s+/g, '-')}\` and make 2 commits!`,
+                    color: 15105570, // Orange/Amber
+                    fields: [
+                      { name: "Assignee", value: `@${assignee}`, inline: true },
+                      { name: "Status", value: "🟡 In Progress (48h Reservation)", inline: true },
+                    ],
+                    footer: {
+                      text: `Growing Worlds • Target dev branch with two commits!`,
+                    },
+                  },
+                ],
+              };
+
+              await fetch(webhookUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(discordPayload),
+              });
+              console.log(`Discord notification sent successfully for assignee @${assignee}.`);
             }
