@@ -170,7 +170,7 @@ describe("GitHub Contributor PR Validation Suite", () => {
       {
         commitMessage: "feat(forest): redesign canopy density and add 10 new trees in single commit",
         files: [
-          "public/assets/worlds/growing-forest/demo-pine-tree.svg",
+          "public/assets/worlds/growing-forest/pine-tree.svg",
           "src/data/worlds/growing-forest/objects.ts",
           "src/data/worlds/growing-forest/placements.ts",
         ],

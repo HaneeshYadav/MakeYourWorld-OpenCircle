@@ -7,7 +7,7 @@ body:
     attributes:
       value: |
         # 🌿 Growing Worlds Contribution Slot
-        This template creates an interactive, reusable task slot for student and beginner contributors.
+        Configure this reusable task slot for student and beginner contributors. Select the target world, slot ID, and segment from the dropdowns below.
 
   - type: dropdown
     id: world
@@ -28,21 +28,71 @@ body:
     validations:
       required: true
 
-  - type: input
+  - type: dropdown
     id: slot_id
     attributes:
       label: 🏷️ Contribution Slot Identifier
-      description: Enter the revolving slot number (e.g. CONTRIB-SLOT #01 to #20).
-      placeholder: "CONTRIB-SLOT #02"
+      description: Select the revolving slot number from the active 20-slot pool.
+      options:
+        - "CONTRIB-SLOT #01"
+        - "CONTRIB-SLOT #02"
+        - "CONTRIB-SLOT #03"
+        - "CONTRIB-SLOT #04"
+        - "CONTRIB-SLOT #05"
+        - "CONTRIB-SLOT #06"
+        - "CONTRIB-SLOT #07"
+        - "CONTRIB-SLOT #08"
+        - "CONTRIB-SLOT #09"
+        - "CONTRIB-SLOT #10"
+        - "CONTRIB-SLOT #11"
+        - "CONTRIB-SLOT #12"
+        - "CONTRIB-SLOT #13"
+        - "CONTRIB-SLOT #14"
+        - "CONTRIB-SLOT #15"
+        - "CONTRIB-SLOT #16"
+        - "CONTRIB-SLOT #17"
+        - "CONTRIB-SLOT #18"
+        - "CONTRIB-SLOT #19"
+        - "CONTRIB-SLOT #20"
     validations:
       required: true
 
-  - type: input
+  - type: dropdown
     id: target_segment
     attributes:
       label: 📍 Assigned World Segment ID
-      description: The specific segment ID where the object will be placed (e.g. forest-01, universe-02, ocean-01, campus-02).
-      placeholder: "forest-02"
+      description: Select the specific segment ID where the object will be placed.
+      options:
+        - "forest-01 (Ancient Canopy)"
+        - "forest-02 (Sunlit Meadow)"
+        - "forest-03 (Deep Grove)"
+        - "universe-01 (Starlit Orbit)"
+        - "universe-02 (Planetary Horizon)"
+        - "universe-03 (Asteroid Belt)"
+        - "ocean-01 (Shallow Coral Reef)"
+        - "ocean-02 (Sunlit Kelp Forest)"
+        - "ocean-03 (Twilight Reef Shelf)"
+        - "city-01 (Brownstone Street)"
+        - "city-02 (Town Square)"
+        - "city-03 (Transit District)"
+        - "village-01 (River Watermill)"
+        - "village-02 (Cobblestone Street)"
+        - "village-03 (Market Square)"
+        - "island-01 (Arrival Beach)"
+        - "island-02 (Palm Lagoon)"
+        - "island-03 (Volcanic Ridge)"
+        - "farm-01 (Homestead Yard)"
+        - "farm-02 (Wheat Fields)"
+        - "farm-03 (Pasture Windmill)"
+        - "campus-01 (University Gate)"
+        - "campus-02 (Academic Quad)"
+        - "campus-03 (Library Plaza)"
+        - "fantasy-01 (Enchanted Glade)"
+        - "fantasy-02 (Rune Arch)"
+        - "fantasy-03 (High Spire)"
+        - "alien-01 (Touchdown Basin)"
+        - "alien-02 (Spore Forest)"
+        - "alien-03 (Crystal Geysers)"
     validations:
       required: true
 
@@ -50,7 +100,7 @@ body:
     id: object_name
     attributes:
       label: 🎨 Suggested Object Name & Category
-      description: The name or creative category of object the student should craft (e.g. Butterfly, Pine Tree, Coral, Student Backpack).
+      description: The name or creative category of object the student should craft (e.g. Butterfly, Pine Tree, Coral, Student Backpack, Floating Crystal).
       placeholder: "Butterfly (woodland fauna)"
     validations:
       required: true

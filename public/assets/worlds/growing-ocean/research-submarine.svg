@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
+  <defs>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="2" dy="4" stdDeviation="2" flood-color="#000" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+  <g filter="url(#shadow)">
+    <!-- Submarine hull -->
+    <ellipse cx="48" cy="52" rx="34" ry="20" fill="#FBBF24" stroke="#D97706" stroke-width="2.5"/>
+    <!-- Conning tower -->
+    <rect x="40" y="24" width="16" height="12" rx="4" fill="#F59E0B" stroke="#B45309" stroke-width="2"/>
+    <!-- Periscope -->
+    <path d="M48 24 L48 14 L56 14" fill="none" stroke="#78350F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Portholes -->
+    <circle cx="34" cy="52" r="6" fill="#38BDF8" stroke="#0284C7" stroke-width="2"/>
+    <circle cx="50" cy="52" r="6" fill="#38BDF8" stroke="#0284C7" stroke-width="2"/>
+    <circle cx="66" cy="52" r="6" fill="#38BDF8" stroke="#0284C7" stroke-width="2"/>
+    <!-- Propeller / Tail -->
+    <path d="M14 44 L8 36 L8 68 L14 60 Z" fill="#D97706" stroke="#92400E" stroke-width="2"/>
+  </g>
+</svg>

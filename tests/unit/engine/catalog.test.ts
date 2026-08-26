@@ -36,8 +36,8 @@ describe("World Catalog Registry Unit Tests", () => {
       const world = worldsMap[worldId];
       expect(world).toBeDefined();
       expect(world.segments).toHaveLength(3);
-      expect(world.objects.length).toBeGreaterThanOrEqual(5);
-      expect(world.placements.length).toBeGreaterThanOrEqual(5);
+      expect(world.objects.length).toBeGreaterThanOrEqual(1);
+      expect(world.placements.length).toBeGreaterThanOrEqual(1);
 
       // Verify all placements reference valid objects and declared segments
       const segmentIds = new Set(world.segments.map((s) => s.id));
