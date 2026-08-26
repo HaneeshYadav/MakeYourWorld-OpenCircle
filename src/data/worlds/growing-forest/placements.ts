@@ -40,6 +40,14 @@ export const forestPlacements: ObjectPlacement[] = [
     scale: 1.0,
     rotation: -2,
   },
+  {
+    objectId: "student-butterfly",
+    segmentId: "forest-01",
+    x: 62.0,
+    y: 42.0,
+    scale: 1.0,
+    rotation: -4,
+  },
 
   // Segment 02 Placements (Demonstrating multi-segment growing world)
   {

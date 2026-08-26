@@ -20,6 +20,7 @@ test.describe("Growing Forest Paper-Collage Prototype E2E", () => {
     await expect(page.locator("text=Alex")).toBeVisible(); // Bird in Segment 01
     await expect(page.locator("text=Elena")).toBeVisible(); // Deer in Segment 01
     await expect(page.locator("text=Liam")).toBeVisible(); // Rock in Segment 01
+    await expect(page.locator("text=Student Example")).toBeVisible(); // Simulated contributor butterfly in Segment 01
 
     const prevBtn = page.locator('[data-testid="prev-segment-button"]');
     const nextBtn = page.locator('[data-testid="next-segment-button"]');
@@ -37,6 +38,8 @@ test.describe("Growing Forest Paper-Collage Prototype E2E", () => {
 
     // Verify Segment 02 specific objects render (Woodland Flower by Maya)
     await expect(page.locator("text=Maya")).toBeVisible();
+    // Verify Segment 01 objects are NOT visible in Segment 02
+    await expect(page.locator("text=Student Example")).not.toBeVisible();
 
     // 5. Navigate to Segment 03: Deep Grove (unpopulated, ready for future growth)
     await nextBtn.click();
@@ -44,13 +47,14 @@ test.describe("Growing Forest Paper-Collage Prototype E2E", () => {
     await expect(page.locator("text=3 / 3")).toBeVisible();
     await expect(prevBtn).toBeEnabled();
     await expect(nextBtn).toBeDisabled();
+    await expect(page.locator("text=Student Example")).not.toBeVisible();
 
     // 6. Navigate back to Segment 01
     await prevBtn.click();
     await expect(page.locator("text=Sunlit Meadow")).toBeVisible();
     await prevBtn.click();
     await expect(page.locator("text=Ancient Canopy")).toBeVisible();
-    await expect(page.locator("text=Shen")).toBeVisible();
+    await expect(page.locator("text=Student Example")).toBeVisible();
   });
 
   test("renders gracefully on mobile viewport (375x667)", async ({ page }) => {
@@ -62,7 +66,7 @@ test.describe("Growing Forest Paper-Collage Prototype E2E", () => {
     await expect(worldContainer).toBeVisible();
 
     // Verify contributor badges and navigation buttons scale cleanly
-    await expect(page.locator("text=Shen")).toBeVisible();
+    await expect(page.locator("text=Student Example")).toBeVisible();
     await expect(page.locator('[data-testid="next-segment-button"]')).toBeVisible();
   });
 });

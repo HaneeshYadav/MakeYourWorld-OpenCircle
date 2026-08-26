@@ -46,4 +46,12 @@ export const forestObjects: WorldObject[] = [
       githubUsername: "elena-wildlife",
     },
   },
+  {
+    id: "student-butterfly",
+    asset: "/assets/worlds/growing-forest/student-butterfly.svg",
+    contributor: {
+      displayName: "Student Example",
+      githubUsername: "student-example",
+    },
+  },
 ];
