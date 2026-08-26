@@ -1,0 +1,67 @@
+name: Auto Rename Issue Slot Title
+
+on:
+  issues:
+    types: [opened, edited]
+
+permissions:
+  issues: write
+
+jobs:
+  update-title:
+    runs-on: ubuntu-latest
+    if: contains(github.event.issue.labels.*.name, 'world-contribution') || contains(github.event.issue.title, '[CONTRIB-SLOT')
+    steps:
+      - name: Parse form fields and update Issue title
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const body = issue.body || "";
+
+            // Helper to extract response from GitHub Issue Forms YAML markdown
+            function extractField(labelRegex) {
+              const match = body.match(new RegExp(labelRegex + '\\s*\\n+([^\\n#]+)', 'i'));
+              return match ? match[1].trim() : null;
+            }
+
+            const worldField = extractField('### 🌍 Target World') || extractField('Target World');
+            const slotField = extractField('### 🏷️ Contribution Slot Identifier') || extractField('Contribution Slot Identifier');
+            const segmentField = extractField('### 📍 Assigned World Segment ID') || extractField('Assigned World Segment ID');
+            const categoryField = extractField('### 🎨 Suggested Object Category & Concept') || extractField('Suggested Object Category & Concept');
+            const customObjField = extractField('### ✏️ Custom Object Name \\(Optional\\)') || extractField('Custom Object Name');
+
+            // Format slot (e.g. "CONTRIB-SLOT #01")
+            const slotMatch = slotField ? slotField.match(/CONTRIB-SLOT\s*#?\s*(\d+)/i) : null;
+            const slotFormatted = slotMatch ? `[CONTRIB-SLOT #${slotMatch[1].padStart(2, '0')}]` : '[CONTRIB-SLOT]';
+
+            // Clean world name (e.g. "Fantasy World (fantasy-world)" -> "Fantasy World")
+            const worldClean = worldField ? worldField.replace(/\s*\([^)]*\)/, '').trim() : 'World';
+
+            // Clean segment (e.g. "forest-01 (Ancient Canopy)" -> "forest-01")
+            const segmentMatch = segmentField ? segmentField.match(/([a-z0-9-]+)/i) : null;
+            const segmentClean = segmentMatch ? segmentMatch[1] : '';
+
+            // Clean object name: prioritize custom input if given, else parse category
+            let objectClean = 'Object';
+            if (customObjField && customObjField !== '_No response_' && customObjField.trim() !== '') {
+              objectClean = customObjField.replace(/\s*\([^)]*\)/, '').trim();
+            } else if (categoryField && categoryField !== '_No response_') {
+              // e.g. "🔮 Fantasy: Dragon Egg (Mythical Artifact)" -> "Dragon Egg"
+              const afterColon = categoryField.includes(':') ? categoryField.split(':')[1] : categoryField;
+              objectClean = afterColon.replace(/\s*\([^)]*\)/, '').trim();
+            }
+
+            const newTitle = `${slotFormatted} Add ${objectClean} to ${worldClean}${segmentClean ? ` (${segmentClean})` : ''}`;
+
+            if (issue.title !== newTitle) {
+              console.log(`Updating issue #${issue.number} title to: "${newTitle}"`);
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                title: newTitle,
+              });
+            } else {
+              console.log(`Issue #${issue.number} already has formatted title.`);
+            }
