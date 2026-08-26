@@ -8,19 +8,53 @@ This document outlines the GitHub governance model, branch architecture, branch 
 
 ```
 feature branch (student fork)
-      ↓ PR
+      ↓ PR (with 'student-contribution' label)
      dev (Integration Branch)
-      ↓ PR / Release Merge
+      ↓ PR / Release Merge (Maintainer PR)
      main (Production SSG Deployment)
 ```
 
 1. **`main`**: Production branch. Contains stable, reviewed code and is deployed automatically to static hosting. Direct pushes are forbidden.
-2. **`dev`**: Active integration branch. **All student contributor PRs must target `dev`**.
+2. **`dev`**: Active integration branch. **All student contributor PRs and feature integrations target `dev`**.
 3. **`contrib/<world>-<object-name>`**: Short-lived feature branches created on student forks from `upstream/dev`.
 
 ---
 
-## 2. GitHub Manual Settings Checklist
+## 2. PR Classification & Validation Pipeline
+
+The CI workflow ([`.github/workflows/ci.yml`](file:///d:/Temp/codes/Open%20Circle/OpenCircle-Test/.github/workflows/ci.yml)) provides a single unified status check: **`Contributor Quality Gates & Build`**.
+
+```
+                        PR targeting dev
+                               |
+                +--------------+--------------+
+                |                             |
+     Student Contribution PR            Maintainer PR
+(has 'student-contribution' label) (docs, engine, CI, etc.)
+                |                             |
+       Student Validator                      |
+  (2 commits, boundary paths,                 |
+       safe asset check)                      |
+                |                             |
+                +--------------+--------------+
+                               |
+                     Standard Quality Gates
+                    (Lint, Typecheck, Tests,
+                      Next.js Static Build)
+```
+
+1. **Maintainer / Infrastructure PRs**:
+   - Modifying `.github/*`, `scripts/*`, `docs/*`, `tests/*`, `package.json`, `src/engine/*`, etc.
+   - Run the standard quality gates (`npm ci`, `lint`, `typecheck`, `test`, `build`).
+   - The student 2-commit validator is safely skipped.
+2. **Student World Contribution PRs**:
+   - Identified by the maintainer-applied **`student-contribution`** label.
+   - Run the strict boundary and 2-commit validator (`npx tsx scripts/validate-pr.ts`).
+   - Run the standard quality gates.
+
+---
+
+## 3. GitHub Manual Settings Checklist
 
 > [!IMPORTANT]
 > The following repository settings cannot be set from repository files and **must be manually configured by the repository admin** in the GitHub web interface (**Settings** tab).
@@ -41,11 +75,12 @@ In **Settings > Branches > Branch protection rules** (or Rulesets), create a rul
 ### B. Branch Protection: `dev`
 Create a rule for `dev`:
 - [x] **Require a pull request before merging**:
-  - Require review from Code Owners (ensures maintainers review PRs)
+  - Require approvals: `1` (maintainer review)
 - [x] **Require status checks to pass before merging**:
   - Status checks: `Contributor Quality Gates & Build`
 - [x] **Require conversation resolution before merging**
 - [x] **Block force pushes** & **Block branch deletions**
+- [x] **Block direct contributor pushes**
 
 ### C. General Repository Settings
 In **Settings > General**:
@@ -56,41 +91,34 @@ In **Settings > General**:
 
 ---
 
-## 3. Label Taxonomy
+## 4. Label Taxonomy
 
 Use the following standardized label taxonomy for issue slots and PR tracking:
 
-| Label | Color | Purpose |
-| :--- | :--- | :--- |
-| `good first issue` | `#7057ff` | Marks reusable student contribution slots for GitHub discovery |
-| `contribution-slot` | `#0e8a16` | Identifies active revolving slots (Slots #01–#20) |
-| `status:available` | `#0075ca` | Slot is open for a student to claim |
-| `status:claimed` | `#d93f0b` | Slot is currently assigned (48h reservation window) |
-| `status:in-review` | `#fbca04` | PR has been opened and is awaiting maintainer check |
-| `world:forest` | `#1E3A2F` | Categorizes slot by world |
-| `world:universe` | `#4C1D95` | Categorizes slot by world |
-| `world:ocean` | `#0F3846` | Categorizes slot by world |
-| `world:city` | `#1E293B` | Categorizes slot by world |
-| `world:village` | `#78350F` | Categorizes slot by world |
-| `world:island` | `#0284C7` | Categorizes slot by world |
-| `world:farm` | `#CA8A04` | Categorizes slot by world |
-| `world:campus` | `#881337` | Categorizes slot by world |
-| `world:fantasy` | `#3B0764` | Categorizes slot by world |
-| `world:alien` | `#180828` | Categorizes slot by world |
+| Label | Color | Purpose | Target Entity |
+| :--- | :--- | :--- | :--- |
+| `good first issue` | `#7057ff` | Marks reusable student contribution slots for GitHub discovery | **Issue Slots** |
+| `student-contribution` | `#1d76db` | Identifies student PRs that must pass the strict 2-commit validator | **Pull Requests** |
+| `contribution-slot` | `#0e8a16` | Identifies active revolving slots (Slots #01–#20) | **Issue Slots** |
+| `status:available` | `#0075ca` | Slot is open for a student to claim | **Issue Slots** |
+| `status:claimed` | `#d93f0b` | Slot is currently assigned (48h reservation window) | **Issue Slots** |
+| `status:in-review` | `#fbca04` | PR has been opened and is awaiting maintainer check | **Pull Requests** |
+| `world:forest` ... `world:alien` | Dynamic | Categorizes slot or PR by world | **Issues & PRs** |
 
 ---
 
-## 4. Maintainer Reusable Slot Lifecycle
+## 5. Maintainer Reusable Slot Lifecycle
 
-1. **Student Claims Slot**: Student comments on open slot issue `#XX`.
+1. **Student Claims Slot**: Student comments on open slot issue `#XX` (labeled `good first issue`).
 2. **Maintainer Assigns**: Maintainer assigns student and updates label to `status:claimed`.
 3. **Student Submits PR**: Student opens PR targeting `dev` with two commits.
-4. **Automated CI**: GitHub Actions executes `scripts/validate-pr.ts`, ESLint, TypeScript typecheck, Vitest, and static Next.js build.
-5. **Maintainer Review & Merge**:
+4. **Maintainer Labels PR**: Maintainer applies `student-contribution` label to trigger the 2-commit validator.
+5. **Automated CI Execution**: GitHub Actions executes `scripts/validate-pr.ts`, ESLint, TypeScript typecheck, Vitest, and static Next.js build under the unified `Contributor Quality Gates & Build` check.
+6. **Maintainer Review & Merge**:
    - Verify 2 distinct commits.
    - Verify placement visually.
    - Merge PR into `dev`.
-6. **Issue Reopened (Manual)**:
+7. **Issue Reopened (Manual)**:
    - Remove student assignee from issue `#XX`.
    - Set label back to `status:available`.
    - **Reopen issue `#XX`** so the next student can claim the slot.
