@@ -247,10 +247,14 @@ We are excited for your contribution to **${slot.worldName}**! Here is a quick r
 - **Object**: \`${slot.objectName}\`
 - **Feature Branch**: \`${slot.branchName}\` (must start with \`contrib/\` from \`dev\`)
 
-### 🔐 Strict Two-Commit Workflow Reminder
-1. **Commit 1**: Add SVG asset to \`public/assets/worlds/${slot.worldId}/\` and register in \`src/data/worlds/${slot.worldId}/objects.ts\`.
-2. **Commit 2**: Add placement in \`src/data/worlds/${slot.worldId}/placements.ts\` with \`segmentId: "${slot.segmentId}"\`.
-3. **Open PR against \`dev\`** and include \`Closes #${issueNumber}\` in the description.
+### 📝 Quick Instructions
+1. ⭐ **Star our repo** on GitHub!
+2. 🍴 **Fork our repo** and clone it locally.
+3. 🌿 **Create your branch**: \`git checkout -b ${slot.branchName}\` (from latest \`dev\`).
+4. 🎨 **Commit 1**: Add SVG asset to \`public/assets/worlds/${slot.worldId}/\` and register in \`src/data/worlds/${slot.worldId}/objects.ts\`.
+5. 📍 **Commit 2**: Add placement in \`src/data/worlds/${slot.worldId}/placements.ts\` with \`segmentId: "${slot.segmentId}"\`.
+6. 🧪 **Run checks**: \`npm test && npm run lint && npm run typecheck && npm run build\`.
+7. 🚀 **Submit PR**: Open PR targeting \`dev\` and include \`Closes #${issueNumber}\` in the description.
 
 > 💡 *Note: Assigned slots are reserved for **48 hours**. If you run into any questions or need help, feel free to ask here!* Happy coding! 🌱`;
 }

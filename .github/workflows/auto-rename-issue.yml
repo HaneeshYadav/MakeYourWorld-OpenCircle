@@ -276,10 +276,14 @@ jobs:
                   `- **Object**: \`${objectName}\``,
                   `- **Feature Branch**: \`${branchName}\` (must start with \`contrib/\` from \`dev\`)`,
                   "",
-                  "### 🔐 Strict Two-Commit Workflow Reminder",
-                  `1. **Commit 1**: Add SVG asset to \`public/assets/worlds/${worldId}/\` and register in \`src/data/worlds/${worldId}/objects.ts\`.`,
-                  `2. **Commit 2**: Add placement in \`src/data/worlds/${worldId}/placements.ts\` with \`segmentId: "${segmentId}"\`.`,
-                  `3. **Open PR against \`dev\`** and include \`Closes #${issue.number}\` in the description.`,
+                  "### 📝 Quick Instructions",
+                  "1. ⭐ **Star our repo** on GitHub!",
+                  "2. 🍴 **Fork our repo** and clone it locally.",
+                  `3. 🌿 **Create your branch**: \`git checkout -b ${branchName}\` (from latest \`dev\`).`,
+                  `4. 🎨 **Commit 1**: Add SVG asset to \`public/assets/worlds/${worldId}/\` and register in \`src/data/worlds/${worldId}/objects.ts\`.`,
+                  `5. 📍 **Commit 2**: Add placement in \`src/data/worlds/${worldId}/placements.ts\` with \`segmentId: "${segmentId}"\`.`,
+                  "6. 🧪 **Run checks**: `npm test && npm run lint && npm run typecheck && npm run build`.",
+                  `7. 🚀 **Submit PR**: Open PR targeting \`dev\` and include \`Closes #${issue.number}\` in the description.`,
                   "",
                   "> 💡 *Note: Assigned slots are reserved for **48 hours**. If you run into any questions or need help, feel free to ask here!* Happy coding! 🌱"
                 ];
