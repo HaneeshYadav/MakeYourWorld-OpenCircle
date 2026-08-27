@@ -95,7 +95,8 @@ For full guidelines, please read our [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ---
 
-## 📄 License & Asset Ownership
+## 📄 License
 
-- **Code**: Permissive open-source license.
-- **Assets**: Contributed assets must be original or under permissive open-source licenses (CC0 / MIT). Please do not submit copyrighted, trademarked, or proprietary characters.
+Growing Worlds is open-source software licensed under the [MIT License](LICENSE).
+
+For details on third-party libraries, UI components, and icons used by this project, see [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).

@@ -60,6 +60,8 @@ Student contributors must **NOT** modify maintainer or infrastructure files:
 - [ ] `npm run build` passes.
 - [ ] My PR targets `dev` base branch.
 - [ ] My PR contains `Closes #<ISSUE_NUMBER>`.
+- [ ] I have the right to submit these changes under the repository's MIT License.
+- [ ] I have not knowingly included third-party material without compatible licensing or required attribution.
 
 ---
 
