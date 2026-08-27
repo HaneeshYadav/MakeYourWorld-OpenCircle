@@ -55,19 +55,25 @@ export default async function WorldPage({ params }: WorldPageProps) {
           <span>Back to Worlds</span>
         </Link>
 
-        <a
-          href={SITE_CONFIG.issuesUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Button
-            size="sm"
-            className="gap-2 bg-emerald-900 text-white hover:bg-emerald-800 shadow-sm"
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+          <span className="text-xs text-stone-500 hidden md:inline">
+            Choose an available slot to add your object to this world:
+          </span>
+          <a
+            href={SITE_CONFIG.issuesUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`Find an open Good First Issue slot for ${world.name}`}
           >
-            <GitPullRequest className="h-3.5 w-3.5" />
-            <span>Add to this World (Good First Issue)</span>
-          </Button>
-        </a>
+            <Button
+              size="sm"
+              className="gap-2 bg-emerald-900 text-white hover:bg-emerald-800 shadow-sm"
+            >
+              <GitPullRequest className="h-3.5 w-3.5" />
+              <span>Find a Good First Issue</span>
+            </Button>
+          </a>
+        </div>
       </div>
 
       {/* Main Shared 2D World Engine Render */}
