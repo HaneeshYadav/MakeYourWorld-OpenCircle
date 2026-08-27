@@ -1,13 +1,13 @@
 name: "🌿 Reusable World Contribution Slot (Good First Issue)"
 description: "Create a reusable student contribution slot for adding a paper-collage object into any Growing World segment"
-title: "[CONTRIB-SLOT #<01-20>] Add a <Object Name> to <World Name> (<Segment Name>)"
-labels: ["good first issue", "world-contribution"]
+title: "[Good First Issue] 🌱 Add a <Object Name> to <World Name> — <Segment Name> (CONTRIB-SLOT #<01-20>)"
+labels: ["good first issue"]
 body:
   - type: markdown
     attributes:
       value: |
-        # 🌿 Growing Worlds Contribution Slot
-        Configure this reusable task slot for student and beginner contributors. Select the target world, slot ID, segment, and suggested object/category from the dropdowns below.
+        # 🌿 Reusable World Contribution Slot
+        Configure this reusable micro-contribution slot for student and beginner contributors. Select the target world, slot ID, assigned segment, and suggested object/category from the dropdowns below.
 
   - type: dropdown
     id: world
@@ -61,35 +61,45 @@ body:
     id: target_segment
     attributes:
       label: 📍 Assigned World Segment ID
-      description: Select the specific segment ID where the object will be placed.
+      description: Select the specific segment ID where the object will be placed (must match disk segment definitions).
       options:
+        # Growing Forest (growing-forest)
         - "forest-01 (Ancient Canopy)"
         - "forest-02 (Sunlit Meadow)"
         - "forest-03 (Deep Grove)"
+        # Growing Universe (growing-universe)
         - "universe-01 (Starlit Orbit)"
         - "universe-02 (Planetary Horizon)"
         - "universe-03 (Asteroid Belt)"
+        # Growing Ocean (growing-ocean)
         - "ocean-01 (Shallow Coral Reef)"
         - "ocean-02 (Sunlit Kelp Forest)"
         - "ocean-03 (Twilight Reef Shelf)"
+        # Growing City (growing-city)
         - "city-01 (Brownstone Street)"
         - "city-02 (Town Square)"
         - "city-03 (Transit District)"
+        # Growing Village (growing-village)
         - "village-01 (River Watermill)"
         - "village-02 (Cobblestone Street)"
         - "village-03 (Market Square)"
+        # Growing Island (growing-island)
         - "island-01 (Arrival Beach)"
         - "island-02 (Palm Lagoon)"
         - "island-03 (Volcanic Ridge)"
+        # Growing Farm (growing-farm)
         - "farm-01 (Homestead Yard)"
         - "farm-02 (Wheat Fields)"
         - "farm-03 (Pasture Windmill)"
+        # Growing Campus (growing-campus)
         - "campus-01 (University Gate)"
         - "campus-02 (Academic Quad)"
         - "campus-03 (Library Plaza)"
+        # Fantasy World (fantasy-world)
         - "fantasy-01 (Enchanted Glade)"
         - "fantasy-02 (Rune Arch)"
         - "fantasy-03 (High Spire)"
+        # Alien Planet (alien-planet)
         - "alien-01 (Touchdown Basin)"
         - "alien-02 (Spore Forest)"
         - "alien-03 (Crystal Geysers)"
@@ -183,83 +193,126 @@ body:
     validations:
       required: false
 
+  - type: dropdown
+    id: difficulty
+    attributes:
+      label: 📊 Difficulty Level
+      description: Difficulty classification for contributor discovery.
+      options:
+        - "Beginner (No prior open-source experience needed)"
+        - "Easy (Basic Git knowledge)"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: estimated_time
+    attributes:
+      label: ⏱️ Estimated Time
+      description: Realistic time estimate for asset creation, 2-commit git workflow, testing, and PR submission.
+      options:
+        - "15–30 minutes"
+        - "30–45 minutes"
+    validations:
+      required: true
+
   - type: markdown
     attributes:
       value: |
         ---
 
-        ## 🏗️ Relevant Project Files
-        All contributor work is strictly contained within these specific paths:
-        - **Asset file**: `public/assets/worlds/<world-name>/<object-name>.svg`
-        - **Object registration**: `src/data/worlds/<world-name>/objects.ts`
-        - **Object placement**: `src/data/worlds/<world-name>/placements.ts`
+        # 🟢 Good First Issue Instructions (Contributor Reference)
+
+        > 🌱 **Welcome!** This is a beginner-friendly micro-contribution. No previous open-source experience is required! Follow the steps below carefully and you will complete your contribution from start to finish.
 
         ---
 
-        # 🛠️ Step-by-Step Instructions
+        ## 🎯 Your Task
+        Your task is to add **ONE** paper-cutout object to the selected **World** inside the assigned **Segment**.
+        - Your contribution will permanently live in the shared diorama, credited with your name in a paper badge!
+        - You must strictly stay within your assigned world and segment — do not modify unrelated worlds.
 
-        ### STEP 1 — Update local `dev`
+        ---
+
+        ## 📁 Files You Will Change
+
+        ```text
+        Commit 1 (Asset & Object Registration):
+        ├── public/assets/worlds/<world-name>/<object-name>.svg  (Your paper artwork)
+        └── src/data/worlds/<world-name>/objects.ts              (Object metadata & your attribution)
+
+        Commit 2 (World Placement):
+        └── src/data/worlds/<world-name>/placements.ts           (Coordinates & segment placement)
+        ```
+
+        ---
+
+        # 🔐 IMPORTANT — EXACTLY 2 COMMITS REQUIRED
+
+        The automated PR validator requires **exactly two separate commits**:
+        - **Commit 1**: MUST contain your SVG asset and registration in `objects.ts`. MUST NOT contain `placements.ts`.
+        - **Commit 2**: MUST contain ONLY your placement in `placements.ts`.
+        - ⚠️ **Do NOT squash** your commits! Keep them separate so automated CI checks can verify both steps.
+
+        ---
+
+        # 🛠️ Step-by-Step Walkthrough
+
+        ### Step 1: Fork & Clone
+        1. Fork this repository to your GitHub account.
+        2. Clone your fork locally:
+        ```bash
+        git clone https://github.com/<your-username>/OpenCircle-Test.git
+        cd OpenCircle-Test
+        ```
+        3. Add the upstream repository:
+        ```bash
+        git remote add upstream https://github.com/ShenSandaru/OpenCircle-Test.git
+        ```
+
+        ### Step 2: Update `dev` and Branch
+        Always start your work from the latest upstream `dev` branch:
         ```bash
         git checkout dev
-        git pull origin dev
+        git fetch upstream
+        git pull upstream dev
         ```
-        *(Always start from `dev`, never `main`).*
-
-        ---
-
-        ### STEP 2 — Create the student branch
+        Create your contribution branch using the required `contrib/` prefix:
         ```bash
-        git checkout -b contrib/<world>-<object-name>
+        git checkout -b contrib/<world-name>-<object-name>
         ```
-        *Example: `git checkout -b contrib/growing-forest-butterfly`*
+        *Example:* `git checkout -b contrib/growing-forest-butterfly`
 
-        > ℹ️ The `contrib/*` branch prefix is the official signal that tells GitHub Actions CI to run the student two-commit validation checks.
+        ### Step 3: Install Dependencies
+        ```bash
+        npm install
+        ```
 
-        ---
-
-        ### STEP 3 — Create the asset
-        - Vector SVG (or transparent PNG) in paper cutout style.
-        - Save to `public/assets/worlds/<world-name>/<object-name>.svg`.
-
-        ---
-
-        ### STEP 4 — Register the object
-        Append your object definition to `src/data/worlds/<world-name>/objects.ts`:
+        ### Step 4: Create Commit 1 (Asset & Object Registration)
+        1. Create your 2D paper-cutout SVG asset (transparent background, <50KB) and save it to:
+           `public/assets/worlds/<world-name>/<object-name>.svg`
+        2. Register the object in `src/data/worlds/<world-name>/objects.ts`:
         ```typescript
         {
-          id: "<object-id>",
+          id: "<object-name>",
           asset: "/assets/worlds/<world-name>/<object-name>.svg",
           contributor: {
-            displayName: "<Your Display Name>",
-            githubUsername: "<Your GitHub Username>",
+            displayName: "Your Name",
+            githubUsername: "your-github-username",
           },
         },
         ```
-
-        ---
-
-        ### STEP 5 & 6 — Commit 1: Asset + Object Registration
+        3. Verify with `git status` and `git diff`, then commit:
         ```bash
-        git status
         git add public/assets/worlds/<world-name>/<object-name>.svg
         git add src/data/worlds/<world-name>/objects.ts
-        git commit -m "feat: add <object> asset and object"
+        git commit -m "feat: add <object-name> asset and object"
         ```
 
-        ---
-
-        ### STEP 7 — Push Commit 1
-        ```bash
-        git push -u origin contrib/<world>-<object-name>
-        ```
-
-        ---
-
-        ### STEP 8 — Add the placement
-        Append your placement to `src/data/worlds/<world-name>/placements.ts`:
+        ### Step 5: Create Commit 2 (Placement Only)
+        1. Open `src/data/worlds/<world-name>/placements.ts` and append your placement:
         ```typescript
         {
-          objectId: "<object-id>",
+          objectId: "<object-name>",
           segmentId: "<assigned-segment-id>",
           x: 45.0,
           y: 55.0,
@@ -267,60 +320,48 @@ body:
           rotation: 0,
         },
         ```
-
-        ---
-
-        ### STEP 9 — Commit 2: Placement Only
+        *(Coordinates `x` and `y` are normalized percentages `0.0` to `100.0`)*
+        2. Verify with `git status` and `git diff`, then commit:
         ```bash
         git add src/data/worlds/<world-name>/placements.ts
-        git commit -m "feat: place <object> in <segment>"
+        git commit -m "feat: place <object-name> in <assigned-segment-id>"
         ```
 
-        ---
-
-        ### STEP 10 & 11 — Verify & Push Commit 2
+        ### Step 6: Verify Commit History
+        Check that you have exactly 2 separate commits:
         ```bash
         git log --oneline -2
-        git push
+        ```
+        Expected output:
+        ```text
+        <hash-2> feat: place <object-name> in <assigned-segment-id>
+        <hash-1> feat: add <object-name> asset and object
         ```
 
-        ---
-
-        ### STEP 12 — Run local validation
+        ### Step 7: Run Local Quality Checks & Test
         ```bash
-        npm ci
-        npm run test:integrity
         npm run lint
         npm run typecheck
         npm test
         npm run build
         ```
 
-        ---
-
-        ### STEP 13 — Visually verify locally
+        ### Step 8: Visual Verification
+        Start the dev server:
         ```bash
         npm run dev
         ```
-        Open `http://localhost:3000/worlds/<world-name>` and check that your object and badge render properly.
+        Open `http://localhost:3000/worlds/<world-name>` in your browser to see your paper craft and contributor badge in action!
 
-        ---
-
-        ### STEP 14 — Review working tree
+        ### Step 9: Push & Open Pull Request
+        1. Push to your fork:
         ```bash
-        git status
+        git push -u origin contrib/<world-name>-<object-name>
         ```
-
-        ---
-
-        ### STEP 15 — Open the Pull Request
-        - **Base branch**: `dev`
-        - **Compare branch**: `contrib/<world>-<object-name>`
-
-        ---
-
-        ### STEP 16 — Link the Issue
-        In your PR description, replace `#<ISSUE_NUMBER>`:
+        2. Open a Pull Request on GitHub:
+           - **Base branch**: `dev` *(Do NOT target `main`)*
+           - **Compare branch**: `contrib/<world-name>-<object-name>`
+        3. In the PR description, link this issue:
         ```markdown
         ## 🔗 Linked Issue
         Closes #<THIS_ISSUE_NUMBER>
@@ -328,18 +369,5 @@ body:
 
         ---
 
-        # 🚫 Files You Should NOT Modify
-        Do **NOT** modify `.github/`, `docs/`, `scripts/`, `tests/`, `src/engine/`, `src/schemas/`, `src/components/`, `src/app/`, or `package.json`.
-
-        ---
-
-        # 📋 Final Submission Checklist
-        - [ ] Correct world and segment
-        - [ ] Commit 1: Asset + `objects.ts`
-        - [ ] Commit 2: `placements.ts`
-        - [ ] Two commits remain separate (not squashed)
-        - [ ] Local tests and build passed
-        - [ ] PR targets `dev`
-        - [ ] Linked with `Closes #<NUMBER>`
-
-        Thank you for contributing to Growing Worlds! 🌱
+        # 🚫 Do NOT Modify
+        Do **NOT** edit `.github/`, `docs/`, `scripts/`, `tests/`, `src/engine/`, `src/schemas/`, `src/components/`, `src/app/`, or `package.json`.

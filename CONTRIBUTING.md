@@ -44,11 +44,11 @@ Each contribution follows a strict, beginner-friendly **two-commit workflow**:
 - Check the issue details for:
   - **Contribution Slot ID**: e.g., `CONTRIB-SLOT #01`
   - **Issue Number**: Note the GitHub issue number (e.g., `#12`) for your PR description.
-  - **Target World**: e.g., `Growing Forest`
+  - **Target World**: e.g., `Growing Forest` (`growing-forest`)
   - **Target Segment**: e.g., `forest-01`
-  - **Allowed Category**: e.g., `woodland flora, birds, insects, small critters`
+  - **Allowed Category / Object**: e.g., `Butterfly`
 - Comment on the issue: `I would like to work on this!`
-- **Wait for Assignment**: A maintainer will formally assign the issue to you. Commenting alone does not reserve the slot.
+- **Wait for Assignment**: A maintainer will formally assign the issue to you and the automated bot will post your personalized onboarding next-steps comment!
 - *Note on Inactivity*: Assigned slots are held for **48 hours**. If no PR is submitted within 48 hours, the slot may be unassigned to give other students an opportunity.
 
 ### 2. Fork and Clone
@@ -71,38 +71,37 @@ Each contribution follows a strict, beginner-friendly **two-commit workflow**:
 Always base your feature branch on the upstream **`dev`** branch (NOT `main`):
 ```bash
 git checkout dev
-git fetch upstream dev
-git merge upstream/dev
-git checkout -b contrib/<world>-<object-name>
+git fetch upstream
+git pull upstream dev
+git checkout -b contrib/<world-name>-<object-name>
 ```
-*Example: `git checkout -b contrib/forest-butterfly`*
+*Example: `git checkout -b contrib/growing-forest-butterfly`*
 
 ---
 
 ### 4. Commit 1: Asset & Object Registration (~1–5 lines)
 
-1. Save your paper-cutout SVG file (transparent background) to:
-   `public/assets/worlds/<world-name>/<object-id>.svg`
-   *(Example: `public/assets/worlds/growing-forest/student-butterfly.svg`)*
+1. Save your paper-cutout SVG file (transparent background, <50 KB) to:
+   `public/assets/worlds/<world-name>/<object-name>.svg`
+   *(Example: `public/assets/worlds/growing-forest/butterfly.svg`)*
 2. Open `src/data/worlds/<world-name>/objects.ts` and append your object to the array:
    ```typescript
    {
-     id: "student-butterfly",
-     asset: "/assets/worlds/growing-forest/student-butterfly.svg",
+     id: "butterfly",
+     asset: "/assets/worlds/growing-forest/butterfly.svg",
      contributor: {
        displayName: "Your Name",
        githubUsername: "your-github-username",
      },
    },
    ```
-3. Run the test suite:
+3. Check status and create **Commit 1**:
    ```bash
-   npm test
-   ```
-4. Create **Commit 1**:
-   ```bash
-   git add public/assets/worlds/ src/data/worlds/
-   git commit -m "feat(forest): add student butterfly object"
+   git status
+   git diff
+   git add public/assets/worlds/<world-name>/<object-name>.svg
+   git add src/data/worlds/<world-name>/objects.ts
+   git commit -m "feat: add butterfly asset and object"
    ```
 
 ---
@@ -113,7 +112,7 @@ git checkout -b contrib/<world>-<object-name>
 2. Append your placement entry specifying your assigned `segmentId` and coordinates `x` (0–100%) and `y` (0–100%):
    ```typescript
    {
-     objectId: "student-butterfly",
+     objectId: "butterfly",
      segmentId: "forest-01",
      x: 62.0,
      y: 42.0,
@@ -121,23 +120,32 @@ git checkout -b contrib/<world>-<object-name>
      rotation: -4,
    },
    ```
-3. Run full validation:
+3. Check status and create **Commit 2**:
    ```bash
-   npm test
+   git status
+   git diff
+   git add src/data/worlds/<world-name>/placements.ts
+   git commit -m "feat: place butterfly in forest-01"
+   ```
+
+4. Verify your two commits:
+   ```bash
+   git log --oneline -2
+   ```
+
+5. Run local validation:
+   ```bash
    npm run lint
    npm run typecheck
+   npm test
    npm run build
    ```
-4. View it locally in your browser:
+
+6. View it locally in your browser:
    ```bash
    npm run dev
    ```
-   Open `http://localhost:3000/worlds/<world-id>` to visually check your placed object and contributor badge.
-5. Create **Commit 2**:
-   ```bash
-   git add src/data/worlds/
-   git commit -m "feat(forest): place student butterfly in forest"
-   ```
+   Open `http://localhost:3000/worlds/<world-name>` to visually check your placed object and contributor badge.
 
 ---
 
@@ -145,13 +153,12 @@ git checkout -b contrib/<world>-<object-name>
 
 1. Push your feature branch to your fork:
    ```bash
-   git push origin contrib/<world>-<object-name>
+   git push -u origin contrib/<world-name>-<object-name>
    ```
 2. Go to GitHub and open a Pull Request against the **`dev`** branch (NOT `main`).
 3. In the PR description, replace `#<ISSUE_NUMBER>` with `Closes #<ASSIGNED_ISSUE_NUMBER>` (e.g. `Closes #12`).
 4. Keep the **two commits separate** (do not squash them).
-5. Fill out the PR template with your contributor display name and Discord handle.
-6. Once reviewed and merged by maintainers into `dev`, your contribution permanently appears in the growing world! 🎉
+5. Once reviewed and merged by maintainers into `dev`, your contribution permanently appears in the growing world! 🎉
 
 ---
 
@@ -163,13 +170,3 @@ To ensure clean validation, contributors must **only** edit:
 - ✅ `src/data/worlds/<world-name>/placements.ts`
 
 Do **NOT** modify engine code (`src/engine/*`), domain schemas (`src/schemas/*`), UI components (`src/components/*`), pages (`src/app/*`), tests (`tests/*`), workflows (`.github/*`), documentation (`docs/*`), scripts (`scripts/*`), or dependency files (`package.json`, `package-lock.json`).
-
----
-
-## 🎨 Asset Guidelines
-
-- **Style**: 2D Paper-cutout aesthetic. Clean geometric or organic silhouettes, warm paper tones, and transparent background.
-- **Format**: SVG strongly preferred (or PNG).
-- **Size**: Lightweight files (<50 KB).
-- **Attribution**: Display name renders beneath the object; Discord handle is used by maintainers for community roles and is never stored in public world files.
-- **Originality**: Only use original assets or permissive open-source assets (CC0 / MIT). Copyrighted or trademarked artwork is prohibited.
