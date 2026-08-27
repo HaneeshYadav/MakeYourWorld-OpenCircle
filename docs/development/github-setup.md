@@ -93,33 +93,46 @@ In **Settings > General**:
 
 ---
 
-## 4. Label Taxonomy
+## 4. Label Policy
 
-Use the following standardized label taxonomy for issue slots:
+The repository uses the standard GitHub label for contributor discovery:
 
 | Label | Color | Purpose | Target Entity |
 | :--- | :--- | :--- | :--- |
 | `good first issue` | `#7057ff` | Marks reusable student contribution slots for GitHub discovery | **Issue Slots** |
-| `contribution-slot` | `#0e8a16` | Identifies active revolving slots (Slots #01–#20) | **Issue Slots** |
-| `status:available` | `#0075ca` | Slot is open for a student to claim | **Issue Slots** |
-| `status:claimed` | `#d93f0b` | Slot is currently assigned (48h reservation window) | **Issue Slots** |
-| `status:in-review` | `#fbca04` | PR has been opened and is awaiting maintainer check | **Pull Requests** |
-| `world:forest` ... `world:alien` | Dynamic | Categorizes slot by world | **Issues & PRs** |
 
 ---
 
-## 5. Maintainer Reusable Slot Lifecycle
+## 5. End-to-End Reusable Slot Lifecycle
 
-1. **Student Claims Slot**: Student comments on open slot issue `#XX` (labeled `good first issue`).
-2. **Maintainer Assigns**: Maintainer assigns student and updates label to `status:claimed`.
-3. **Student Submits PR**: Student opens PR targeting `dev` from `contrib/<world>-<object>` with two commits and includes `Closes #XX`.
-4. **Automated CI Execution**: GitHub Actions executes `validate-pr.ts`, ESLint, TypeScript typecheck, Vitest, and static Next.js build under the unified `Contributor Quality Gates & Build` check.
-5. **Maintainer Review & Merge**:
-   - Verify 2 distinct commits.
-   - Verify placement visually.
-   - Merge PR into `dev`.
-6. **Issue Reopened (Manual)**:
-   - Remove student assignee from issue `#XX`.
-   - Set label back to `status:available`.
-   - **Reopen issue `#XX`** so the next student can claim the slot.
-   - (Optional) Award contributor role in community Discord using submitted username.
+```
+1. MAINTAINER CREATES ISSUE SLOT
+   └── Created via .github/ISSUE_TEMPLATE/world-contribution.yml
+   └── Labeled with "good first issue"
+   └── Formatted as: "[Good First Issue] 🌱 Add <Object> to <World> — <Segment> (CONTRIB-SLOT #XX)"
+
+2. STUDENT CLAIMS SLOT
+   └── Contributor comments: "I would like to work on this!"
+
+3. MAINTAINER ASSIGNS CONTRIBUTOR
+   └── Maintainer assigns student to the issue
+   └── GitHub Actions (auto-rename-issue.yml) automatically posts an onboarding next-steps comment welcoming the student!
+   └── (Optional) Notification sent to Discord webhook.
+
+4. 2-COMMIT STUDENT DEVELOPMENT
+   └── Branch: contrib/<world>-<object> from dev
+   └── Commit 1: Asset SVG + objects.ts registration
+   └── Commit 2: placements.ts placement in assigned segment
+   └── Local tests: npm test && npm run lint && npm run typecheck && npm run build
+
+5. PULL REQUEST & CI QUALITY GATES
+   └── Target: dev
+   └── PR description includes: Closes #<ISSUE_NUMBER>
+   └── CI (ci.yml) validates 2 commits and contributor file boundaries
+
+6. REVIEW, MERGE, AUTOMATIC CLOSURE & CELEBRATION
+   └── Maintainer review & approval
+   └── Merged into dev
+   └── Linked issue automatically closes via GitHub's Closes #<ISSUE_NUMBER> mechanism
+   └── (Optional) Completion celebration notification sent to Discord.
+```

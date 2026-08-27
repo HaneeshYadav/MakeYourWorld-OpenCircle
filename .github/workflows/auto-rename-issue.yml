@@ -1,8 +1,8 @@
-name: Auto Rename Issue Slot Title & Discord Notification
+name: Auto Rename Issue Slot Title & Contributor Lifecycle
 
 on:
   issues:
-    types: [opened, edited, assigned]
+    types: [opened, edited, assigned, closed]
 
 permissions:
   issues: write
@@ -10,9 +10,9 @@ permissions:
 jobs:
   update-title-and-notify:
     runs-on: ubuntu-latest
-    if: contains(github.event.issue.labels.*.name, 'world-contribution') || contains(github.event.issue.title, '[CONTRIB-SLOT')
+    if: contains(github.event.issue.labels.*.name, 'good first issue') || contains(github.event.issue.title, '[CONTRIB-SLOT') || contains(github.event.issue.title, '[Good First Issue]')
     steps:
-      - name: Parse form fields, update Issue title, and notify Discord
+      - name: Parse form fields, update Issue title, post onboarding comment, and notify Discord
         uses: actions/github-script@v7
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
@@ -49,18 +49,23 @@ jobs:
             const customObjField = extractSection(['Custom Object Name', 'custom_object_name']);
 
             // Extract slot number (e.g. "CONTRIB-SLOT #01", "#02", "1")
-            let slotFormatted = '[CONTRIB-SLOT]';
+            let slotFormatted = 'CONTRIB-SLOT #01';
             if (slotField) {
               const numMatch = slotField.match(/(\d+)/);
               if (numMatch) {
-                slotFormatted = `[CONTRIB-SLOT #${numMatch[1].padStart(2, '0')}]`;
+                slotFormatted = `CONTRIB-SLOT #${numMatch[1].padStart(2, '0')}`;
               }
             }
 
-            // Clean world name
+            // Clean world name & world id
             let worldClean = 'World';
+            let worldId = 'growing-forest';
             if (worldField) {
               worldClean = worldField.replace(/\s*\([^)]*\)/, '').trim();
+              const worldIdMatch = worldField.match(/\(([a-z0-9-]+)\)/i);
+              if (worldIdMatch) {
+                worldId = worldIdMatch[1];
+              }
             }
 
             // Clean segment
@@ -81,87 +86,146 @@ jobs:
               objectClean = afterColon.replace(/\s*\([^)]*\)/, '').trim();
             }
 
-            const finalTitle = `${slotFormatted} Add ${objectClean} to ${worldClean}${segmentClean ? ` (${segmentClean})` : ''}`;
+            // Standardized polished title format
+            const finalTitle = `[Good First Issue] 🌱 Add ${objectClean} to ${worldClean}${segmentClean ? ` — ${segmentClean}` : ''} (${slotFormatted})`;
 
-            let titleUpdated = false;
-            if (issue.title !== finalTitle) {
-              console.log(`Renaming issue #${issue.number} title to: "${finalTitle}"`);
-              await github.rest.issues.update({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: issue.number,
-                title: finalTitle,
-              });
-              titleUpdated = true;
-            } else {
-              console.log(`Issue #${issue.number} already has formatted title.`);
+            if (action === 'opened' || action === 'edited') {
+              if (issue.title !== finalTitle) {
+                console.log(`Renaming issue #${issue.number} title to: "${finalTitle}"`);
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issue.number,
+                  title: finalTitle,
+                });
+              } else {
+                console.log(`Issue #${issue.number} already has formatted title.`);
+              }
             }
 
             // -------------------------------------------------------------
-            // DISCORD NOTIFICATION TRIGGER
+            // ONBOARDING COMMENT & DISCORD NOTIFICATION TRIGGER
             // -------------------------------------------------------------
             const webhookUrl = process.env.DISCORD_WEBHOOK;
-            if (!webhookUrl) {
-              console.log("No DISCORD_WEBHOOK secret configured. Skipping Discord notification.");
-              return;
-            }
 
-            // Scenario 1: New Slot Opened (send only on 'opened' or first rename)
+            // Scenario 1: New Slot Opened
             if (action === 'opened') {
-              console.log("Sending 'New Contribution Slot' notification to Discord...");
-              const discordPayload = {
-                embeds: [
-                  {
-                    title: `🌿 New World Slot #${issue.number}: ${finalTitle}`,
-                    url: issue.html_url,
-                    description: `A new reusable student contribution slot is open for **${worldClean}**!\n\n**World**: ${worldClean}\n**Segment**: \`${segmentClean}\`\n**Object**: ${objectClean}\n**Slot**: ${slotFormatted}`,
-                    color: 3066993, // Green
-                    fields: [
-                      { name: "Repository", value: context.repo.repo, inline: true },
-                      { name: "Status", value: "🟢 Available (Claimable)", inline: true },
-                    ],
-                    footer: {
-                      text: `Growing Worlds Onboarding • Comment on Issue #${issue.number} to claim!`,
+              if (webhookUrl) {
+                console.log("Sending 'New Contribution Slot' notification to Discord...");
+                const discordPayload = {
+                  embeds: [
+                    {
+                      title: `🌿 New World Slot #${issue.number}: ${finalTitle}`,
+                      url: issue.html_url,
+                      description: `A new reusable student contribution slot is open for **${worldClean}**!\n\n**World**: ${worldClean}\n**Segment**: \`${segmentClean}\`\n**Object**: ${objectClean}\n**Slot**: \`${slotFormatted}\``,
+                      color: 3066993, // Green
+                      fields: [
+                        { name: "Repository", value: context.repo.repo, inline: true },
+                        { name: "Status", value: "🟢 Available (Claimable)", inline: true },
+                      ],
+                      footer: {
+                        text: `Growing Worlds Onboarding • Comment on Issue #${issue.number} to claim!`,
+                      },
                     },
-                  },
-                ],
-              };
+                  ],
+                };
 
-              await fetch(webhookUrl, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(discordPayload),
-              });
-              console.log("Discord notification sent successfully for issue opening.");
+                await fetch(webhookUrl, {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify(discordPayload),
+                });
+              }
             }
 
-            // Scenario 2: Slot Assigned to a Contributor ('assigned')
+            // Scenario 2: Slot Assigned to Contributor ('assigned')
             if (action === 'assigned') {
               const assignee = context.payload.assignee ? context.payload.assignee.login : (issue.assignees && issue.assignees[0] ? issue.assignees[0].login : 'Student');
-              console.log(`Sending 'Slot Assigned to @${assignee}' notification to Discord...`);
+              const branchName = `contrib/${worldId}-${objectClean.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
 
-              const discordPayload = {
-                embeds: [
-                  {
-                    title: `🎯 Slot Claimed: ${finalTitle} (#${issue.number})`,
-                    url: issue.html_url,
-                    description: `This contribution slot has been assigned to **@${assignee}**! 🎉\n\n**World**: ${worldClean}\n**Assigned To**: [\`@${assignee}\`](https://github.com/${assignee})\n**Next Step**: Branch from \`dev\` via \`contrib/${segmentClean ? segmentClean : 'world'}-${objectClean.toLowerCase().replace(/\\s+/g, '-')}\` and make 2 commits!`,
-                    color: 15105570, // Orange/Amber
-                    fields: [
-                      { name: "Assignee", value: `@${assignee}`, inline: true },
-                      { name: "Status", value: "🟡 In Progress (48h Reservation)", inline: true },
-                    ],
-                    footer: {
-                      text: `Growing Worlds • Target dev branch with two commits!`,
+              console.log(`Posting onboarding welcome comment for @${assignee} on issue #${issue.number}...`);
+
+              const welcomeComment = `## 👋 Welcome @${assignee}! You have been assigned to this slot! 🎉
+
+We are excited for your contribution to **${worldClean}**! Here is a quick reference for your next steps:
+
+### 📋 Your Contribution Details
+- **Assigned World**: \`${worldClean}\` (\`${worldId}\`)
+- **Assigned Segment**: \`${segmentClean}\`
+- **Object**: \`${objectClean}\`
+- **Feature Branch**: \`${branchName}\` (must start with \`contrib/\` from \`dev\`)
+
+### 🔐 Strict Two-Commit Workflow Reminder
+1. **Commit 1**: Add SVG asset to \`public/assets/worlds/${worldId}/\` and register in \`src/data/worlds/${worldId}/objects.ts\`.
+2. **Commit 2**: Add placement in \`src/data/worlds/${worldId}/placements.ts\` with \`segmentId: "${segmentClean}"\`.
+3. **Open PR against \`dev\`** and include \`Closes #${issue.number}\` in the description.
+
+> 💡 *Note: Assigned slots are reserved for **48 hours**. If you run into any questions or need help, feel free to ask here!* Happy coding! 🌱`;
+
+              try {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issue.number,
+                  body: welcomeComment,
+                });
+              } catch (err) {
+                console.error("Failed to post welcome comment:", err);
+              }
+
+              if (webhookUrl) {
+                console.log(`Sending 'Slot Assigned to @${assignee}' notification to Discord...`);
+                const discordPayload = {
+                  embeds: [
+                    {
+                      title: `🎯 Slot Claimed: ${finalTitle} (#${issue.number})`,
+                      url: issue.html_url,
+                      description: `This contribution slot has been assigned to **@${assignee}**! 🎉\n\n**World**: ${worldClean}\n**Assigned To**: [\`@${assignee}\`](https://github.com/${assignee})\n**Branch**: \`${branchName}\``,
+                      color: 15105570, // Orange/Amber
+                      fields: [
+                        { name: "Assignee", value: `@${assignee}`, inline: true },
+                        { name: "Status", value: "🟡 In Progress (48h Reservation)", inline: true },
+                      ],
+                      footer: {
+                        text: `Growing Worlds • Target dev branch with two commits!`,
+                      },
                     },
-                  },
-                ],
-              };
+                  ],
+                };
 
-              await fetch(webhookUrl, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(discordPayload),
-              });
-              console.log(`Discord notification sent successfully for assignee @${assignee}.`);
+                await fetch(webhookUrl, {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify(discordPayload),
+                });
+              }
+            }
+
+            // Scenario 3: Issue Closed / Merged ('closed')
+            if (action === 'closed') {
+              console.log(`Issue #${issue.number} closed.`);
+              if (webhookUrl) {
+                const discordPayload = {
+                  embeds: [
+                    {
+                      title: `🎉 Contribution Merged: ${finalTitle} (#${issue.number})`,
+                      url: issue.html_url,
+                      description: `This contribution slot has been successfully completed and merged into **${worldClean}**! 🌿\n\nThank you to the contributor for expanding our growing worlds!`,
+                      color: 65280, // Bright Green
+                      fields: [
+                        { name: "Status", value: "✅ Merged & Complete", inline: true },
+                      ],
+                      footer: {
+                        text: `Growing Worlds • Open source education in action!`,
+                      },
+                    },
+                  ],
+                };
+
+                await fetch(webhookUrl, {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify(discordPayload),
+                });
+              }
             }
