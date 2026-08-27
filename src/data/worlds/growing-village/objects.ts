@@ -14,7 +14,7 @@ export const villageObjects: WorldObject[] = [
     },
   },
   {
-    id: "village",
+    id: "wooden-cart",
     asset: "/assets/worlds/growing-village/wooden-cart.svg",
     contributor: {
       displayName: "Shen",
