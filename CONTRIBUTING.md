@@ -189,3 +189,12 @@ Do **NOT** modify existing SVG asset files in `public/assets/`, engine code (`sr
 - **"At least 2 commits are required"**: Ensure your changes are split across at least 2 commits (Commit 1 for `objects.ts`, Commit 2 for `placements.ts`).
 - **"Unexpected asset modification"**: You modified an SVG in `public/assets/`. Revert it using `git checkout -- public/assets/` and simply reference the file path from `objects.ts`.
 - **"Forbidden file modified"**: You changed files outside your assigned world. Revert unrelated files so only `objects.ts` and `placements.ts` are modified.
+
+---
+
+## 📄 Contributor Licensing
+
+By submitting a Pull Request to **Growing Worlds**, you confirm that:
+1. You have the legal right to submit your contribution.
+2. Your contribution is distributed under the repository's [MIT License](LICENSE).
+3. You have not included third-party material without compatible open-source licensing or required attribution.
