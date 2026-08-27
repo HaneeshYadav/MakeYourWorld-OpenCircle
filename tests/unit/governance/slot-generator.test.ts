@@ -7,6 +7,7 @@ import {
   TOTAL_POOL_SIZE,
 } from "../../../scripts/contribution-slot-generator";
 import { parseIssueSlotBody, isGrowingWorldsContributionIssue } from "../../../scripts/issue-lifecycle-parser";
+import { computeReplenishment, ReplenishInput } from "../../../scripts/run-replenishment";
 
 describe("Contribution Slot Pool Replenishment Generator Tests", () => {
   it("TEST 1: 20 open issues -> 0 missing slots", () => {
@@ -89,5 +90,33 @@ describe("Contribution Slot Pool Replenishment Generator Tests", () => {
       expect(c.worldName).toBeTruthy();
       expect(c.assetFile.endsWith(".svg")).toBe(true);
     }
+  });
+
+  it("TEST 10: computeReplenishment handles empty input, multiline strings, and special characters cleanly", () => {
+    const emptyInput: ReplenishInput = {
+      activeSlots: [],
+      activeAssignments: [],
+      maxPerRun: 5,
+    };
+    const result = computeReplenishment(emptyInput);
+    expect(result.openContributionCount).toBe(0);
+    expect(result.missingSlotCount).toBe(20);
+    expect(result.slotsToCreate).toHaveLength(5);
+    expect(result.generatedIssues).toHaveLength(5);
+
+    // Complex input with Unicode / special quotes
+    const complexInput: ReplenishInput = {
+      activeSlots: ["CONTRIB-SLOT #01", "CONTRIB-SLOT #02"],
+      activeAssignments: [
+        { worldId: "growing-forest", objectName: 'Butterfly "Canopy" & 🌲' },
+      ],
+      maxPerRun: 2,
+    };
+    const complexResult = computeReplenishment(complexInput);
+    expect(complexResult.openContributionCount).toBe(2);
+    expect(complexResult.missingSlotCount).toBe(18);
+    expect(complexResult.slotsToCreate).toEqual(["CONTRIB-SLOT #03", "CONTRIB-SLOT #04"]);
+    expect(complexResult.generatedIssues).toHaveLength(2);
+    expect(complexResult.generatedIssues[0].slotFormatted).toBe("CONTRIB-SLOT #03");
   });
 });

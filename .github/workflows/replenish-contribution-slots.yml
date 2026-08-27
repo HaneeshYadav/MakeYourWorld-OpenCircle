@@ -36,12 +36,17 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Execute Slot Pool Replenishment
+      - name: Prepare and Execute Slot Replenishment Engine
         uses: actions/github-script@v7
+        id: compute-replenishment
         env:
           DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
         with:
           script: |
+            const fs = require('fs');
+            const path = require('path');
+            const { execSync } = require('child_process');
+
             const eventName = context.eventName;
             const action = context.payload.action || 'dispatched';
             const closedIssue = context.payload.issue;
@@ -113,59 +118,46 @@ jobs:
 
             console.log("Active Open Slots:", activeSlots.join(", ") || "None");
 
-            // Calculate missing slots (1..20)
-            const TARGET_POOL_SIZE = 20;
-            const MAX_PER_RUN = 5;
-            const activeSet = new Set(activeSlots.map(s => {
-              const m = s.match(/(\d+)/);
-              return m ? parseInt(m[1], 10) : null;
-            }).filter(Boolean));
+            // Write input payload safely to a temporary file (no shell injection)
+            const inputPath = path.join(process.cwd(), '.replenish-input.json');
+            const outputPath = path.join(process.cwd(), '.replenish-output.json');
 
-            const missingSlotNumbers = [];
-            for (let i = 1; i <= TARGET_POOL_SIZE; i++) {
-              if (!activeSet.has(i)) {
-                missingSlotNumbers.push(i);
-              }
-            }
+            fs.writeFileSync(inputPath, JSON.stringify({
+              activeSlots,
+              activeAssignments,
+              maxPerRun: 5,
+            }, null, 2), 'utf-8');
 
-            console.log(`Missing Slot Count: ${missingSlotNumbers.length}`);
-            if (missingSlotNumbers.length === 0) {
-              console.log("✅ Contribution pool is already at full capacity (20/20). Nothing to create.");
+            console.log(`Invoking TypeScript replenishment computation script...`);
+            execSync(`npx tsx scripts/run-replenishment.ts "${inputPath}" "${outputPath}"`, { stdio: 'inherit' });
+
+            const resultRaw = fs.readFileSync(outputPath, 'utf-8');
+            const result = JSON.parse(resultRaw);
+
+            console.log(`\nReplenishment Pool Audit:`);
+            console.log(`  Target Pool:             ${result.targetPoolSize}`);
+            console.log(`  Currently Open Slots:    ${result.openContributionCount}`);
+            console.log(`  Missing Slot Count:      ${result.missingSlotCount}`);
+            console.log(`  Slots To Replenish (Run):${result.slotsToCreate.join(', ') || 'None'}\n`);
+
+            if (result.generatedIssues.length === 0) {
+              console.log("✅ Contribution pool is already at target capacity (20/20). Nothing to create.");
               return;
             }
 
-            const slotsToCreate = missingSlotNumbers.slice(0, MAX_PER_RUN);
-            console.log(`Slots to replenish in this run (max ${MAX_PER_RUN}):`, slotsToCreate.map(n => `CONTRIB-SLOT #${String(n).padStart(2, '0')}`).join(", "));
-
-            // Invoke deterministic generator script via child_process
-            const { execSync } = require('child_process');
             let createdCount = 0;
 
-            for (const slotNum of slotsToCreate) {
-              const slotFormatted = `CONTRIB-SLOT #${String(slotNum).padStart(2, '0')}`;
-              const activePayload = JSON.stringify(activeAssignments);
-
-              const scriptCmd = `npx tsx -e "import { selectFreshConcept, generateContributionSlotIssue } from './scripts/contribution-slot-generator'; const active = ${JSON.stringify(activePayload)}; const concept = selectFreshConcept(JSON.parse(active)); const res = generateContributionSlotIssue('${slotFormatted}', concept); console.log('__JSON_START__' + JSON.stringify(res) + '__JSON_END__');"`;
-
-              const out = execSync(scriptCmd, { encoding: 'utf-8' });
-              const jsonMatch = out.match(/__JSON_START__([\s\S]*?)__JSON_END__/);
-              if (!jsonMatch) {
-                console.error("Failed to generate contribution slot data:", out);
-                continue;
-              }
-
-              const generated = JSON.parse(jsonMatch[1]);
-
-              console.log("\n-------------------------------------------------");
-              console.log(`Proposed Slot:   ${slotFormatted}`);
-              console.log(`Proposed World:  ${generated.worldName} (${generated.worldId})`);
-              console.log(`Proposed Object: ${generated.objectName}`);
+            for (const generated of result.generatedIssues) {
+              console.log("-------------------------------------------------");
+              console.log(`Slot:            ${generated.slotFormatted}`);
+              console.log(`Target World:    ${generated.worldName} (${generated.worldId})`);
+              console.log(`Object Concept:  ${generated.objectName}`);
               console.log(`Proposed Title:  ${generated.title}`);
 
               if (isDryRun) {
-                console.log("ℹ️ [DRY RUN] Issue creation skipped.");
+                console.log("ℹ️ [DRY RUN ENABLED] No issues created.");
               } else {
-                console.log(`Creating new contribution issue for ${slotFormatted}...`);
+                console.log(`Creating new contribution issue for ${generated.slotFormatted}...`);
                 const createdIssue = await github.rest.issues.create({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
@@ -175,17 +167,17 @@ jobs:
                 });
                 console.log(`✅ Created Issue #${createdIssue.data.number}: ${createdIssue.data.html_url}`);
                 createdCount++;
-                activeAssignments.push({
-                  objectName: generated.objectName,
-                  worldId: generated.worldId,
-                });
               }
             }
 
             console.log("\n=================================================");
             console.log(`Pool Replenishment Summary:`);
-            console.log(`  Target Pool:     ${TARGET_POOL_SIZE}`);
-            console.log(`  Previously Open: ${openContribIssues.length}`);
+            console.log(`  Target Pool:     ${result.targetPoolSize}`);
+            console.log(`  Previously Open: ${result.openContributionCount}`);
             console.log(`  Created:         ${createdCount}`);
-            console.log(`  Total Active:    ${openContribIssues.length + createdCount} / ${TARGET_POOL_SIZE}`);
+            console.log(`  Total Active:    ${result.openContributionCount + createdCount} / ${result.targetPoolSize}`);
             console.log("=================================================");
+
+            // Cleanup temp files
+            if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
+            if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath);
