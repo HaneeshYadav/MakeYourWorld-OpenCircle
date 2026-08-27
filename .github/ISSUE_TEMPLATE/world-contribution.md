@@ -6,151 +6,177 @@ labels: ["good first issue"]
 assignees: ""
 ---
 
-# 🟢 Good First Issue: Add <Object Name> to <World Name>
+# 🌱 Good First Issue — Add <Object Name> to <World Name>
 
-> 🌱 **Welcome!** This is a beginner-friendly contribution. No previous open-source experience is required! Follow the steps below and you can complete your contribution step-by-step from start to finish.
+> 👋 **Welcome!** This is a beginner-friendly contribution to Growing Worlds.
+>
+> You do not need previous open-source experience. We will guide you through every step from claiming this issue to opening your Pull Request!
+>
+> Your job is to add **ONE** paper-cutout object to the assigned world.
+
+- 🟢 **Difficulty**: Beginner
+- ⏱️ **Estimated Time**: 15–30 minutes
 
 ---
 
 ## 🎯 Contribution Slot Summary
 
-| Field | Value |
+| Detail | Your Assignment |
 | :--- | :--- |
-| **Difficulty** | Beginner (No prior open-source experience needed) |
-| **Estimated Time** | 15–30 minutes |
-| **Contribution Slot** | `[e.g., CONTRIB-SLOT #02]` |
 | **Target World** | `[e.g., Growing Forest]` (`growing-forest`) |
-| **Target Segment** | `[e.g., forest-02]` (Sunlit Meadow) |
+| **Contribution Slot** | `[e.g., CONTRIB-SLOT #02]` |
+| **Assigned Segment** | `[e.g., forest-01]` (Ancient Canopy) |
 | **Object Name** | `[e.g., Butterfly]` |
-| **Suggested Asset File** | `public/assets/worlds/<world-name>/<object-name>.svg` |
+| **Feature Branch** | `contrib/<world-id>-<object-slug>` |
 | **PR Target Branch** | `dev` |
-| **Student Feature Branch** | `contrib/<world-name>-<object-name>` |
+| **Required Commits** | Exactly 2 |
 
 ---
 
-## 🎯 Your Task
+## 🎯 What You Are Building
 
-Your task is to add **ONE** paper-cutout object to **<World Name>** inside the assigned **<Segment Name>** (`<segment-id>`).
-
-- **Permanent Contribution**: Once merged into `dev`, your object permanently joins the living diorama, credited with your name in a paper pin badge beneath your art.
-- **Scope & Isolation**: You must strictly stay within your assigned world and segment — do not modify other worlds or existing items.
+Your contribution adds **ONE** new visual paper-cutout object to the selected Growing World!
+- Once merged into `dev`, your paper craft becomes a permanent visual part of the shared interactive diorama.
+- Your GitHub username and contributor display name will be displayed in an elegant paper pin badge right beneath your object.
 
 ---
 
-## 📁 Files You Will Change
+## 📝 Your Task
 
-All of your work is strictly contained in these specific files:
+1. **Create or add ONE themed SVG paper-cutout object**.
+2. **Register that object** in the world's `objects.ts`.
+3. **Place that object** in the assigned segment using `placements.ts`.
+4. **Keep your work separated into the required two commits**.
+5. **Open a Pull Request** targeting the `dev` branch.
 
+> ⚠️ **Important Scope Boundary**: You are adding **ONE** object only. Do not modify unrelated worlds, governance files, CI workflows, or project configuration.
+
+---
+
+## ✅ Before You Start
+
+- [ ] Read this entire issue once from top to bottom.
+- [ ] Make sure the issue is formally assigned to you before writing code.
+- [ ] Verify your assigned World and Segment ID.
+- [ ] Check the suggested object concept (or custom name).
+- [ ] Understand that student contributions require exactly **two separate commits**.
+- [ ] Remember: PRs always target the **`dev`** branch (never `main`).
+
+> 💡 *If you have not contributed to GitHub before, that's completely okay! Follow the steps below one by one.*
+
+---
+
+## 🙋 Step 1 — Claim the Issue
+
+To claim this slot, comment below:
 ```text
-Commit 1 (Asset & Object Registration):
-├── public/assets/worlds/<world-name>/<object-name>.svg  (Your paper artwork)
-└── src/data/worlds/<world-name>/objects.ts              (Object metadata & contributor attribution)
-
-Commit 2 (World Placement):
-└── src/data/worlds/<world-name>/placements.ts           (Coordinates & segment placement)
+Hi! I'd like to work on this issue. Thank you! 🙌
 ```
+A maintainer will formally assign you to the issue. Once assigned, GitHub Actions will automatically post a personalized onboarding comment with your exact branch name and assignment details. You have a **48-hour reservation window** to submit your PR.
 
 ---
 
-# 🔐 IMPORTANT — EXACTLY 2 COMMITS REQUIRED
+## 🍴 Step 2 — Fork and Clone
 
-The automated contributor validator checks this two-commit structure:
-
-### Commit 1: Asset + Object Registration
-- **MUST contain**:
-  - `public/assets/worlds/<world-name>/<object-name>.svg`
-  - `src/data/worlds/<world-name>/objects.ts`
-- **MUST NOT contain**:
-  - `src/data/worlds/<world-name>/placements.ts`
-- **Suggested Commit Message**: `feat: add <object-name> asset and object`
-
-### Commit 2: World Placement Only
-- **MUST contain**:
-  - `src/data/worlds/<world-name>/placements.ts`
-- **MUST NOT contain**:
-  - Unrelated files, extra assets, or engine files.
-- **Suggested Commit Message**: `feat: place <object-name> in <segment-id>`
-
-> ⚠️ **Do NOT squash** your commits! Keep them separate so automated CI checks can verify both steps.
-
----
-
-# 🛠️ Step-by-Step Beginner Walkthrough
-
-### Step 1: Claiming the Slot
-Comment on this issue: `I would like to work on this!`
-A maintainer will assign you to the issue. Once assigned, you have a 48-hour window to submit your PR.
-
----
-
-### Step 2: Fork and Clone the Repository
-1. Click **Fork** at the top right of this repository on GitHub.
-2. Clone your fork to your computer:
+1. Click **Fork** in the top right corner of this repository on GitHub.
+2. Clone your newly created fork to your computer:
    ```bash
-   git clone https://github.com/<your-username>/OpenCircle-Test.git
-   cd OpenCircle-Test
+   git clone https://github.com/<your-github-username>/MakeYourWorld-OpenCircle.git
+   cd MakeYourWorld-OpenCircle
    ```
-3. Add the upstream repository:
+3. Connect to the upstream repository:
    ```bash
-   git remote add upstream https://github.com/ShenSandaru/OpenCircle-Test.git
+   git remote add upstream https://github.com/ShenSandaru/MakeYourWorld-OpenCircle.git
    ```
 
 ---
 
-### Step 3: Branch from Upstream `dev`
-Always base your work on the latest `dev` branch:
+## 🌿 Step 3 — Create Your Student Feature Branch
+
+Always start fresh from the latest upstream **`dev`** branch:
 ```bash
 git checkout dev
 git fetch upstream
 git pull upstream dev
 ```
 
-Create your student feature branch using the required `contrib/` prefix:
+Create and switch to your feature branch using the required `contrib/` prefix:
 ```bash
-git checkout -b contrib/<world-name>-<object-name>
+git checkout -b contrib/<world-id>-<object-slug>
 ```
-*Example:* `git checkout -b contrib/growing-forest-butterfly`
+*Example for Growing Forest Butterfly:*
+```bash
+git checkout -b contrib/growing-forest-butterfly
+```
+
+> ℹ️ *The `contrib/*` branch prefix tells automated CI checks that this is a student contribution.*
 
 ---
 
-### Step 4: Install Dependencies
+## 📦 Step 4 — Install Dependencies
+
 ```bash
 npm install
 ```
 
 ---
 
-### Step 5: Create & Register Your Object (Commit 1)
+## 📁 Files You Will Change
+
+```text
+Commit 1 (Asset & Object Registration):
+├── public/assets/worlds/<world-id>/<object-name>.svg  (Your paper cutout artwork)
+└── src/data/worlds/<world-id>/objects.ts              (Object metadata & contributor attribution)
+
+Commit 2 (World Placement):
+└── src/data/worlds/<world-id>/placements.ts           (Coordinates & segment placement)
+```
+
+---
+
+# 🔐 IMPORTANT — EXACTLY 2 COMMITS REQUIRED
+
+The automated PR validator requires **exactly two separate commits**:
+- **Commit 1**: MUST contain your SVG asset and registration in `objects.ts`. MUST NOT contain `placements.ts`.
+- **Commit 2**: MUST contain ONLY your placement in `placements.ts`.
+- ⚠️ **Do NOT squash** your commits! Keep them separate so automated CI checks can verify both steps.
+
+---
+
+## 🎨 Step 5 — Commit 1: Create Asset & Register Object
+
 1. **Create the SVG Artwork**:
    - Create a clean 2D paper cutout style SVG (or transparent PNG) with a transparent background (<50 KB).
-   - Save it to: `public/assets/worlds/<world-name>/<object-name>.svg`.
+   - Save the file to: `public/assets/worlds/<world-id>/<object-name>.svg`.
 
-2. **Register the Object**:
-   - Open `src/data/worlds/<world-name>/objects.ts` and append your object definition:
+2. **Register in `objects.ts`**:
+   - Open `src/data/worlds/<world-id>/objects.ts` and append your object:
      ```typescript
      {
        id: "<object-name>",
-       asset: "/assets/worlds/<world-name>/<object-name>.svg",
+       asset: "/assets/worlds/<world-id>/<object-name>.svg",
        contributor: {
-         displayName: "<Your Name>",
+         displayName: "<Your Display Name>",
          githubUsername: "<your-github-username>",
        },
      },
      ```
 
-3. **Check Changes & Commit 1**:
+3. **Check Changes & Create Commit 1**:
    ```bash
    git status
    git diff
-   git add public/assets/worlds/<world-name>/<object-name>.svg
-   git add src/data/worlds/<world-name>/objects.ts
+   git add public/assets/worlds/<world-id>/<object-name>.svg
+   git add src/data/worlds/<world-id>/objects.ts
    git commit -m "feat: add <object-name> asset and object"
    ```
 
 ---
 
-### Step 6: Place Your Object in the World (Commit 2)
-1. Open `src/data/worlds/<world-name>/placements.ts` and append your placement referencing your registered `id` and assigned `segmentId`:
+## 📍 Step 6 — Commit 2: Place Your Object in the Segment
+
+1. Open `src/data/worlds/<world-id>/placements.ts`.
+2. Append your placement entry referencing your registered `id` and assigned `segmentId`:
    ```typescript
    {
      objectId: "<object-name>",
@@ -161,19 +187,21 @@ npm install
      rotation: 0,
    },
    ```
-   *(Coordinates `x` and `y` are normalized percentages from `0.0` to `100.0`)*
+   *(Coordinates `x` and `y` are normalized percentages `0.0` to `100.0`)*
 
-2. **Check Changes & Commit 2**:
+3. **Check Changes & Create Commit 2**:
    ```bash
    git status
    git diff
-   git add src/data/worlds/<world-name>/placements.ts
+   git add src/data/worlds/<world-id>/placements.ts
    git commit -m "feat: place <object-name> in <assigned-segment-id>"
    ```
 
 ---
 
-### Step 7: Verify Exactly 2 Commits
+## 🔍 Step 7 — Verify Your Two Commits
+
+Check your Git commit history:
 ```bash
 git log --oneline -2
 ```
@@ -185,72 +213,52 @@ Expected output:
 
 ---
 
-### Step 8: Run Local Quality Gates
-Make sure all checks pass locally:
+## 🧪 Step 8 — Run Local Quality Gates
+
+Run all validation checks locally to ensure zero errors:
 ```bash
+npm test
 npm run lint
 npm run typecheck
-npm test
 npm run build
 ```
 
 ---
 
-### Step 9: Visual Verification in Browser
+## 🖥️ Step 9 — Visual Verification in Your Browser
+
 Start the local Next.js development server:
 ```bash
 npm run dev
 ```
-Open `http://localhost:3000/worlds/<world-name>` in your browser to verify:
-- Your object appears in its assigned segment.
-- The paper-cutout shadow and styling render properly.
-- Your contributor name badge appears beneath the object.
+Open `http://localhost:3000/worlds/<world-id>` in your browser:
+- Verify that your object renders in its assigned segment.
+- Verify that your contributor badge displays your display name.
+- Verify that existing objects remain intact.
 
 ---
 
-### Step 10: Push and Open Pull Request
+## 🚀 Step 10 — Push and Open Pull Request
+
 1. Push your branch to your fork:
    ```bash
-   git push -u origin contrib/<world-name>-<object-name>
+   git push -u origin contrib/<world-id>-<object-name>
    ```
-
-2. On GitHub, navigate to your fork and click **Compare & pull request**:
-   - **Base branch**: `dev` *(Do NOT target `main`)*
-   - **Compare branch**: `contrib/<world-name>-<object-name>`
-
-3. In the PR description, link this issue so it automatically closes upon merge:
+2. Open a Pull Request on GitHub:
+   - **Base branch**: `dev` *(⚠️ Do NOT target `main`)*
+   - **Compare branch**: `contrib/<world-id>-<object-name>`
+3. In the PR description, connect this issue so it automatically closes upon merge:
    ```markdown
    ## 🔗 Linked Issue
    Closes #<THIS_ISSUE_NUMBER>
    ```
-   *(Example: `Closes #12`)*
+   *(Example:* `Closes #21`*)*
 
 ---
 
-# 🚫 Files You Should NOT Modify
+## 🎉 Step 11 — What Happens After Submitting
 
-Student contributors must **NOT** touch maintainer or infrastructure files:
-- `.github/`
-- `docs/`
-- `scripts/`
-- `tests/`
-- `src/app/`
-- `src/components/`
-- `src/engine/`
-- `src/schemas/`
-- `package.json` & `package-lock.json`
-
----
-
-# 📋 Final Submission Checklist
-
-- [ ] Started from latest `dev`
-- [ ] Created `contrib/<world>-<object>` branch
-- [ ] Commit 1 contains SVG asset + `objects.ts` registration
-- [ ] Commit 2 contains `placements.ts` placement only
-- [ ] Two commits remain separate (not squashed)
-- [ ] Placed in assigned segment
-- [ ] `npm test`, `npm run lint`, `npm run typecheck`, and `npm run build` passed cleanly
-- [ ] Visually verified at `http://localhost:3000/worlds/<world-name>`
-- [ ] PR targets `dev`
-- [ ] PR description contains `Closes #<ISSUE_NUMBER>`
+1. **Automated CI Validation**: GitHub Actions will automatically test your two commits, verify file boundaries, run ESLint/typecheck/build, and confirm schema integrity.
+2. **Maintainer Review**: A maintainer will review your placement and approve the PR.
+3. **Merge & Automatic Closure**: Once merged into `dev`, GitHub automatically closes this issue slot and awards your permanent spot in the diorama!
+4. **Need Help?**: If you get stuck or have questions at any step, feel free to comment right here on this issue!
