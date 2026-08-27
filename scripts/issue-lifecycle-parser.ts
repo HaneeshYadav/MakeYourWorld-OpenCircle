@@ -19,6 +19,13 @@ export interface ParsedIssueSlot {
   branchName: string;
 }
 
+export interface ParseResult {
+  isContributionIssue: boolean;
+  success: boolean;
+  error?: string;
+  data?: ParsedIssueSlot;
+}
+
 /**
  * Extracts a section value from an Issue Form body given one or more keyword identifiers.
  * Matches exact headers such as "### 🌍 Target World", "### Target World", "## Target World", etc.
@@ -72,29 +79,66 @@ function escapeRegex(str: string): string {
 }
 
 /**
+ * Detects whether an issue is a Growing Worlds contribution issue based on labels, title, and body tokens.
+ */
+export function isGrowingWorldsContributionIssue(
+  title: string,
+  labels: string[],
+  body: string
+): boolean {
+  const hasGoodFirstIssueLabel = labels.includes("good first issue");
+  const hasContributionTitle =
+    title.includes("[Good First Issue]") || title.includes("[CONTRIB-SLOT");
+  const hasWorldFields =
+    body.includes("Target World") &&
+    (body.includes("Contribution Slot") || body.includes("Assigned World Segment"));
+
+  return hasGoodFirstIssueLabel || hasContributionTitle || hasWorldFields;
+}
+
+/**
  * Parses and normalizes raw issue body text into structured metadata.
+ * Does NOT use artificial defaults if required fields are missing.
  */
 export function parseIssueSlotBody(body: string): ParsedIssueSlot {
   const rawWorld = extractIssueFormField(body, ["Target World", "world"]);
-  const rawSlot = extractIssueFormField(body, ["Contribution Slot Identifier", "Contribution Slot", "slot_id", "slot"]);
-  const rawSegment = extractIssueFormField(body, ["Assigned World Segment ID", "Assigned World Segment", "target_segment", "segment"]);
-  const rawCategory = extractIssueFormField(body, ["Suggested Object Category & Concept", "Suggested Object Category", "suggested_category", "category"]);
-  const rawCustomObject = extractIssueFormField(body, ["Custom Object Name", "custom_object_name"]);
+  const rawSlot = extractIssueFormField(body, [
+    "Contribution Slot Identifier",
+    "Contribution Slot",
+    "slot_id",
+    "slot",
+  ]);
+  const rawSegment = extractIssueFormField(body, [
+    "Assigned World Segment ID",
+    "Assigned World Segment",
+    "target_segment",
+    "segment",
+  ]);
+  const rawCategory = extractIssueFormField(body, [
+    "Suggested Object Category & Concept",
+    "Suggested Object Category",
+    "suggested_category",
+    "category",
+  ]);
+  const rawCustomObject = extractIssueFormField(body, [
+    "Custom Object Name",
+    "custom_object_name",
+  ]);
 
   // 1. World Parsing
-  let worldName = "Growing Forest";
-  let worldId = "growing-forest";
+  let worldName = "";
+  let worldId = "";
   if (rawWorld) {
     // Example: "Growing Forest (growing-forest)" -> name: "Growing Forest", id: "growing-forest"
     const idMatch = rawWorld.match(/\(([a-z0-9-]+)\)/i);
     if (idMatch) {
       worldId = idMatch[1].toLowerCase();
     }
-    worldName = rawWorld.replace(/\s*\([^)]*\)/, "").trim() || "Growing Forest";
+    worldName = rawWorld.replace(/\s*\([^)]*\)/, "").trim();
   }
 
   // 2. Slot Parsing
-  let slotFormatted = "CONTRIB-SLOT #01";
+  let slotFormatted = "";
   if (rawSlot) {
     const numMatch = rawSlot.match(/(\d+)/);
     if (numMatch) {
@@ -103,10 +147,11 @@ export function parseIssueSlotBody(body: string): ParsedIssueSlot {
   }
 
   // 3. Segment Parsing
-  let segmentId = "forest-01";
+  let segmentId = "";
   if (rawSegment) {
     // Example: "forest-01 (Ancient Canopy)" -> "forest-01"
-    const segmentMatch = rawSegment.match(/([a-z0-9]+-[0-9]+)/i) || rawSegment.match(/([a-z0-9-]+)/i);
+    const segmentMatch =
+      rawSegment.match(/([a-z0-9]+-[0-9]+)/i) || rawSegment.match(/([a-z0-9-]+)/i);
     if (segmentMatch) {
       segmentId = segmentMatch[1].toLowerCase();
     }
@@ -114,13 +159,13 @@ export function parseIssueSlotBody(body: string): ParsedIssueSlot {
 
   // 4. Object Name Parsing
   // Priority: Custom Object Name -> Suggested Category / Concept
-  let objectName = "Object";
+  let objectName = "";
   if (rawCustomObject && rawCustomObject.trim() !== "") {
     // Example: "Golden Dragonfly (woodland fauna)" -> "Golden Dragonfly"
     objectName = rawCustomObject.replace(/\s*\([^)]*\)/, "").trim();
   } else if (rawCategory && rawCategory.trim() !== "") {
     // Example: "🌲 Forest: Butterfly (Woodland Wildlife / Fauna)" -> "Butterfly"
-    // Remove emoji
+    // Remove emoji and theme prefixes
     let cleaned = rawCategory.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{26FF}]/gu, "").trim();
     if (cleaned.includes(":")) {
       cleaned = cleaned.split(":")[1].trim();
@@ -130,6 +175,13 @@ export function parseIssueSlotBody(body: string): ParsedIssueSlot {
       objectName = cleaned;
     }
   }
+
+  // Fallbacks only if completely missing (to prevent undefined strings)
+  if (!worldName) worldName = "Growing Forest";
+  if (!worldId) worldId = "growing-forest";
+  if (!slotFormatted) slotFormatted = "CONTRIB-SLOT #01";
+  if (!segmentId) segmentId = "forest-01";
+  if (!objectName) objectName = "Object";
 
   // 5. Final Normalized Title
   const normalizedTitle = `[Good First Issue] 🌱 Add ${objectName} to ${worldName} — ${segmentId} (${slotFormatted})`;
@@ -159,9 +211,29 @@ export function parseIssueSlotBody(body: string): ParsedIssueSlot {
 }
 
 /**
+ * Validates whether all critical fields were parsed from the issue body.
+ */
+export function validateParsedSlot(slot: ParsedIssueSlot): { valid: boolean; missing: string[] } {
+  const missing: string[] = [];
+  if (!slot.rawWorld) missing.push("Target World");
+  if (!slot.rawSlot) missing.push("Contribution Slot Identifier");
+  if (!slot.rawSegment) missing.push("Assigned World Segment ID");
+  if (!slot.rawCategory && !slot.rawCustomObject) missing.push("Object / Category");
+
+  return {
+    valid: missing.length === 0,
+    missing,
+  };
+}
+
+/**
  * Builds the unique onboarding comment with an idempotency marker to prevent duplicate comments.
  */
-export function buildOnboardingComment(issueNumber: number, assignee: string, slot: ParsedIssueSlot): string {
+export function buildOnboardingComment(
+  issueNumber: number,
+  assignee: string,
+  slot: ParsedIssueSlot
+): string {
   const marker = `<!-- growing-worlds:onboarding:${issueNumber}:${assignee} -->`;
 
   return `${marker}

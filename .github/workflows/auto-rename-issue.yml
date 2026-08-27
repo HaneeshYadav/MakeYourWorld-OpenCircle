@@ -2,7 +2,11 @@ name: Auto Rename Issue Slot Title & Contributor Lifecycle
 
 on:
   issues:
-    types: [opened, edited, assigned, closed]
+    types:
+      - opened
+      - edited
+      - assigned
+      - closed
   workflow_dispatch:
     inputs:
       dry_run_body:
@@ -11,20 +15,14 @@ on:
         default: ""
 
 permissions:
+  contents: read
   issues: write
 
 jobs:
   update-title-and-notify:
     runs-on: ubuntu-latest
-    if: >
-      github.event_name == 'workflow_dispatch' ||
-      contains(github.event.issue.labels.*.name, 'good first issue') ||
-      contains(github.event.issue.title, '[CONTRIB-SLOT') ||
-      contains(github.event.issue.title, '[Good First Issue]') ||
-      contains(github.event.issue.body, 'Target World') ||
-      contains(github.event.issue.body, 'Contribution Slot')
     steps:
-      - name: Parse form fields, update Issue title, post onboarding comment, and notify Discord
+      - name: Process Growing Worlds issue lifecycle
         uses: actions/github-script@v7
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
@@ -35,10 +33,33 @@ jobs:
             const issue = context.payload.issue;
             const dryRunInput = context.payload.inputs ? context.payload.inputs.dry_run_body : '';
             const body = dryRunInput || (issue ? issue.body : "") || "";
+            const issueTitle = issue ? issue.title : "";
+            const labels = issue && issue.labels ? issue.labels.map(l => typeof l === 'string' ? l : l.name) : [];
 
-            console.log(`=================================================`);
-            console.log(`Action: ${action}, Event: ${eventName}, Issue: #${issue ? issue.number : 'N/A'}`);
-            console.log(`=================================================`);
+            const hasGoodFirstIssue = labels.includes("good first issue");
+            const hasContributionTitle = issueTitle.includes("[Good First Issue]") || issueTitle.includes("[CONTRIB-SLOT");
+            const hasWorldFields = body.includes("Target World") && (body.includes("Contribution Slot") || body.includes("Assigned World Segment"));
+
+            const isContributionIssue = eventName === 'workflow_dispatch' || hasGoodFirstIssue || hasContributionTitle || hasWorldFields;
+
+            console.log("=================================================");
+            console.log("Growing Worlds Issue Lifecycle");
+            console.log("=================================================");
+            console.log(`Event:                      ${eventName}`);
+            console.log(`Action:                     ${action}`);
+            console.log(`Repository:                 ${context.repo.owner}/${context.repo.repo}`);
+            console.log(`Issue:                      ${issue ? `#${issue.number}` : 'N/A'}`);
+            console.log(`Issue URL:                  ${issue ? issue.html_url : 'N/A'}`);
+            console.log(`Title:                      ${issueTitle}`);
+            console.log(`Labels:                     ${labels.join(', ') || 'none'}`);
+            console.log(`Body present:               ${body ? 'YES' : 'NO'}`);
+            console.log(`Contribution issue detected:${isContributionIssue ? 'YES' : 'NO'}`);
+            console.log("=================================================\n");
+
+            if (!isContributionIssue) {
+              console.log("Not a Growing Worlds contribution issue. Nothing to do.");
+              return;
+            }
 
             function escapeRegex(str) {
               return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -92,19 +113,26 @@ jobs:
             const rawCategory = extractIssueFormField(body, ["Suggested Object Category & Concept", "Suggested Object Category", "suggested_category", "category"]);
             const rawCustomObject = extractIssueFormField(body, ["Custom Object Name", "custom_object_name"]);
 
+            console.log("Raw Form Fields:");
+            console.log(`  Raw World:         ${rawWorld || 'null'}`);
+            console.log(`  Raw Slot:          ${rawSlot || 'null'}`);
+            console.log(`  Raw Segment:       ${rawSegment || 'null'}`);
+            console.log(`  Raw Category:      ${rawCategory || 'null'}`);
+            console.log(`  Raw Custom Object: ${rawCustomObject || 'null'}\n`);
+
             // 1. World Parsing
-            let worldName = "Growing Forest";
-            let worldId = "growing-forest";
+            let worldName = "";
+            let worldId = "";
             if (rawWorld) {
               const idMatch = rawWorld.match(/\(([a-z0-9-]+)\)/i);
               if (idMatch) {
                 worldId = idMatch[1].toLowerCase();
               }
-              worldName = rawWorld.replace(/\s*\([^)]*\)/, "").trim() || "Growing Forest";
+              worldName = rawWorld.replace(/\s*\([^)]*\)/, "").trim();
             }
 
             // 2. Slot Parsing
-            let slotFormatted = "CONTRIB-SLOT #01";
+            let slotFormatted = "";
             if (rawSlot) {
               const numMatch = rawSlot.match(/(\d+)/);
               if (numMatch) {
@@ -113,7 +141,7 @@ jobs:
             }
 
             // 3. Segment Parsing
-            let segmentId = "forest-01";
+            let segmentId = "";
             if (rawSegment) {
               const segmentMatch = rawSegment.match(/([a-z0-9]+-[0-9]+)/i) || rawSegment.match(/([a-z0-9-]+)/i);
               if (segmentMatch) {
@@ -122,7 +150,7 @@ jobs:
             }
 
             // 4. Object Name Parsing
-            let objectName = "Object";
+            let objectName = "";
             if (rawCustomObject && rawCustomObject.trim() !== "") {
               objectName = rawCustomObject.replace(/\s*\([^)]*\)/, "").trim();
             } else if (rawCategory && rawCategory.trim() !== "") {
@@ -136,20 +164,24 @@ jobs:
               }
             }
 
+            if (!worldName || !slotFormatted || !segmentId || !objectName) {
+              console.error("❌ Contribution issue parsing failed. Missing critical fields:");
+              console.error(`  worldName: '${worldName}', slotFormatted: '${slotFormatted}', segmentId: '${segmentId}', objectName: '${objectName}'`);
+              return;
+            }
+
             const normalizedTitle = `[Good First Issue] 🌱 Add ${objectName} to ${worldName} — ${segmentId} (${slotFormatted})`;
             const objectSlug = objectName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
             const branchName = `contrib/${worldId}-${objectSlug || "object"}`;
 
-            console.log("\nParsed fields:");
-            console.log(`  World: ${worldName}`);
-            console.log(`  World ID: ${worldId}`);
-            console.log(`  Slot: ${slotFormatted}`);
-            console.log(`  Segment: ${segmentId}`);
-            console.log(`  Object: ${objectName}`);
-            console.log(`\nNormalized title:`);
-            console.log(`  ${normalizedTitle}`);
-            console.log(`\nBranch:`);
-            console.log(`  ${branchName}\n`);
+            console.log("Parsed Metadata:");
+            console.log(`  World:            ${worldName}`);
+            console.log(`  World ID:         ${worldId}`);
+            console.log(`  Slot:             ${slotFormatted}`);
+            console.log(`  Segment:          ${segmentId}`);
+            console.log(`  Object:           ${objectName}`);
+            console.log(`\nNormalized Title:   ${normalizedTitle}`);
+            console.log(`Branch Name:        ${branchName}\n`);
 
             // Safe Dry-Run Mode for workflow_dispatch
             if (eventName === 'workflow_dispatch' && !issue) {

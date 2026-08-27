@@ -2,6 +2,8 @@ import { describe, it, expect } from "vitest";
 import {
   extractIssueFormField,
   parseIssueSlotBody,
+  validateParsedSlot,
+  isGrowingWorldsContributionIssue,
   buildOnboardingComment,
   buildCompletionComment,
 } from "../../../scripts/issue-lifecycle-parser";
@@ -15,7 +17,7 @@ Growing Forest (growing-forest)
 
 ### 🏷️ Contribution Slot Identifier
 
-CONTRIB-SLOT #02
+CONTRIB-SLOT #01
 
 ### 📍 Assigned World Segment ID
 
@@ -51,7 +53,7 @@ Add ONE paper-cutout object to Growing Forest inside forest-01.
 
   it("TEST 2: correctly parses Contribution Slot Identifier", () => {
     const parsed = parseIssueSlotBody(sampleIssueFormBody);
-    expect(parsed.slotFormatted).toBe("CONTRIB-SLOT #02");
+    expect(parsed.slotFormatted).toBe("CONTRIB-SLOT #01");
   });
 
   it("TEST 3: correctly parses Assigned World Segment ID", () => {
@@ -81,7 +83,7 @@ Add ONE paper-cutout object to Growing Forest inside forest-01.
   it("TEST 7: produces the standardized, normalized title", () => {
     const parsed = parseIssueSlotBody(sampleIssueFormBody);
     expect(parsed.normalizedTitle).toBe(
-      "[Good First Issue] 🌱 Add Butterfly to Growing Forest — forest-01 (CONTRIB-SLOT #02)"
+      "[Good First Issue] 🌱 Add Butterfly to Growing Forest — forest-01 (CONTRIB-SLOT #01)"
     );
   });
 
@@ -117,17 +119,57 @@ Add ONE paper-cutout object to Growing Forest inside forest-01.
 
   it("TEST 11: onboarding comment contains unique idempotency marker", () => {
     const parsed = parseIssueSlotBody(sampleIssueFormBody);
-    const comment = buildOnboardingComment(19, "student-dev", parsed);
-    expect(comment).toContain("<!-- growing-worlds:onboarding:19:student-dev -->");
+    const comment = buildOnboardingComment(21, "student-dev", parsed);
+    expect(comment).toContain("<!-- growing-worlds:onboarding:21:student-dev -->");
     expect(comment).toContain("@student-dev");
     expect(comment).toContain("contrib/growing-forest-butterfly");
-    expect(comment).toContain("Closes #19");
+    expect(comment).toContain("Closes #21");
   });
 
   it("TEST 12: completion comment contains unique idempotency marker", () => {
     const parsed = parseIssueSlotBody(sampleIssueFormBody);
-    const comment = buildCompletionComment(19, parsed);
-    expect(comment).toContain("<!-- growing-worlds:completion:19 -->");
+    const comment = buildCompletionComment(21, parsed);
+    expect(comment).toContain("<!-- growing-worlds:completion:21 -->");
     expect(comment).toContain("Growing Forest");
+  });
+
+  it("TEST 13: accurately parses all 10 world suggested categories", () => {
+    const testWorlds = [
+      { world: "Growing Universe (growing-universe)", cat: "🌌 Universe: Spiral Galaxy (Deep Space Nebula)", expectedObj: "Spiral Galaxy" },
+      { world: "Growing Ocean (growing-ocean)", cat: "🌊 Ocean: Research Submarine (Marine Exploration)", expectedObj: "Research Submarine" },
+      { world: "Growing City (growing-city)", cat: "🏙️ City: Paper Tram (Transit Rail)", expectedObj: "Paper Tram" },
+      { world: "Growing Village (growing-village)", cat: "🏡 Village: Stone Well (Village Landmark)", expectedObj: "Stone Well" },
+      { world: "Growing Island (growing-island)", cat: "🏝️ Island: Island Lighthouse (Coastal Landmark)", expectedObj: "Island Lighthouse" },
+      { world: "Growing Farm (growing-farm)", cat: "🚜 Farm: Pasture Windmill (Farm Landmark)", expectedObj: "Pasture Windmill" },
+      { world: "Growing Campus (growing-campus)", cat: "🏛️ Campus: Campus Telescope (Observatory Instrument)", expectedObj: "Campus Telescope" },
+      { world: "Fantasy World (fantasy-world)", cat: "🔮 Fantasy: Dragon Egg (Mythical Artifact)", expectedObj: "Dragon Egg" },
+      { world: "Alien Planet (alien-planet)", cat: "🪐 Alien: Surface Rover (Exploration Vehicle)", expectedObj: "Surface Rover" },
+    ];
+
+    for (const tw of testWorlds) {
+      const body = `
+### 🌍 Target World\n${tw.world}\n\n### 🏷️ Contribution Slot Identifier\nCONTRIB-SLOT #03\n\n### 📍 Assigned World Segment ID\nseg-01\n\n### 🎨 Suggested Object Category & Concept\n${tw.cat}\n`;
+      const parsed = parseIssueSlotBody(body);
+      expect(parsed.objectName).toBe(tw.expectedObj);
+      expect(validateParsedSlot(parsed).valid).toBe(true);
+    }
+  });
+
+  it("TEST 14: detects Growing Worlds issues correctly", () => {
+    expect(
+      isGrowingWorldsContributionIssue("Random bug", [], "Some description")
+    ).toBe(false);
+
+    expect(
+      isGrowingWorldsContributionIssue("Any title", ["good first issue"], "Some description")
+    ).toBe(true);
+
+    expect(
+      isGrowingWorldsContributionIssue(
+        "[Good First Issue] 🌱 Add a <Object Name> to <World Name>",
+        [],
+        sampleIssueFormBody
+      )
+    ).toBe(true);
   });
 });
