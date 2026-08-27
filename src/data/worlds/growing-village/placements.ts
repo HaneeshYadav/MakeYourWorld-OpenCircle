@@ -13,4 +13,12 @@ export const villagePlacements: ObjectPlacement[] = [
     scale: 0.95,
     rotation: -2,
   },
+  {
+    objectId: "wooden-cart",
+    segmentId: "village-01",
+    x: 60,
+    y: 70,
+    scale: 1,
+    rotation: 10,
+  },
 ];
