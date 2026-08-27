@@ -3,6 +3,12 @@ name: Auto Rename Issue Slot Title & Contributor Lifecycle
 on:
   issues:
     types: [opened, edited, assigned, closed]
+  workflow_dispatch:
+    inputs:
+      dry_run_body:
+        description: "Sample issue body markdown to test parser without modifying real issues"
+        required: false
+        default: ""
 
 permissions:
   issues: write
@@ -10,7 +16,13 @@ permissions:
 jobs:
   update-title-and-notify:
     runs-on: ubuntu-latest
-    if: contains(github.event.issue.labels.*.name, 'good first issue') || contains(github.event.issue.title, '[CONTRIB-SLOT') || contains(github.event.issue.title, '[Good First Issue]')
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      contains(github.event.issue.labels.*.name, 'good first issue') ||
+      contains(github.event.issue.title, '[CONTRIB-SLOT') ||
+      contains(github.event.issue.title, '[Good First Issue]') ||
+      contains(github.event.issue.body, 'Target World') ||
+      contains(github.event.issue.body, 'Contribution Slot')
     steps:
       - name: Parse form fields, update Issue title, post onboarding comment, and notify Discord
         uses: actions/github-script@v7
@@ -18,214 +30,333 @@ jobs:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
           script: |
+            const eventName = context.eventName;
+            const action = context.payload.action || 'dispatched';
             const issue = context.payload.issue;
-            const action = context.payload.action;
-            const body = issue.body || "";
+            const dryRunInput = context.payload.inputs ? context.payload.inputs.dry_run_body : '';
+            const body = dryRunInput || (issue ? issue.body : "") || "";
 
-            console.log(`Action: ${action}, Issue #${issue.number}`);
+            console.log(`=================================================`);
+            console.log(`Action: ${action}, Event: ${eventName}, Issue: #${issue ? issue.number : 'N/A'}`);
+            console.log(`=================================================`);
 
-            // Robust multi-line/markdown field extractor
-            function extractSection(headingKeywords) {
-              for (const keyword of headingKeywords) {
-                const regex = new RegExp(`(?:###?\\s*.*${keyword}.*)[\\r\\n]+([\\s\\S]*?)(?=(?:\\n###?|\\n---|\\n\\*\\*|$))`, 'i');
-                const match = body.match(regex);
+            function escapeRegex(str) {
+              return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+            }
+
+            function extractIssueFormField(docBody, keywords) {
+              if (!docBody) return null;
+
+              for (const keyword of keywords) {
+                const regex = new RegExp(
+                  `(?:^|\\n)#{1,4}\\s*[^\\r\\n]*?${escapeRegex(keyword)}[^\\r\\n]*[\\r\\n]+([\\s\\S]*?)(?=(?:\\n#{1,4}\\s+|\\n---|\\n\\*\\*|$))`,
+                  "i"
+                );
+                const match = docBody.match(regex);
                 if (match && match[1]) {
-                  const cleaned = match[1]
-                    .split('\n')
-                    .map(line => line.trim())
-                    .filter(line => line.length > 0 && !line.startsWith('>'))[0];
-                  if (cleaned && cleaned !== '_No response_') {
-                    return cleaned;
+                  const lines = match[1]
+                    .split("\n")
+                    .map((l) => l.trim())
+                    .filter((l) => l.length > 0 && !l.startsWith(">"));
+
+                  if (lines.length > 0) {
+                    const firstLine = lines[0];
+                    if (firstLine !== "_No response_" && firstLine !== "No response" && firstLine !== "None") {
+                      return firstLine;
+                    }
                   }
                 }
               }
+
+              for (const keyword of keywords) {
+                const listRegex = new RegExp(
+                  `(?:^|\\n)[-*]\\s*\\*\\*[^\\r\\n]*?${escapeRegex(keyword)}[^\\r\\n]*?\\*\\*:\\s*` +
+                    `(?:\\[e\\.g\\.,?\\s*)?([^\\]\\r\\n]+?)(?:\\])?(?=[\\r\\n]|$)`,
+                  "i"
+                );
+                const match = docBody.match(listRegex);
+                if (match && match[1]) {
+                  const val = match[1].trim();
+                  if (val && val !== "_No response_" && val !== "No response") {
+                    return val;
+                  }
+                }
+              }
+
               return null;
             }
 
-            const worldField = extractSection(['Target World', 'world']);
-            const slotField = extractSection(['Contribution Slot', 'slot_id', 'slot']);
-            const segmentField = extractSection(['Assigned World Segment', 'target_segment', 'segment']);
-            const categoryField = extractSection(['Suggested Object Category', 'suggested_category', 'category']);
-            const customObjField = extractSection(['Custom Object Name', 'custom_object_name']);
+            const rawWorld = extractIssueFormField(body, ["Target World", "world"]);
+            const rawSlot = extractIssueFormField(body, ["Contribution Slot Identifier", "Contribution Slot", "slot_id", "slot"]);
+            const rawSegment = extractIssueFormField(body, ["Assigned World Segment ID", "Assigned World Segment", "target_segment", "segment"]);
+            const rawCategory = extractIssueFormField(body, ["Suggested Object Category & Concept", "Suggested Object Category", "suggested_category", "category"]);
+            const rawCustomObject = extractIssueFormField(body, ["Custom Object Name", "custom_object_name"]);
 
-            // Extract slot number (e.g. "CONTRIB-SLOT #01", "#02", "1")
-            let slotFormatted = 'CONTRIB-SLOT #01';
-            if (slotField) {
-              const numMatch = slotField.match(/(\d+)/);
+            // 1. World Parsing
+            let worldName = "Growing Forest";
+            let worldId = "growing-forest";
+            if (rawWorld) {
+              const idMatch = rawWorld.match(/\(([a-z0-9-]+)\)/i);
+              if (idMatch) {
+                worldId = idMatch[1].toLowerCase();
+              }
+              worldName = rawWorld.replace(/\s*\([^)]*\)/, "").trim() || "Growing Forest";
+            }
+
+            // 2. Slot Parsing
+            let slotFormatted = "CONTRIB-SLOT #01";
+            if (rawSlot) {
+              const numMatch = rawSlot.match(/(\d+)/);
               if (numMatch) {
-                slotFormatted = `CONTRIB-SLOT #${numMatch[1].padStart(2, '0')}`;
+                slotFormatted = `CONTRIB-SLOT #${numMatch[1].padStart(2, "0")}`;
               }
             }
 
-            // Clean world name & world id
-            let worldClean = 'World';
-            let worldId = 'growing-forest';
-            if (worldField) {
-              worldClean = worldField.replace(/\s*\([^)]*\)/, '').trim();
-              const worldIdMatch = worldField.match(/\(([a-z0-9-]+)\)/i);
-              if (worldIdMatch) {
-                worldId = worldIdMatch[1];
-              }
-            }
-
-            // Clean segment
-            let segmentClean = '';
-            if (segmentField) {
-              const segmentMatch = segmentField.match(/([a-z0-9]+-[0-9]+)/i) || segmentField.match(/([a-z0-9-]+)/i);
+            // 3. Segment Parsing
+            let segmentId = "forest-01";
+            if (rawSegment) {
+              const segmentMatch = rawSegment.match(/([a-z0-9]+-[0-9]+)/i) || rawSegment.match(/([a-z0-9-]+)/i);
               if (segmentMatch) {
-                segmentClean = segmentMatch[1];
+                segmentId = segmentMatch[1].toLowerCase();
               }
             }
 
-            // Clean object name
-            let objectClean = 'Object';
-            if (customObjField && customObjField !== '_No response_' && customObjField.trim() !== '') {
-              objectClean = customObjField.replace(/\s*\([^)]*\)/, '').trim();
-            } else if (categoryField && categoryField !== '_No response_') {
-              const afterColon = categoryField.includes(':') ? categoryField.split(':')[1] : categoryField;
-              objectClean = afterColon.replace(/\s*\([^)]*\)/, '').trim();
+            // 4. Object Name Parsing
+            let objectName = "Object";
+            if (rawCustomObject && rawCustomObject.trim() !== "") {
+              objectName = rawCustomObject.replace(/\s*\([^)]*\)/, "").trim();
+            } else if (rawCategory && rawCategory.trim() !== "") {
+              let cleaned = rawCategory.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{26FF}]/gu, "").trim();
+              if (cleaned.includes(":")) {
+                cleaned = cleaned.split(":")[1].trim();
+              }
+              cleaned = cleaned.replace(/\s*\([^)]*\)/, "").trim();
+              if (cleaned) {
+                objectName = cleaned;
+              }
             }
 
-            // Standardized polished title format
-            const finalTitle = `[Good First Issue] 🌱 Add ${objectClean} to ${worldClean}${segmentClean ? ` — ${segmentClean}` : ''} (${slotFormatted})`;
+            const normalizedTitle = `[Good First Issue] 🌱 Add ${objectName} to ${worldName} — ${segmentId} (${slotFormatted})`;
+            const objectSlug = objectName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+            const branchName = `contrib/${worldId}-${objectSlug || "object"}`;
 
+            console.log("\nParsed fields:");
+            console.log(`  World: ${worldName}`);
+            console.log(`  World ID: ${worldId}`);
+            console.log(`  Slot: ${slotFormatted}`);
+            console.log(`  Segment: ${segmentId}`);
+            console.log(`  Object: ${objectName}`);
+            console.log(`\nNormalized title:`);
+            console.log(`  ${normalizedTitle}`);
+            console.log(`\nBranch:`);
+            console.log(`  ${branchName}\n`);
+
+            // Safe Dry-Run Mode for workflow_dispatch
+            if (eventName === 'workflow_dispatch' && !issue) {
+              console.log("ℹ️ workflow_dispatch dry run completed. No real issues modified.");
+              return;
+            }
+
+            // -------------------------------------------------------------
+            // TITLE NORMALIZATION (on 'opened' or 'edited')
+            // -------------------------------------------------------------
             if (action === 'opened' || action === 'edited') {
-              if (issue.title !== finalTitle) {
-                console.log(`Renaming issue #${issue.number} title to: "${finalTitle}"`);
+              if (issue.title !== normalizedTitle) {
+                console.log(`Title update: Renaming issue #${issue.number} to: "${normalizedTitle}"`);
                 await github.rest.issues.update({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   issue_number: issue.number,
-                  title: finalTitle,
+                  title: normalizedTitle,
                 });
+                console.log("Title update: SUCCESS");
               } else {
-                console.log(`Issue #${issue.number} already has formatted title.`);
+                console.log("Title update: SKIPPED — already normalized");
               }
             }
 
             // -------------------------------------------------------------
-            // ONBOARDING COMMENT & DISCORD NOTIFICATION TRIGGER
+            // DISCORD NOTIFICATIONS & ONBOARDING / COMPLETION COMMENTS
             // -------------------------------------------------------------
             const webhookUrl = process.env.DISCORD_WEBHOOK;
 
             // Scenario 1: New Slot Opened
             if (action === 'opened') {
               if (webhookUrl) {
-                console.log("Sending 'New Contribution Slot' notification to Discord...");
-                const discordPayload = {
-                  embeds: [
-                    {
-                      title: `🌿 New World Slot #${issue.number}: ${finalTitle}`,
-                      url: issue.html_url,
-                      description: `A new reusable student contribution slot is open for **${worldClean}**!\n\n**World**: ${worldClean}\n**Segment**: \`${segmentClean}\`\n**Object**: ${objectClean}\n**Slot**: \`${slotFormatted}\``,
-                      color: 3066993, // Green
-                      fields: [
-                        { name: "Repository", value: context.repo.repo, inline: true },
-                        { name: "Status", value: "🟢 Available (Claimable)", inline: true },
-                      ],
-                      footer: {
-                        text: `Growing Worlds Onboarding • Comment on Issue #${issue.number} to claim!`,
+                try {
+                  console.log("Sending 'New Contribution Slot' notification to Discord...");
+                  const discordPayload = {
+                    embeds: [
+                      {
+                        title: `🌿 New World Slot #${issue.number}: ${normalizedTitle}`,
+                        url: issue.html_url,
+                        description: `A new reusable student contribution slot is open for **${worldName}**!\n\n**World**: ${worldName}\n**Segment**: \`${segmentId}\`\n**Object**: ${objectName}\n**Slot**: \`${slotFormatted}\``,
+                        color: 3066993, // Green
+                        fields: [
+                          { name: "Repository", value: context.repo.repo, inline: true },
+                          { name: "Status", value: "🟢 Available (Claimable)", inline: true },
+                        ],
+                        footer: {
+                          text: `Growing Worlds Onboarding • Comment on Issue #${issue.number} to claim!`,
+                        },
                       },
-                    },
-                  ],
-                };
+                    ],
+                  };
 
-                await fetch(webhookUrl, {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify(discordPayload),
-                });
+                  await fetch(webhookUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(discordPayload),
+                  });
+                } catch (err) {
+                  console.warn("Discord notification error (non-fatal):", err.message);
+                }
               }
             }
 
             // Scenario 2: Slot Assigned to Contributor ('assigned')
             if (action === 'assigned') {
               const assignee = context.payload.assignee ? context.payload.assignee.login : (issue.assignees && issue.assignees[0] ? issue.assignees[0].login : 'Student');
-              const branchName = `contrib/${worldId}-${objectClean.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+              const marker = `<!-- growing-worlds:onboarding:${issue.number}:${assignee} -->`;
 
-              console.log(`Posting onboarding welcome comment for @${assignee} on issue #${issue.number}...`);
+              console.log(`Checking existing comments on issue #${issue.number} for onboarding marker...`);
+              const existingComments = await github.rest.issues.listComments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+              });
 
-              const welcomeComment = `## 👋 Welcome @${assignee}! You have been assigned to this slot! 🎉
+              const alreadyCommented = existingComments.data.some((c) => c.body && c.body.includes(marker));
 
-We are excited for your contribution to **${worldClean}**! Here is a quick reference for your next steps:
+              if (alreadyCommented) {
+                console.log(`Onboarding comment for @${assignee} already exists on issue #${issue.number}. Skipping duplicate.`);
+              } else {
+                console.log(`Posting onboarding welcome comment for @${assignee} on issue #${issue.number}...`);
+                const welcomeComment = `${marker}
+## 👋 Welcome @${assignee}! You have been assigned to this slot! 🎉
+
+We are excited for your contribution to **${worldName}**! Here is a quick reference for your next steps:
 
 ### 📋 Your Contribution Details
-- **Assigned World**: \`${worldClean}\` (\`${worldId}\`)
-- **Assigned Segment**: \`${segmentClean}\`
-- **Object**: \`${objectClean}\`
+- **Assigned World**: \`${worldName}\` (\`${worldId}\`)
+- **Assigned Segment**: \`${segmentId}\`
+- **Object**: \`${objectName}\`
 - **Feature Branch**: \`${branchName}\` (must start with \`contrib/\` from \`dev\`)
 
 ### 🔐 Strict Two-Commit Workflow Reminder
 1. **Commit 1**: Add SVG asset to \`public/assets/worlds/${worldId}/\` and register in \`src/data/worlds/${worldId}/objects.ts\`.
-2. **Commit 2**: Add placement in \`src/data/worlds/${worldId}/placements.ts\` with \`segmentId: "${segmentClean}"\`.
+2. **Commit 2**: Add placement in \`src/data/worlds/${worldId}/placements.ts\` with \`segmentId: "${segmentId}"\`.
 3. **Open PR against \`dev\`** and include \`Closes #${issue.number}\` in the description.
 
 > 💡 *Note: Assigned slots are reserved for **48 hours**. If you run into any questions or need help, feel free to ask here!* Happy coding! 🌱`;
 
-              try {
-                await github.rest.issues.createComment({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: issue.number,
-                  body: welcomeComment,
-                });
-              } catch (err) {
-                console.error("Failed to post welcome comment:", err);
+                try {
+                  await github.rest.issues.createComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: issue.number,
+                    body: welcomeComment,
+                  });
+                  console.log("Onboarding comment: POSTED successfully.");
+                } catch (err) {
+                  console.error("Failed to post welcome comment:", err);
+                }
               }
 
               if (webhookUrl) {
-                console.log(`Sending 'Slot Assigned to @${assignee}' notification to Discord...`);
-                const discordPayload = {
-                  embeds: [
-                    {
-                      title: `🎯 Slot Claimed: ${finalTitle} (#${issue.number})`,
-                      url: issue.html_url,
-                      description: `This contribution slot has been assigned to **@${assignee}**! 🎉\n\n**World**: ${worldClean}\n**Assigned To**: [\`@${assignee}\`](https://github.com/${assignee})\n**Branch**: \`${branchName}\``,
-                      color: 15105570, // Orange/Amber
-                      fields: [
-                        { name: "Assignee", value: `@${assignee}`, inline: true },
-                        { name: "Status", value: "🟡 In Progress (48h Reservation)", inline: true },
-                      ],
-                      footer: {
-                        text: `Growing Worlds • Target dev branch with two commits!`,
+                try {
+                  console.log(`Sending 'Slot Assigned to @${assignee}' notification to Discord...`);
+                  const discordPayload = {
+                    embeds: [
+                      {
+                        title: `🎯 Slot Claimed: ${normalizedTitle} (#${issue.number})`,
+                        url: issue.html_url,
+                        description: `This contribution slot has been assigned to **@${assignee}**! 🎉\n\n**World**: ${worldName}\n**Assigned To**: [\`@${assignee}\`](https://github.com/${assignee})\n**Branch**: \`${branchName}\``,
+                        color: 15105570, // Orange/Amber
+                        fields: [
+                          { name: "Assignee", value: `@${assignee}`, inline: true },
+                          { name: "Status", value: "🟡 In Progress (48h Reservation)", inline: true },
+                        ],
+                        footer: {
+                          text: `Growing Worlds • Target dev branch with two commits!`,
+                        },
                       },
-                    },
-                  ],
-                };
+                    ],
+                  };
 
-                await fetch(webhookUrl, {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify(discordPayload),
-                });
+                  await fetch(webhookUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(discordPayload),
+                  });
+                } catch (err) {
+                  console.warn("Discord notification error (non-fatal):", err.message);
+                }
               }
             }
 
             // Scenario 3: Issue Closed / Merged ('closed')
             if (action === 'closed') {
               console.log(`Issue #${issue.number} closed.`);
-              if (webhookUrl) {
-                const discordPayload = {
-                  embeds: [
-                    {
-                      title: `🎉 Contribution Merged: ${finalTitle} (#${issue.number})`,
-                      url: issue.html_url,
-                      description: `This contribution slot has been successfully completed and merged into **${worldClean}**! 🌿\n\nThank you to the contributor for expanding our growing worlds!`,
-                      color: 65280, // Bright Green
-                      fields: [
-                        { name: "Status", value: "✅ Merged & Complete", inline: true },
-                      ],
-                      footer: {
-                        text: `Growing Worlds • Open source education in action!`,
-                      },
-                    },
-                  ],
-                };
+              const completionMarker = `<!-- growing-worlds:completion:${issue.number} -->`;
 
-                await fetch(webhookUrl, {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify(discordPayload),
-                });
+              console.log(`Checking existing comments on issue #${issue.number} for completion marker...`);
+              const existingComments = await github.rest.issues.listComments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+              });
+
+              const alreadyCelebrated = existingComments.data.some((c) => c.body && c.body.includes(completionMarker));
+
+              if (!alreadyCelebrated) {
+                console.log(`Posting completion comment on issue #${issue.number}...`);
+                const completionComment = `${completionMarker}
+## 🎉 Contribution Complete & Merged!
+
+This contribution slot has been successfully completed and merged into **${worldName}**! 🌿
+
+Thank you to the contributor for expanding our growing worlds! Your paper cutout is now a permanent part of the shared diorama.`;
+
+                try {
+                  await github.rest.issues.createComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: issue.number,
+                    body: completionComment,
+                  });
+                  console.log("Completion comment: POSTED successfully.");
+                } catch (err) {
+                  console.error("Failed to post completion comment:", err);
+                }
+              }
+
+              if (webhookUrl) {
+                try {
+                  const discordPayload = {
+                    embeds: [
+                      {
+                        title: `🎉 Contribution Merged: ${normalizedTitle} (#${issue.number})`,
+                        url: issue.html_url,
+                        description: `This contribution slot has been successfully completed and merged into **${worldName}**! 🌿\n\nThank you to the contributor for expanding our growing worlds!`,
+                        color: 65280, // Bright Green
+                        fields: [
+                          { name: "Status", value: "✅ Merged & Complete", inline: true },
+                        ],
+                        footer: {
+                          text: `Growing Worlds • Open source education in action!`,
+                        },
+                      },
+                    ],
+                  };
+
+                  await fetch(webhookUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(discordPayload),
+                  });
+                } catch (err) {
+                  console.warn("Discord notification error (non-fatal):", err.message);
+                }
               }
             }
