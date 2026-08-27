@@ -1,111 +1,86 @@
-# Growing Worlds — Repository File Structure & Architecture Map
+# Project File Structure & Development Guidelines
 
-This document outlines the complete architectural organization and directory hierarchy for the **Growing Worlds** codebase.
+This document outlines the directory structure and architectural patterns used in **Growing Worlds**. All future features, world additions, and code changes should strictly adhere to these guidelines to ensure codebase consistency, maintainability, and clear separation between maintainer and contributor zones.
 
 ---
 
-## 🏛️ High-Level Directory Overview
+## 📁 Directory Structure Overview
 
 ```
-.
-├── .agents/                      # AI Agent workspace guidelines, custom skills & workflows
-├── .github/                      # GitHub issue templates, PR template, and GitHub Actions CI/CD workflows
-├── docs/                         # Comprehensive engineering, design, and architecture documentation
+├── .agents/                      # AI Agent workspace rules, skills, and runbooks
+├── .github/                      # Issue templates, PR templates, and GitHub Actions CI/CD workflows
+│   ├── ISSUE_TEMPLATE/           # Structured issue templates for world contribution slots
+│   └── workflows/                # Automation workflows (CI, auto-rename-issue, replenish-slots)
+├── docs/                         # Architecture, design tokens, and developer documentation
 │   ├── architecture/             # Engine specifications, data schemas, contribution flows, and world catalogs
 │   ├── design/                   # Paper-collage design language and UI principles
 │   └── development/              # Setup instructions, testing guidelines, and GitHub settings
 ├── public/                       # Static public assets
 │   └── assets/
-│       └── worlds/               # [CONTRIBUTOR REUSE ZONE] Curated paper-cutout SVGs & segment backdrops
+│       └── worlds/               # [CONTRIBUTOR REUSE ZONE] Pre-curated paper-cutout SVGs & backdrops
 ├── src/                          # Next.js App Router source code
-│   ├── app/                      # Pages, layouts, error routes, and API endpoints
-│   ├── components/               # Global UI, navigation, world dioramas, and modals
-│   ├── config/                   # Static site configuration and metadata registry
+│   ├── app/                      # Next.js App Router (pages, layouts, and route-specific UI)
+│   │   ├── api/                  # Server-side API endpoints (e.g. /api/github/stats)
+│   │   ├── dev/                  # Internal development test harnesses (/dev/density, /dev/world-engine)
+│   │   ├── how-to-contribute/    # Route: /how-to-contribute (contributor onboarding guide)
+│   │   ├── worlds/               # Route: /worlds (all worlds gallery)
+│   │   │   └── [worldId]/        # Dynamic route: /worlds/[worldId] (individual 2D diorama explorer)
+│   │   ├── globals.css           # Global Tailwind CSS and CSS variables
+│   │   ├── layout.tsx            # Root application layout (Navbar, Footer, Providers)
+│   │   ├── not-found.tsx         # Custom 404 page
+│   │   └── page.tsx              # Root homepage route (Hero diorama & feature paths)
+│   ├── components/               # Shared global components & UI primitives
+│   │   ├── ui/                   # Reusable UI component primitives (shadcn/ui buttons, dialogs)
+│   │   ├── world/                # World explorer UI (cards, preview dioramas, fullscreen viewer)
+│   │   ├── CommunityStats.tsx    # Live GitHub community stats indicator badge
+│   │   ├── footer.tsx            # Global application footer
+│   │   └── navigation.tsx        # Sticky global navigation bar
+│   ├── config/                   # Static site configuration and metadata registry (site.ts)
 │   ├── data/                     # [CONTRIBUTOR ZONE] Declarative world definitions, objects, and placements
-│   ├── engine/                   # [MAINTAINER ZONE] Shared 2D World Rendering Engine & coordinate math
-│   ├── lib/                      # Shared utility functions (styling, tailwind merge)
-│   └── schemas/                  # Zod runtime validation schemas for world, object, and placement data
+│   │   └── worlds/               # 10 active paper worlds (forest, universe, ocean, city, etc.)
+│   │       └── <world-id>/
+│   │           ├── world.config.ts # World metadata, theme, and segment definitions
+│   │           ├── objects.ts    # [Step 1] Contributed object registrations referencing existing SVGs
+│   │           └── placements.ts # [Step 2] World placements (segmentId, coordinates, rotation, scale)
+│   ├── engine/                   # [MAINTAINER ZONE] Shared 2D World Rendering Engine
+│   │   ├── World.tsx             # Master container coordinating segment navigation and parallax layers
+│   │   ├── WorldSegment.tsx      # Segment viewport rendering background, midground, and foreground
+│   │   ├── WorldLayer.tsx        # Layer container managing z-index and parallax depth
+│   │   ├── WorldCutout.tsx       # Paper cutout renderer with drop shadows and attribution tags
+│   │   ├── math.ts               # Percentage coordinate scaling, position clamping, and transform logic
+│   │   └── types.ts              # Core engine type definitions
+│   ├── lib/                      # Shared helper utilities (cn, styling formatters)
+│   └── schemas/                  # Runtime Zod validation schemas (world.schema.ts, object.schema.ts, placement.schema.ts)
 ├── scripts/                      # Maintainer scripts (integrity auditor, issue parser, slot generator)
 └── tests/                        # Vitest unit/integration tests and Playwright E2E suites
+    ├── unit/                     # Unit test suites (schemas, engine math, governance validators, API routes)
+    └── e2e/                      # Playwright browser integration tests
 ```
 
 ---
 
-## 📁 Detailed Directory Breakdown
+## 📐 Core Architectural Rules & Guidelines
 
-### 1. Documentation (`docs/`)
-- [`docs/architecture/overview.md`](file:///d:/Temp/codes/Open%20Circle/OpenCircle-Test/docs/architecture/overview.md): System architecture, technology boundaries, and micro-contribution model.
-- [`docs/architecture/world-engine.md`](file:///d:/Temp/codes/Open%20Circle/OpenCircle-Test/docs/architecture/world-engine.md): 2D diorama rendering pipeline, layering system, and coordinate math.
-- [`docs/architecture/world-data.md`](file:///d:/Temp/codes/Open%20Circle/OpenCircle-Test/docs/architecture/world-data.md): Data schema definitions for objects, placements, and segments.
-- [`docs/architecture/contribution-flow.md`](file:///d:/Temp/codes/Open%20Circle/OpenCircle-Test/docs/architecture/contribution-flow.md): Two-commit contribution lifecycle and PR validation rules.
-- [`docs/architecture/world-catalog.md`](file:///d:/Temp/codes/Open%20Circle/OpenCircle-Test/docs/architecture/world-catalog.md): Registry of all 10 active paper worlds.
-- [`docs/architecture/world-density.md`](file:///d:/Temp/codes/Open%20Circle/OpenCircle-Test/docs/architecture/world-density.md): Density budgeting, collision boundaries, and visual scaling.
-- [`docs/architecture/cross-world-review.md`](file:///d:/Temp/codes/Open%20Circle/OpenCircle-Test/docs/architecture/cross-world-review.md): Audit checklists for world consistency and thematic balance.
-- [`docs/design/visual-language.md`](file:///d:/Temp/codes/Open%20Circle/OpenCircle-Test/docs/design/visual-language.md): Paper-collage aesthetic, drop-shadow filters, and color tokens.
-- [`docs/design/ui-principles.md`](file:///d:/Temp/codes/Open%20Circle/OpenCircle-Test/docs/design/ui-principles.md): Minimalist, warm, accessible UI principles.
-- [`docs/development/setup.md`](file:///d:/Temp/codes/Open%20Circle/OpenCircle-Test/docs/development/setup.md): Local development environment quickstart.
-- [`docs/development/testing.md`](file:///d:/Temp/codes/Open%20Circle/OpenCircle-Test/docs/development/testing.md): Vitest unit tests, Playwright E2E setup, and schema validation.
-- [`docs/development/github-setup.md`](file:///d:/Temp/codes/Open%20Circle/OpenCircle-Test/docs/development/github-setup.md): Branch protection rules, CI status checks, and workflow setup.
+### 1. Maintainer Boundary vs. Contributor Boundary
+- **Rule**: Contributors only modify their assigned world's `src/data/worlds/<world-id>/objects.ts` (Commit 1) and `src/data/worlds/<world-id>/placements.ts` (Commit 2). They must **never** modify engine components, schemas, site configuration, or dependencies.
+- **Why**: Keeps student contributions bite-sized (~1–10 LOC), prevents merge conflicts, and ensures strict security and stability across all 10 worlds.
 
----
+### 2. Asset Reuse-First Model (`public/assets/worlds/`)
+- **Rule**: Contributors select and reuse existing curated paper-cutout SVGs stored in `public/assets/worlds/<world-id>/`. Contributors do **not** upload or create new SVG files for standard Good First Issues.
+- **Why**: Eliminates artistic friction, ensures uniform paper-collage styling and drop-shadow consistency, and prevents large binary or unvetted SVG bloat.
 
-### 2. Next.js Application Routes (`src/app/`)
-- [`src/app/page.tsx`](file:///d:/Temp/codes/Open%20Circle/OpenCircle-Test/src/app/page.tsx): Homepage featuring the interactive Forest hero diorama, feature highlights, and contribution overview.
-- [`src/app/worlds/page.tsx`](file:///d:/Temp/codes/Open%20Circle/OpenCircle-Test/src/app/worlds/page.tsx): All Worlds directory gallery with snapshot previews and modal inspection.
-- [`src/app/worlds/[worldId]/page.tsx`](file:///d:/Temp/codes/Open%20Circle/OpenCircle-Test/src/app/worlds/%5BworldId%5D/page.tsx): Dynamic SSG route rendering individual worlds (10 statically generated paths).
-- [`src/app/how-to-contribute/page.tsx`](file:///d:/Temp/codes/Open%20Circle/OpenCircle-Test/src/app/how-to-contribute/page.tsx): Step-by-step beginner contributor walkthrough.
-- [`src/app/api/github/stats/route.ts`](file:///d:/Temp/codes/Open%20Circle/OpenCircle-Test/src/app/api/github/stats/route.ts): Server-side cached API endpoint fetching live GitHub Stars and Forks.
-- [`src/app/not-found.tsx`](file:///d:/Temp/codes/Open%20Circle/OpenCircle-Test/src/app/not-found.tsx): Custom 404 page.
-- [`src/app/dev/`](file:///d:/Temp/codes/Open%20Circle/OpenCircle-Test/src/app/dev/): Internal development test harness routes (`/dev/density`, `/dev/world-engine`).
+### 3. Shared World Engine (`src/engine/`)
+- **Rule**: All 10 worlds are strictly data-driven and render through the single, shared, reusable rendering engine in `src/engine/`. **Never duplicate or fork the engine per world.**
+- **Why**: Guarantees consistent parallax behavior, responsive scaling, coordinate clamping, and unified performance optimizations.
 
----
+### 4. Shared & Primitive Components (`src/components/`)
+- **Rule**: Place global layout components (`navigation.tsx`, `footer.tsx`, `CommunityStats.tsx`) in `src/components/`. Place generic, reusable UI primitives (buttons, dialogs, badges) in `src/components/ui/`. Place world-specific explorer components in `src/components/world/`.
+- **Why**: Keeps reusable design system tokens and primitive UI separate from feature-specific layout code.
 
-### 3. Components (`src/components/`)
-- [`src/components/navigation.tsx`](file:///d:/Temp/codes/Open%20Circle/OpenCircle-Test/src/components/navigation.tsx): Sticky top navbar with brand logo, world links, and live community stats.
-- [`src/components/CommunityStats.tsx`](file:///d:/Temp/codes/Open%20Circle/OpenCircle-Test/src/components/CommunityStats.tsx): Client-side badges for GitHub Stars and Forks.
-- [`src/components/footer.tsx`](file:///d:/Temp/codes/Open%20Circle/OpenCircle-Test/src/components/footer.tsx): Footer with copyright, repository links, and MIT licensing notice.
-- [`src/components/world/`](file:///d:/Temp/codes/Open%20Circle/OpenCircle-Test/src/components/world/):
-  - `WorldCard.tsx`: Diorama preview card with metadata and exploration actions.
-  - `WorldPreview.tsx`: Miniature paper diorama snapshot renderer.
-  - `FullscreenWorldViewer.tsx`: Accessible modal dialog for fullscreen diorama inspection.
-  - `WorldsOverview.tsx`: Client-side dynamic world directory grid and modal state coordinator.
-- [`src/components/ui/`](file:///d:/Temp/codes/Open%20Circle/OpenCircle-Test/src/components/ui/): Primitive UI buttons, badges, and dialogs.
+### 5. Runtime Schema Validation (`src/schemas/`)
+- **Rule**: Every world configuration, contributed object definition, and placement coordinate entry must validate against strict Zod runtime schemas before being loaded or merged.
+- **Why**: Catches malformed data, coordinate overflows (`x, y` outside 0–100%), and missing asset references during automated CI tests.
 
----
-
-### 4. Shared 2D World Engine (`src/engine/`)
-- [`src/engine/World.tsx`](file:///d:/Temp/codes/Open%20Circle/OpenCircle-Test/src/engine/World.tsx): Master container coordinating segment navigation and parallax layers.
-- [`src/engine/WorldSegment.tsx`](file:///d:/Temp/codes/Open%20Circle/OpenCircle-Test/src/engine/WorldSegment.tsx): Individual segment viewport rendering background, midground, and foreground.
-- [`src/engine/WorldLayer.tsx`](file:///d:/Temp/codes/Open%20Circle/OpenCircle-Test/src/engine/WorldLayer.tsx): Layer container managing z-index and parallax depth.
-- [`src/engine/WorldCutout.tsx`](file:///d:/Temp/codes/Open%20Circle/OpenCircle-Test/src/engine/WorldCutout.tsx): Interactive paper cutout renderer with drop shadows and contributor attribution badges.
-- [`src/engine/math.ts`](file:///d:/Temp/codes/Open%20Circle/OpenCircle-Test/src/engine/math.ts): Percentage coordinate scaling, position clamping, and transform logic.
-
----
-
-### 5. World Data & Contributor Zones (`src/data/worlds/`)
-Each of the 10 worlds contains:
-- `world.config.ts`: World theme, colors, dimensions, and segment metadata.
-- `objects.ts`: **[Step 1]** Contributor object registration referencing an existing SVG asset.
-- `placements.ts`: **[Step 2]** Contributor world coordinates (`x`, `y`), rotation, scale, and segment ID.
-
----
-
-### 6. Validation Schemas (`src/schemas/`)
-- [`src/schemas/world.schema.ts`](file:///d:/Temp/codes/Open%20Circle/OpenCircle-Test/src/schemas/world.schema.ts): Zod schema for full world configurations and segments.
-- [`src/schemas/object.schema.ts`](file:///d:/Temp/codes/Open%20Circle/OpenCircle-Test/src/schemas/object.schema.ts): Zod schema for contributed object definitions and contributor metadata.
-- [`src/schemas/placement.schema.ts`](file:///d:/Temp/codes/Open%20Circle/OpenCircle-Test/src/schemas/placement.schema.ts): Zod schema for object placements and coordinate bounds.
-
----
-
-### 7. Automation & Governance Scripts (`scripts/`)
-- [`scripts/pr-validator-core.ts`](file:///d:/Temp/codes/Open%20Circle/OpenCircle-Test/scripts/pr-validator-core.ts): PR governance validator enforcing minimum 2 commits, single-world scope, and read-only asset boundaries on `contrib/*` branches.
-- [`scripts/issue-lifecycle-parser.ts`](file:///d:/Temp/codes/Open%20Circle/OpenCircle-Test/scripts/issue-lifecycle-parser.ts): Issue title normalization and personalized bot onboarding welcome message generator.
-- [`scripts/contribution-slot-generator.ts`](file:///d:/Temp/codes/Open%20Circle/OpenCircle-Test/scripts/contribution-slot-generator.ts): Self-replenishing 20-slot contribution issue pool generator (`CONTRIB-SLOT #01..#20`).
-- [`scripts/audit-integrity.ts`](file:///d:/Temp/codes/Open%20Circle/OpenCircle-Test/scripts/audit-integrity.ts): Relational integrity auditor verifying all world assets, objects, segments, and placements on disk.
-
----
-
-### 8. GitHub Workflows (`.github/workflows/`)
-- [`ci.yml`](file:///d:/Temp/codes/Open%20Circle/OpenCircle-Test/.github/workflows/ci.yml): Runs PR validation, linting, TypeScript typecheck, Vitest unit tests, Next.js production build, and integrity audit.
-- [`auto-rename-issue.yml`](file:///d:/Temp/codes/Open%20Circle/OpenCircle-Test/.github/workflows/auto-rename-issue.yml): Normalizes issue titles and posts automated onboarding comments upon assignment.
-- [`replenish-contribution-slots.yml`](file:///d:/Temp/codes/Open%20Circle/OpenCircle-Test/.github/workflows/replenish-contribution-slots.yml): Maintains a standing pool of 20 unassigned beginner contribution issue slots.
+### 6. Clean Import Paths (`@/...`)
+- **Rule**: Always use the defined path alias `@/` mapped to the `src/` directory (e.g., `import { World } from "@/engine"`, `import { cn } from "@/lib/utils"`).
+- **Why**: Avoids brittle relative imports (`../../../`) and keeps import statements clean, readable, and refactor-safe across the repository.
