@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Trees, Compass, BookOpen, Code2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SITE_CONFIG } from "@/config/site";
+import { CommunityStats } from "./CommunityStats";
 
 export function Navigation() {
   return (
@@ -18,22 +19,27 @@ export function Navigation() {
           <span className="font-serif text-lg tracking-tight">Growing Worlds</span>
         </Link>
 
-        {/* Navigation Links */}
-        <nav className="flex items-center gap-1 sm:gap-4 text-sm font-medium text-stone-600">
+        {/* Navigation Links & Community Indicators */}
+        <nav className="flex items-center gap-1 sm:gap-3 text-sm font-medium text-stone-600">
           <Link
             href="/worlds"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-colors hover:text-stone-900 hover:bg-stone-200/50"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-colors hover:text-stone-900 hover:bg-stone-200/50"
           >
             <Compass className="h-4 w-4 text-emerald-800" />
             <span>Worlds</span>
           </Link>
           <Link
             href="/how-to-contribute"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-colors hover:text-stone-900 hover:bg-stone-200/50"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-colors hover:text-stone-900 hover:bg-stone-200/50"
           >
             <BookOpen className="h-4 w-4 text-emerald-800" />
             <span className="hidden xs:inline">How to</span> Contribute
           </Link>
+
+          {/* Live GitHub Stars & Forks Indicators */}
+          <CommunityStats />
+
+          {/* GitHub Repository Link Button */}
           <a
             href={SITE_CONFIG.repositoryUrl}
             target="_blank"
@@ -43,7 +49,7 @@ export function Navigation() {
             <Button
               variant="outline"
               size="sm"
-              className="gap-1.5 border-stone-300 bg-white/80 text-stone-800 hover:bg-stone-100"
+              className="gap-1.5 border-stone-300 bg-white/80 text-stone-800 hover:bg-stone-100 shadow-xs"
             >
               <Code2 className="h-4 w-4 text-stone-600" />
               <span>GitHub</span>
