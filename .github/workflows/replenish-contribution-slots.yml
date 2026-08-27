@@ -137,15 +137,24 @@ jobs:
             const slotsToCreate = missingSlotNumbers.slice(0, MAX_PER_RUN);
             console.log(`Slots to replenish in this run (max ${MAX_PER_RUN}):`, slotsToCreate.map(n => `CONTRIB-SLOT #${String(n).padStart(2, '0')}`).join(", "));
 
-            // Load Generator using tsx in node
-            const { CURATED_CONCEPTS, generateContributionSlotIssue, selectFreshConcept } = require('./scripts/contribution-slot-generator.ts');
-
+            // Invoke deterministic generator script via child_process
+            const { execSync } = require('child_process');
             let createdCount = 0;
 
             for (const slotNum of slotsToCreate) {
               const slotFormatted = `CONTRIB-SLOT #${String(slotNum).padStart(2, '0')}`;
-              const concept = selectFreshConcept(activeAssignments);
-              const generated = generateContributionSlotIssue(slotFormatted, concept);
+              const activePayload = JSON.stringify(activeAssignments);
+
+              const scriptCmd = `npx tsx -e "import { selectFreshConcept, generateContributionSlotIssue } from './scripts/contribution-slot-generator'; const active = ${JSON.stringify(activePayload)}; const concept = selectFreshConcept(JSON.parse(active)); const res = generateContributionSlotIssue('${slotFormatted}', concept); console.log('__JSON_START__' + JSON.stringify(res) + '__JSON_END__');"`;
+
+              const out = execSync(scriptCmd, { encoding: 'utf-8' });
+              const jsonMatch = out.match(/__JSON_START__([\s\S]*?)__JSON_END__/);
+              if (!jsonMatch) {
+                console.error("Failed to generate contribution slot data:", out);
+                continue;
+              }
+
+              const generated = JSON.parse(jsonMatch[1]);
 
               console.log("\n-------------------------------------------------");
               console.log(`Proposed Slot:   ${slotFormatted}`);
