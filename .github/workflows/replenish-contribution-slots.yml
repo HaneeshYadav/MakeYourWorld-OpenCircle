@@ -1,0 +1,182 @@
+name: Replenish Contribution Slots Pool
+
+on:
+  issues:
+    types:
+      - closed
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run mode (calculates missing slots without creating issues)"
+        type: boolean
+        required: false
+        default: false
+
+concurrency:
+  group: contribution-slot-replenishment
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  replenish-slots:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository code for scripts & generator catalog
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js runtime
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Execute Slot Pool Replenishment
+        uses: actions/github-script@v7
+        env:
+          DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+        with:
+          script: |
+            const eventName = context.eventName;
+            const action = context.payload.action || 'dispatched';
+            const closedIssue = context.payload.issue;
+            const isDryRun = process.env.DRY_RUN === 'true';
+
+            console.log("=================================================");
+            console.log("Growing Worlds Contribution Pool Replenishment");
+            console.log("=================================================");
+            console.log(`Event:       ${eventName}`);
+            console.log(`Action:      ${action}`);
+            console.log(`Dry Run:     ${isDryRun ? 'YES' : 'NO'}`);
+            console.log(`Target Pool: 20 open contribution issues\n`);
+
+            // If triggered by issues.closed, verify if the closed issue was a contribution slot issue
+            if (eventName === 'issues' && action === 'closed' && closedIssue) {
+              const labels = closedIssue.labels ? closedIssue.labels.map(l => typeof l === 'string' ? l : l.name) : [];
+              const isGoodFirstIssue = labels.includes("good first issue");
+              const hasContribTitle = closedIssue.title && (closedIssue.title.includes("[Good First Issue]") || closedIssue.title.includes("CONTRIB-SLOT"));
+              const hasWorldBody = closedIssue.body && closedIssue.body.includes("Target World") && closedIssue.body.includes("Contribution Slot");
+
+              const isContributionIssue = isGoodFirstIssue || hasContribTitle || hasWorldBody;
+
+              if (!isContributionIssue) {
+                console.log(`Closed issue #${closedIssue.number} ("${closedIssue.title}") is NOT a contribution slot issue.`);
+                console.log("Replenishment skipped.");
+                return;
+              }
+
+              console.log(`Contribution issue #${closedIssue.number} closed: "${closedIssue.title}". Proceeding to replenish pool.`);
+            }
+
+            // 1. Fetch all currently OPEN issues
+            console.log("Fetching currently open issues from repository...");
+            const openIssuesRes = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: "open",
+              per_page: 100,
+            });
+
+            // Filter open issues that are contribution slot issues
+            const openContribIssues = openIssuesRes.data.filter(issue => {
+              const labels = issue.labels.map(l => typeof l === 'string' ? l : l.name);
+              const isGoodFirstIssue = labels.includes("good first issue");
+              const hasContribTitle = issue.title && (issue.title.includes("[Good First Issue]") || issue.title.includes("CONTRIB-SLOT"));
+              return isGoodFirstIssue || hasContribTitle;
+            });
+
+            console.log(`Found ${openContribIssues.length} active open contribution slot issue(s).\n`);
+
+            // Extract active slot numbers (e.g. "CONTRIB-SLOT #01")
+            const activeSlots = [];
+            const activeAssignments = [];
+
+            for (const issue of openContribIssues) {
+              const slotMatch = issue.title.match(/CONTRIB-SLOT #(\d+)/i) || (issue.body && issue.body.match(/CONTRIB-SLOT #(\d+)/i));
+              if (slotMatch) {
+                activeSlots.push(`CONTRIB-SLOT #${slotMatch[1].padStart(2, '0')}`);
+              }
+              // Extract world and object
+              const titleMatch = issue.title.match(/Add (.*?) to (.*?) —/i);
+              if (titleMatch) {
+                activeAssignments.push({
+                  objectName: titleMatch[1].trim(),
+                  worldId: titleMatch[2].toLowerCase().replace(/\s+/g, '-'),
+                });
+              }
+            }
+
+            console.log("Active Open Slots:", activeSlots.join(", ") || "None");
+
+            // Calculate missing slots (1..20)
+            const TARGET_POOL_SIZE = 20;
+            const MAX_PER_RUN = 5;
+            const activeSet = new Set(activeSlots.map(s => {
+              const m = s.match(/(\d+)/);
+              return m ? parseInt(m[1], 10) : null;
+            }).filter(Boolean));
+
+            const missingSlotNumbers = [];
+            for (let i = 1; i <= TARGET_POOL_SIZE; i++) {
+              if (!activeSet.has(i)) {
+                missingSlotNumbers.push(i);
+              }
+            }
+
+            console.log(`Missing Slot Count: ${missingSlotNumbers.length}`);
+            if (missingSlotNumbers.length === 0) {
+              console.log("✅ Contribution pool is already at full capacity (20/20). Nothing to create.");
+              return;
+            }
+
+            const slotsToCreate = missingSlotNumbers.slice(0, MAX_PER_RUN);
+            console.log(`Slots to replenish in this run (max ${MAX_PER_RUN}):`, slotsToCreate.map(n => `CONTRIB-SLOT #${String(n).padStart(2, '0')}`).join(", "));
+
+            // Load Generator using tsx in node
+            const { CURATED_CONCEPTS, generateContributionSlotIssue, selectFreshConcept } = require('./scripts/contribution-slot-generator.ts');
+
+            let createdCount = 0;
+
+            for (const slotNum of slotsToCreate) {
+              const slotFormatted = `CONTRIB-SLOT #${String(slotNum).padStart(2, '0')}`;
+              const concept = selectFreshConcept(activeAssignments);
+              const generated = generateContributionSlotIssue(slotFormatted, concept);
+
+              console.log("\n-------------------------------------------------");
+              console.log(`Proposed Slot:   ${slotFormatted}`);
+              console.log(`Proposed World:  ${generated.worldName} (${generated.worldId})`);
+              console.log(`Proposed Object: ${generated.objectName}`);
+              console.log(`Proposed Title:  ${generated.title}`);
+
+              if (isDryRun) {
+                console.log("ℹ️ [DRY RUN] Issue creation skipped.");
+              } else {
+                console.log(`Creating new contribution issue for ${slotFormatted}...`);
+                const createdIssue = await github.rest.issues.create({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  title: generated.title,
+                  body: generated.body,
+                  labels: generated.labels,
+                });
+                console.log(`✅ Created Issue #${createdIssue.data.number}: ${createdIssue.data.html_url}`);
+                createdCount++;
+                activeAssignments.push({
+                  objectName: generated.objectName,
+                  worldId: generated.worldId,
+                });
+              }
+            }
+
+            console.log("\n=================================================");
+            console.log(`Pool Replenishment Summary:`);
+            console.log(`  Target Pool:     ${TARGET_POOL_SIZE}`);
+            console.log(`  Previously Open: ${openContribIssues.length}`);
+            console.log(`  Created:         ${createdCount}`);
+            console.log(`  Total Active:    ${openContribIssues.length + createdCount} / ${TARGET_POOL_SIZE}`);
+            console.log("=================================================");
