@@ -50,9 +50,9 @@ The CI workflow ([`.github/workflows/ci.yml`](file:///d:/Temp/codes/Open%20Circl
 ```
 
 1. **Student World Contribution PRs (`contrib/*`)**:
-   - The validator strictly requires exactly 2 commits (Commit 1: Asset + `objects.ts`, Commit 2: `placements.ts`) and forbids touching files outside contributor zones.
+   - The validator requires a minimum of 2 commits (Commit 1: Register object in `objects.ts` reusing an existing asset, Commit 2: World placement in `placements.ts`; extra commits are allowed), verifies single-world scope, and forbids touching files outside the assigned world's `objects.ts` and `placements.ts`.
 2. **Maintainer / Infrastructure PRs (`feature/*`, `fix/*`, `chore/*`, `docs/*`)**:
-   - Safely bypasses the student 2-commit check, proceeding directly to the standard quality gates (`npm ci`, `lint`, `typecheck`, `test`, `build`).
+   - Safely bypasses the student contributor check, proceeding directly to the standard quality gates (`npm ci`, `lint`, `typecheck`, `test`, `build`).
 
 ---
 

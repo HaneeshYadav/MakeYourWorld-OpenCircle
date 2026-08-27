@@ -43,10 +43,13 @@ export default function HomePage() {
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-            <Link href="/worlds/growing-forest">
-              <Button size="lg" className="gap-2 bg-emerald-900 text-white hover:bg-emerald-800 shadow-md">
+            <Link href="/worlds">
+              <Button
+                size="lg"
+                className="gap-2 bg-emerald-900 text-white border border-emerald-700/60 shadow-[0_0_12px_rgba(16,185,129,0.15)] transition-all duration-200 ease-out hover:bg-emerald-800 hover:border-emerald-500/80 hover:shadow-[0_0_20px_rgba(16,185,129,0.30)] hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2 focus-visible:ring-offset-[#FAF8F5]"
+              >
                 <Compass className="h-4 w-4" />
-                <span>Explore Growing Forest</span>
+                <span>Explore All Worlds</span>
               </Button>
             </Link>
             <Link href="/how-to-contribute">
@@ -122,9 +125,9 @@ export default function HomePage() {
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-900/10 text-emerald-900 font-bold font-mono text-sm">
                 02
               </div>
-              <h3 className="font-bold text-stone-900">Commit 1: Asset</h3>
+              <h3 className="font-bold text-stone-900">Commit 1: Register</h3>
               <p className="text-xs text-stone-600">
-                Add your SVG paper cutout and register metadata in <code>objects.ts</code> (~1–5 LOC).
+                Choose an existing paper asset and register metadata in <code>objects.ts</code> (~1–5 LOC).
               </p>
             </div>
 

@@ -12,7 +12,8 @@
 - **Contribution Slot**: `[e.g., CONTRIB-SLOT #01]`
 - **Target World**: `[e.g., Growing Forest]` (`growing-forest`)
 - **Target Segment**: `[e.g., forest-01]` (Ancient Canopy)
-- **Object Name**: `[e.g., Pine Tree]`
+- **Object Name**: `[e.g., Butterfly]`
+- **Reused Asset**: `[e.g., /assets/worlds/growing-forest/student-butterfly.svg]`
 
 ---
 
@@ -23,22 +24,21 @@
 
 ---
 
-## 📁 Two-Commit Structure Checklist
+## 📁 Two-Stage Contribution Structure
 
-Your PR must strictly contain the following structure across **two separate commits**:
+Your PR should contain changes split across a **minimum of 2 commits** (more commits for adjustments are welcome):
 
-### Commit 1: Asset & Object Registration
-- `public/assets/worlds/<world>/<object-name>.svg` (or `.png`)
-- `src/data/worlds/<world>/objects.ts`
+### Commit 1: Register Object with Existing Asset
+- `src/data/worlds/<world>/objects.ts` (references existing SVG from `public/assets/worlds/<world>/`)
 
-### Commit 2: World Placement Only
-- `src/data/worlds/<world>/placements.ts`
+### Commit 2: World Placement
+- `src/data/worlds/<world>/placements.ts` (places object in assigned segment)
 
 ---
 
 ## 🛑 Files You Must NOT Modify
 Student contributors must **NOT** modify maintainer or infrastructure files:
-`src/engine/*`, `src/schemas/*`, `src/components/*`, `src/app/*`, `tests/*`, `.github/*`, `package.json`, `package-lock.json`, `docs/*`, or `scripts/*`.
+`public/assets/worlds/*` (assets are read-only and reused), `src/engine/*`, `src/schemas/*`, `src/components/*`, `src/app/*`, `tests/*`, `.github/*`, `package.json`, `package-lock.json`, `docs/*`, or `scripts/*`.
 
 ---
 
@@ -46,12 +46,12 @@ Student contributors must **NOT** modify maintainer or infrastructure files:
 
 - [ ] I started from the latest `dev`.
 - [ ] My branch starts with `contrib/` (e.g., `contrib/growing-forest-butterfly`).
-- [ ] Commit 1 contains the asset + `objects.ts` registration.
-- [ ] Commit 2 contains `placements.ts` only.
-- [ ] I did not squash the two commits (exactly 2 separate commits).
+- [ ] Commit 1 registers the object in `objects.ts` referencing an existing repository SVG.
+- [ ] Commit 2 adds the placement in `placements.ts` only.
+- [ ] I have at least 2 commits on my branch (more commits are allowed if needed).
+- [ ] I reused an existing SVG asset (I did NOT create or upload a new SVG file).
 - [ ] I used the assigned world and segment.
 - [ ] My `objectId` matches `objects.ts`.
-- [ ] My asset path is correct and file exists on disk.
 - [ ] I checked the visual placement locally at `http://localhost:3000/worlds/<world-id>`.
 - [ ] I did not modify unrelated or maintainer files.
 - [ ] `npm run lint` passes.
