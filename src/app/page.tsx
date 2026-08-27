@@ -43,10 +43,10 @@ export default function HomePage() {
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-            <Link href="/worlds/growing-forest">
+            <Link href="/worlds">
               <Button size="lg" className="gap-2 bg-emerald-900 text-white hover:bg-emerald-800 shadow-md">
                 <Compass className="h-4 w-4" />
-                <span>Explore Growing Forest</span>
+                <span>Explore All Worlds</span>
               </Button>
             </Link>
             <Link href="/how-to-contribute">
