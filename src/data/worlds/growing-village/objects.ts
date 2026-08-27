@@ -13,4 +13,13 @@ export const villageObjects: WorldObject[] = [
       githubUsername: "clara-garden",
     },
   },
+  {
+    id: "village",
+    asset: "/assets/worlds/growing-village/wooden-cart.svg",
+    contributor: {
+      displayName: "Shen",
+      githubUsername: "ShenSandaru",
+    },
+  },
+
 ];
