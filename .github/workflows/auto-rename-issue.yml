@@ -264,23 +264,26 @@ jobs:
                 console.log(`Onboarding comment for @${assignee} already exists on issue #${issue.number}. Skipping duplicate.`);
               } else {
                 console.log(`Posting onboarding welcome comment for @${assignee} on issue #${issue.number}...`);
-                const welcomeComment = `${marker}
-## 👋 Welcome @${assignee}! You have been assigned to this slot! 🎉
-
-We are excited for your contribution to **${worldName}**! Here is a quick reference for your next steps:
-
-### 📋 Your Contribution Details
-- **Assigned World**: \`${worldName}\` (\`${worldId}\`)
-- **Assigned Segment**: \`${segmentId}\`
-- **Object**: \`${objectName}\`
-- **Feature Branch**: \`${branchName}\` (must start with \`contrib/\` from \`dev\`)
-
-### 🔐 Strict Two-Commit Workflow Reminder
-1. **Commit 1**: Add SVG asset to \`public/assets/worlds/${worldId}/\` and register in \`src/data/worlds/${worldId}/objects.ts\`.
-2. **Commit 2**: Add placement in \`src/data/worlds/${worldId}/placements.ts\` with \`segmentId: "${segmentId}"\`.
-3. **Open PR against \`dev\`** and include \`Closes #${issue.number}\` in the description.
-
-> 💡 *Note: Assigned slots are reserved for **48 hours**. If you run into any questions or need help, feel free to ask here!* Happy coding! 🌱`;
+                const lines = [
+                  marker,
+                  `## 👋 Welcome @${assignee}! You have been assigned to this slot! 🎉`,
+                  "",
+                  `We are excited for your contribution to **${worldName}**! Here is a quick reference for your next steps:`,
+                  "",
+                  "### 📋 Your Contribution Details",
+                  `- **Assigned World**: \`${worldName}\` (\`${worldId}\`)`,
+                  `- **Assigned Segment**: \`${segmentId}\``,
+                  `- **Object**: \`${objectName}\``,
+                  `- **Feature Branch**: \`${branchName}\` (must start with \`contrib/\` from \`dev\`)`,
+                  "",
+                  "### 🔐 Strict Two-Commit Workflow Reminder",
+                  `1. **Commit 1**: Add SVG asset to \`public/assets/worlds/${worldId}/\` and register in \`src/data/worlds/${worldId}/objects.ts\`.`,
+                  `2. **Commit 2**: Add placement in \`src/data/worlds/${worldId}/placements.ts\` with \`segmentId: "${segmentId}"\`.`,
+                  `3. **Open PR against \`dev\`** and include \`Closes #${issue.number}\` in the description.`,
+                  "",
+                  "> 💡 *Note: Assigned slots are reserved for **48 hours**. If you run into any questions or need help, feel free to ask here!* Happy coding! 🌱"
+                ];
+                const welcomeComment = lines.join("\n");
 
                 try {
                   await github.rest.issues.createComment({
@@ -343,12 +346,15 @@ We are excited for your contribution to **${worldName}**! Here is a quick refere
 
               if (!alreadyCelebrated) {
                 console.log(`Posting completion comment on issue #${issue.number}...`);
-                const completionComment = `${completionMarker}
-## 🎉 Contribution Complete & Merged!
-
-This contribution slot has been successfully completed and merged into **${worldName}**! 🌿
-
-Thank you to the contributor for expanding our growing worlds! Your paper cutout is now a permanent part of the shared diorama.`;
+                const completionLines = [
+                  completionMarker,
+                  "## 🎉 Contribution Complete & Merged!",
+                  "",
+                  `This contribution slot has been successfully completed and merged into **${worldName}**! 🌿`,
+                  "",
+                  "Thank you to the contributor for expanding our growing worlds! Your paper cutout is now a permanent part of the shared diorama."
+                ];
+                const completionComment = completionLines.join("\n");
 
                 try {
                   await github.rest.issues.createComment({
