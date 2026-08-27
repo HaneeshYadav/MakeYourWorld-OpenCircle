@@ -125,9 +125,9 @@ export default function HomePage() {
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-900/10 text-emerald-900 font-bold font-mono text-sm">
                 02
               </div>
-              <h3 className="font-bold text-stone-900">Commit 1: Asset</h3>
+              <h3 className="font-bold text-stone-900">Commit 1: Register</h3>
               <p className="text-xs text-stone-600">
-                Add your SVG paper cutout and register metadata in <code>objects.ts</code> (~1–5 LOC).
+                Choose an existing paper asset and register metadata in <code>objects.ts</code> (~1–5 LOC).
               </p>
             </div>
 

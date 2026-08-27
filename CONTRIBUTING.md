@@ -6,27 +6,39 @@ Growing Worlds is an open-source educational project specifically designed for s
 
 ---
 
-## 🌟 The 2-Commit Contribution Process
+## 🎨 Asset vs. Object vs. Placement (Key Concepts)
 
-Each contribution follows a strict, beginner-friendly **two-commit workflow**:
+Before you write code, understanding these 3 terms makes your contribution simple and straightforward:
+
+1. **Asset (SVG)**: A reusable picture file stored in `public/assets/worlds/<world-id>/`. Think of it as the physical paper stamp. **You reuse an existing asset from the repository—you do NOT need to create or upload a new SVG!**
+2. **Object**: A data record in `src/data/worlds/<world-id>/objects.ts` that connects your display name and GitHub username to the chosen existing asset.
+3. **Placement**: A record in `src/data/worlds/<world-id>/placements.ts` that defines *where* (assigned `segmentId` and `x, y` percentage coordinates) your object sits in the world.
+
+---
+
+## 🌟 The Minimum 2-Commit Contribution Workflow
+
+Each student contribution follows a clear two-stage workflow:
 
 ```
 ┌────────────────────────────────────────────────────────┐
-│  Commit 1: Add Image Asset & Object Registration       │
-│  - Add paper SVG file: public/assets/worlds/<world>/   │
-│  - Add ~1-5 lines: src/data/worlds/<world>/objects.ts  │
+│  Commit 1: Register Object with Existing Asset         │
+│  - Select existing SVG from public/assets/worlds/<id>/ │
+│  - Add ~1-5 lines in src/data/worlds/<id>/objects.ts   │
 │  - Test with: npm test                                 │
 └────────────────────────────────────────────────────────┘
                            │
                            ▼
 ┌────────────────────────────────────────────────────────┐
 │  Commit 2: Place Object in World Segment               │
-│  - Add ~1-5 lines: src/data/worlds/<world>/placements.ts│
+│  - Add ~1-5 lines in src/data/worlds/<id>/placements.ts│
 │  - Set assigned segmentId (e.g. "forest-01") & x, y (%)│
 │  - Test with: npm test && npm run lint                 │
 │  - Check visually at http://localhost:3000/worlds/<id> │
 └────────────────────────────────────────────────────────┘
 ```
+
+> 💡 **Flexible Commit Count**: A **minimum of 2 commits** is required. If you make 3, 4, or 5 commits to fix coordinates, formatting, or comments, that is **100% fine and allowed**! You do not need to squash your commits. CI checks your file boundaries and structure.
 
 ---
 
@@ -46,8 +58,8 @@ Each contribution follows a strict, beginner-friendly **two-commit workflow**:
   - **Issue Number**: Note the GitHub issue number (e.g., `#12`) for your PR description.
   - **Target World**: e.g., `Growing Forest` (`growing-forest`)
   - **Target Segment**: e.g., `forest-01`
-  - **Allowed Category / Object**: e.g., `Butterfly`
-- Comment on the issue: `I would like to work on this!`
+  - **Suggested Concept**: e.g., `Butterfly`
+- Comment on the issue: `Hi! I would like to work on this issue. Thank you! 🙌`
 - **Wait for Assignment**: A maintainer will formally assign the issue to you and the automated bot will post your personalized onboarding next-steps comment!
 - *Note on Inactivity*: Assigned slots are held for **48 hours**. If no PR is submitted within 48 hours, the slot may be unassigned to give other students an opportunity.
 
@@ -55,12 +67,12 @@ Each contribution follows a strict, beginner-friendly **two-commit workflow**:
 - Click **Fork** at the top-right of the repository on GitHub.
 - Clone your fork to your computer:
   ```bash
-  git clone https://github.com/<your-username>/OpenCircle-Test.git
-  cd OpenCircle-Test
+  git clone https://github.com/<your-username>/MakeYourWorld-OpenCircle.git
+  cd MakeYourWorld-OpenCircle
   ```
 - Add the upstream repository remote:
   ```bash
-  git remote add upstream https://github.com/ShenSandaru/OpenCircle-Test.git
+  git remote add upstream https://github.com/ShenSandaru/MakeYourWorld-OpenCircle.git
   ```
 - Install dependencies:
   ```bash
@@ -73,22 +85,22 @@ Always base your feature branch on the upstream **`dev`** branch (NOT `main`):
 git checkout dev
 git fetch upstream
 git pull upstream dev
-git checkout -b contrib/<world-name>-<object-name>
+git checkout -b contrib/<world-id>-<object-name>
 ```
 *Example: `git checkout -b contrib/growing-forest-butterfly`*
 
 ---
 
-### 4. Commit 1: Asset & Object Registration (~1–5 lines)
+### 4. Commit 1: Register Object with Existing Asset (~1–5 lines)
 
-1. Save your paper-cutout SVG file (transparent background, <50 KB) to:
-   `public/assets/worlds/<world-name>/<object-name>.svg`
-   *(Example: `public/assets/worlds/growing-forest/butterfly.svg`)*
-2. Open `src/data/worlds/<world-name>/objects.ts` and append your object to the array:
+1. Browse existing paper-cutout SVGs in:
+   `public/assets/worlds/<world-id>/`
+   *(Example: choose `public/assets/worlds/growing-forest/student-butterfly.svg`)*
+2. Open `src/data/worlds/<world-id>/objects.ts` and append your object to the array:
    ```typescript
    {
      id: "butterfly",
-     asset: "/assets/worlds/growing-forest/butterfly.svg",
+     asset: "/assets/worlds/growing-forest/student-butterfly.svg",
      contributor: {
        displayName: "Your Name",
        githubUsername: "your-github-username",
@@ -99,16 +111,15 @@ git checkout -b contrib/<world-name>-<object-name>
    ```bash
    git status
    git diff
-   git add public/assets/worlds/<world-name>/<object-name>.svg
-   git add src/data/worlds/<world-name>/objects.ts
-   git commit -m "feat: add butterfly asset and object"
+   git add src/data/worlds/<world-id>/objects.ts
+   git commit -m "feat: register butterfly object"
    ```
 
 ---
 
 ### 5. Commit 2: World Placement (~1–5 lines)
 
-1. Open `src/data/worlds/<world-name>/placements.ts`.
+1. Open `src/data/worlds/<world-id>/placements.ts`.
 2. Append your placement entry specifying your assigned `segmentId` and coordinates `x` (0–100%) and `y` (0–100%):
    ```typescript
    {
@@ -124,28 +135,29 @@ git checkout -b contrib/<world-name>-<object-name>
    ```bash
    git status
    git diff
-   git add src/data/worlds/<world-name>/placements.ts
+   git add src/data/worlds/<world-id>/placements.ts
    git commit -m "feat: place butterfly in forest-01"
    ```
 
-4. Verify your two commits:
+4. Verify your commits:
    ```bash
-   git log --oneline -2
+   git log --oneline -5
    ```
 
 5. Run local validation:
    ```bash
+   npm test
    npm run lint
    npm run typecheck
-   npm test
    npm run build
+   npx tsx scripts/audit-integrity.ts
    ```
 
 6. View it locally in your browser:
    ```bash
    npm run dev
    ```
-   Open `http://localhost:3000/worlds/<world-name>` to visually check your placed object and contributor badge.
+   Open `http://localhost:3000/worlds/<world-id>` to visually check your placed object and contributor badge.
 
 ---
 
@@ -153,20 +165,27 @@ git checkout -b contrib/<world-name>-<object-name>
 
 1. Push your feature branch to your fork:
    ```bash
-   git push -u origin contrib/<world-name>-<object-name>
+   git push -u origin contrib/<world-id>-<object-name>
    ```
 2. Go to GitHub and open a Pull Request against the **`dev`** branch (NOT `main`).
-3. In the PR description, replace `#<ISSUE_NUMBER>` with `Closes #<ASSIGNED_ISSUE_NUMBER>` (e.g. `Closes #12`).
-4. Keep the **two commits separate** (do not squash them).
-5. Once reviewed and merged by maintainers into `dev`, your contribution permanently appears in the growing world! 🎉
+3. In the PR description, include `Closes #<ASSIGNED_ISSUE_NUMBER>` (e.g. `Closes #12`).
+4. Once reviewed and merged by maintainers into `dev`, your contribution permanently appears in the growing world! 🎉
+5. The completed issue will automatically close, and a fresh issue will be automatically created to keep the 20-slot pool replenished.
 
 ---
 
 ## 🛑 Contributor File Boundaries
 
-To ensure clean validation, contributors must **only** edit:
-- ✅ `public/assets/worlds/<world-name>/*`
-- ✅ `src/data/worlds/<world-name>/objects.ts`
-- ✅ `src/data/worlds/<world-name>/placements.ts`
+To ensure clean validation, student contributors must **only** edit:
+- ✅ `src/data/worlds/<world-id>/objects.ts` (Commit 1)
+- ✅ `src/data/worlds/<world-id>/placements.ts` (Commit 2)
 
-Do **NOT** modify engine code (`src/engine/*`), domain schemas (`src/schemas/*`), UI components (`src/components/*`), pages (`src/app/*`), tests (`tests/*`), workflows (`.github/*`), documentation (`docs/*`), scripts (`scripts/*`), or dependency files (`package.json`, `package-lock.json`).
+Do **NOT** modify existing SVG asset files in `public/assets/`, engine code (`src/engine/*`), domain schemas (`src/schemas/*`), UI components (`src/components/*`), pages (`src/app/*`), tests (`tests/*`), workflows (`.github/*`), documentation (`docs/*`), scripts (`scripts/*`), or dependency files (`package.json`, `package-lock.json`).
+
+---
+
+## 🛠️ Troubleshooting CI Failures
+
+- **"At least 2 commits are required"**: Ensure your changes are split across at least 2 commits (Commit 1 for `objects.ts`, Commit 2 for `placements.ts`).
+- **"Unexpected asset modification"**: You modified an SVG in `public/assets/`. Revert it using `git checkout -- public/assets/` and simply reference the file path from `objects.ts`.
+- **"Forbidden file modified"**: You changed files outside your assigned world. Revert unrelated files so only `objects.ts` and `placements.ts` are modified.
