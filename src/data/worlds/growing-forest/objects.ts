@@ -13,4 +13,12 @@ export const forestObjects: WorldObject[] = [
       githubUsername: "ShenSandaru",
     },
   },
+  {
+    id: "song-bird",
+    asset: "/assets/worlds/growing-forest/song-bird.svg",
+    contributor: {
+      displayName: "Harsh",
+      githubUsername: "Lazy-Pir8",
+    },
+  },
 ];
